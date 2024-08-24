@@ -16,8 +16,11 @@ public record PlaceBetLogs
 	public DateTime Time { get; set; } = default!;
 
 	[BsonElement("request")]
-	public Object Request { get; set; } = default!;
+	public string Request { get; set; } = default!;
 
 	[BsonElement("response")]
-	public Object Response { get; set; } = default!;
+	public string Response { get; set; } = default!;
 }
+
+public record PlaceBetRequestLogs(string key, string message);
+public record PlaceBetResponseLogs(string key, string message);
