@@ -6,6 +6,7 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["nuget.config", "."]
 COPY ["SabaSingleWallet.API/SabaSingleWallet.API.csproj", "SabaSingleWallet.API/"]
+COPY ["SabaSingleWallet.Repositories/SabaSingleWallet.Repositories.csproj", "SabaSingleWallet.Repositories/"]
 RUN dotnet restore "./SabaSingleWallet.API/./SabaSingleWallet.API.csproj"
 COPY . .
 WORKDIR "/src/SabaSingleWallet.API"
