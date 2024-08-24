@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35208.52
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SingleWallet.API", "SingleWallet.API\SingleWallet.API.csproj", "{82D42BD7-0E56-4B01-BA0A-0F8986473309}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabaSingleWallet.API", "SingleWallet.API\SabaSingleWallet.API.csproj", "{82D42BD7-0E56-4B01-BA0A-0F8986473309}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SabaSingleWallet.Repositories", "SingleWallet.Repositories\SabaSingleWallet.Repositories.csproj", "{68AD0663-51DD-4F92-8F92-02A450A10C12}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{82D42BD7-0E56-4B01-BA0A-0F8986473309}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82D42BD7-0E56-4B01-BA0A-0F8986473309}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82D42BD7-0E56-4B01-BA0A-0F8986473309}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68AD0663-51DD-4F92-8F92-02A450A10C12}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68AD0663-51DD-4F92-8F92-02A450A10C12}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68AD0663-51DD-4F92-8F92-02A450A10C12}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68AD0663-51DD-4F92-8F92-02A450A10C12}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,4 @@
-﻿namespace SingleWallet.API.Models.PlaceBet
+﻿namespace SabaSingleWallet.API.Models.PlaceBet
 {
     public record PlaceBetData
     {

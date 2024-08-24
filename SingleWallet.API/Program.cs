@@ -3,8 +3,8 @@ using Microsoft.AspNetCore.HttpLogging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using SingleWallet.API;
-using SingleWallet.API.Middlewares;
+using SabaSingleWallet.API;
+using SabaSingleWallet.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 

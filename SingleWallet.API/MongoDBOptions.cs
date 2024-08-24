@@ -1,4 +1,4 @@
-﻿namespace SingleWallet.API;
+﻿namespace SabaSingleWallet.API;
 
 public record MongoDBOptions
 {

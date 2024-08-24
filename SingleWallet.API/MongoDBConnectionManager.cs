@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using MongoDB.Driver;
 
-namespace SingleWallet.API;
+namespace SabaSingleWallet.API;
 
 internal class MongoDBConnectionManager
 {

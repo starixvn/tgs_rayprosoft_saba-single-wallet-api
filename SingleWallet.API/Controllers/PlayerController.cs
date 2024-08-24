@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using SingleWallet.API.Models.PlaceBet;
+using SabaSingleWallet.API.Models.PlaceBet;
 using Tgs.ServiceUtility;
 
-namespace SingleWallet.API.Controllers
+namespace SabaSingleWallet.API.Controllers
 {
     [Route("api/player")]
     [ApiController]

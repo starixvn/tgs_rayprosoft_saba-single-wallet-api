@@ -1,8 +1,8 @@
 ﻿using System.Text.Json;
-using SingleWallet.API.Models.PlaceBet;
+using SabaSingleWallet.API.Models.PlaceBet;
 using Tgs.ServiceUtility;
 
-namespace SingleWallet.API.Services
+namespace SabaSingleWallet.API.Services
 {
     public class PlaceBetGetService : IGetService<PlaceBetRequest, PlaceBetResult>
     {

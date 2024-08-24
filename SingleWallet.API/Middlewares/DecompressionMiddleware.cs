@@ -1,6 +1,6 @@
 ﻿using System.IO.Compression;
 
-namespace SingleWallet.API.Middlewares
+namespace SabaSingleWallet.API.Middlewares
 {
     public class DecompressionMiddleware
     {
