@@ -2,7 +2,7 @@
 
 public record SettleData
 {
-	public required string Action { get; set; } // Default value for action
+	public required string Action { get; set; } = "Settle"; // Default value for action
 
 	public required string OperationId { get; set; }
 
@@ -17,9 +17,9 @@ public record SettlementTransaction
 
 	public required long TxId { get; set; }
 
-	public required DateTime UpdateTime { get; set; }
+	public required string UpdateTime { get; set; }
 
-	public required DateTime WinlostDate { get; set; }
+	public required string WinlostDate { get; set; }
 
 	public required string Status { get; set; }
 
@@ -29,7 +29,7 @@ public record SettlementTransaction
 
 	public required decimal DebitAmount { get; set; }
 
-	public required DateTime SettlementTime { get; set; }
+	public required string SettlementTime { get; set; }
 
-	public string? ExtraStatus { get; set; }
+	public string? ExtraStatus { get; set; } //cashout || void ticket || refund match || void cashout
 }
