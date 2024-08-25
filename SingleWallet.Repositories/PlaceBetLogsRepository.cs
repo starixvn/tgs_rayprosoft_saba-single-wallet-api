@@ -32,5 +32,5 @@ internal class PlaceBetLogsRepository(IMongoClient client) : IPlaceBetLogsReposi
 	private IMongoCollection<PlaceBetLogs> GetCollection()
 	=> client
 	.GetDatabase($"sw_logs_master")
-	.GetCollection<PlaceBetLogs>("place_bet_logs");
+	.GetCollection<PlaceBetLogs>("placebet_logs");
 }

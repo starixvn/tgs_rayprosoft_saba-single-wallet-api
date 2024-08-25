@@ -3,10 +3,9 @@ using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
 namespace SabaSingleWallet.Repositories.Extensions.Models;
-[Table("place_bet_logs")]
+[Table("placebet_logs")]
 public record PlaceBetLogs
 {
-
 	[BsonId]
 	public ObjectId Id { get; set; } = default!;
 	/// <summary>
