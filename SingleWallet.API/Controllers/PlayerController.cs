@@ -5,6 +5,7 @@ using SabaSingleWallet.API.Models.ConfirmBet;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.API.Models.Resettle;
 using SabaSingleWallet.API.Models.Settle;
+using SabaSingleWallet.API.Models.Unsettle;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Controllers
@@ -72,6 +73,17 @@ namespace SabaSingleWallet.API.Controllers
 		public async ValueTask<ResettleResult> Resettle(
 			[FromServices] IGetService<ResettleRequest, ResettleResult> service,
 			ResettleRequest source
+			)
+		{
+			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
+
+			return result;
+		}
+
+		[HttpPost("unsettle")]
+		public async ValueTask<UnsettleResult> Unsettle(
+			[FromServices] IGetService<UnsettleRequest, UnsettleResult> service,
+			UnsettleRequest source
 			)
 		{
 			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
