@@ -1,4 +1,3 @@
-using FluentdForward.OpenTelemetry.MessagePack;
 using Microsoft.AspNetCore.HttpLogging;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
@@ -8,18 +7,16 @@ using SabaSingleWallet.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
-
-
 // Add services to the container.
 builder.Services
-    .AddOptions<MongoDBOptions>()
-    .Configure((MongoDBOptions options, IServiceProvider sp) =>
-    {
-        var configuration = sp.GetRequiredService<IConfiguration>();
-        options.ConnectionString = configuration.GetConnectionString("Mongo")!;
-    })
-    .Services
-    .AddSingleton<MongoDBConnectionManager>()
+	.AddOptions<MongoDBOptions>()
+	.Configure((MongoDBOptions options, IServiceProvider sp) =>
+	{
+		var configuration = sp.GetRequiredService<IConfiguration>();
+		options.ConnectionString = configuration.GetConnectionString("Mongo")!;
+	})
+	.Services
+	.AddSingleton<MongoDBConnectionManager>()
 	.AddGameRecordRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient);
 
 builder.Services.AddControllers();
@@ -28,64 +25,48 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddGameInterfaceCore();
 builder.Services
-    .AddHttpLogging(logging => logging.LoggingFields = HttpLoggingFields.All)
-    .AddHealthChecks();
+	.AddHttpLogging(logging => logging.LoggingFields = HttpLoggingFields.All)
+	.AddHealthChecks();
 builder.WebHost.UseSentry();
-
-builder.Logging
-    .AddOpenTelemetry(options =>
-    {
-        options.IncludeFormattedMessage = true;
-        options.ParseStateValues = true;
-        _ = options.AddFluentdForwardExporter(fluentOptions =>
-        {
-            var nodeIp = builder.Configuration.GetValue<string>("NODE_IP")!;
-            fluentOptions.Host = nodeIp;
-            fluentOptions.Tag = builder.Configuration.GetValue<string>("OTEL_SERVICE_NAME")!;
-            fluentOptions.UseMessagePack(LogRecordFormatterResolver.GetResolverInstanceWithExtendInfo(
-                "MachineName",
-                () => Environment.MachineName));
-        });
-    });
 
 var excludeExtensions = new[] { "html", "ico", "png", "jpg" };
 
 builder.Services
-    .AddOpenTelemetry()
-    .ConfigureResource(_ => _.AddService(builder.Configuration.GetValue<string>("Otel:ServiceName")))
-    .WithTracing(tracerProviderBuilder => tracerProviderBuilder
-        .AddSource("Tgs.*")
-        .AddSource("TGS.*")
-        .AddSource("Valhalla.*")
-        .AddAspNetCoreInstrumentation(options => options.Filter =
-            httpContext => !httpContext.Request.Path.HasValue
-                || !httpContext.Request.Path.StartsWithSegments("/swagger")
-                && !httpContext.Request.Path.StartsWithSegments("/health")
-                && !httpContext.Request.Path.StartsWithSegments("/profiler/")
-                && !httpContext.Request.Path.StartsWithSegments("/metrics")
-                && !excludeExtensions.Any(
-                    ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
-        .AddHttpClientInstrumentation()
-        .AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
-        .AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector")))
-    .WithMetrics(meterBuiler => meterBuiler
-        .SetResourceBuilder(ResourceBuilder.CreateDefault()
-            .AddEnvironmentVariableDetector())
-            .AddRuntimeInstrumentation()
-            .AddAspNetCoreInstrumentation()
-            .AddOtlpExporter())
-    .Services
-    .AddProfileViewer()
-    .AddInterceptionService()
-    .AddServiceUtiltiyInterceptors();
+	.AddOpenTelemetry()
+	.ConfigureResource(_ => _.AddService(builder.Configuration.GetValue<string>("Otel:ServiceName") ?? ""))
+	.WithTracing(tracerProviderBuilder => tracerProviderBuilder
+		.AddSource("Tgs.*")
+		.AddSource("TGS.*")
+		.AddSource("Valhalla.*")
+		.AddAspNetCoreInstrumentation(options => options.Filter =
+			httpContext => !httpContext.Request.Path.HasValue
+				|| !httpContext.Request.Path.StartsWithSegments("/swagger")
+				&& !httpContext.Request.Path.StartsWithSegments("/health")
+				&& !httpContext.Request.Path.StartsWithSegments("/profiler/")
+				&& !httpContext.Request.Path.StartsWithSegments("/metrics")
+				&& !excludeExtensions.Any(
+					ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
+		.AddHttpClientInstrumentation()
+		.AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
+		.AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector") ?? new Uri("")))
+	.WithMetrics(meterBuiler => meterBuiler
+		.SetResourceBuilder(ResourceBuilder.CreateDefault()
+			.AddEnvironmentVariableDetector())
+			.AddRuntimeInstrumentation()
+			.AddAspNetCoreInstrumentation()
+			.AddOtlpExporter())
+	.Services
+	.AddProfileViewer()
+	.AddInterceptionService()
+	.AddServiceUtiltiyInterceptors();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+	app.UseSwagger();
+	app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
