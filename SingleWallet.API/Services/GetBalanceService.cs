@@ -4,7 +4,7 @@ using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class GetBalanceService(IGetBalanceLogsRepository getBalanceLogsRepository) : IGetService<GetBalanceRequest, GetBalanceResult>
+public class GetBalanceService(IApiLogsRepository apiLogsRepository) : IGetService<GetBalanceRequest, GetBalanceResult>
 {
 	public async ValueTask<GetBalanceResult> GetAsync(GetBalanceRequest query, CancellationToken cancellationToken = default)
 	{
@@ -13,7 +13,7 @@ public class GetBalanceService(IGetBalanceLogsRepository getBalanceLogsRepositor
 			Console.WriteLine(query.message);
 			var res = new GetBalanceResult("0", "4200500_2331", 100, new DateTime());
 
-			_ = await getBalanceLogsRepository.AddAsync(query, res, cancellationToken);
+			_ = await apiLogsRepository.AddAsync(query.message.Action, query, res, cancellationToken);
 
 			//TO DO
 			//#1. Check Valid UserId

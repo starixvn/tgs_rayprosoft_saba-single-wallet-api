@@ -4,7 +4,7 @@ using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class ConfirmBetService(IConfirmBetLogsRepository confirmBetLogsRepository) : IGetService<ConfirmBetRequest, ConfirmBetResult>
+public class ConfirmBetService(IApiLogsRepository apiLogsRepository) : IGetService<ConfirmBetRequest, ConfirmBetResult>
 {
 	public async ValueTask<ConfirmBetResult> GetAsync(ConfirmBetRequest query, CancellationToken cancellationToken = default)
 	{
@@ -13,7 +13,7 @@ public class ConfirmBetService(IConfirmBetLogsRepository confirmBetLogsRepositor
 			Console.WriteLine(query.message);
 			var res = new ConfirmBetResult("0", 100, "");
 
-			_ = await confirmBetLogsRepository.AddAsync(query, res, cancellationToken);
+			_ = await apiLogsRepository.AddAsync(query.message.Action, query, res, cancellationToken);
 
 			//TO DO
 			//#1. Check Valid Request

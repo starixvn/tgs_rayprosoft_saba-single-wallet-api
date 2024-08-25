@@ -4,7 +4,7 @@ using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class SettleService(ISettleLogsRepository SettleLogsRepository) : IGetService<SettleRequest, SettleResult>
+public class SettleService(IApiLogsRepository apiLogsRepository) : IGetService<SettleRequest, SettleResult>
 {
 	public async ValueTask<SettleResult> GetAsync(SettleRequest query, CancellationToken cancellationToken = default)
 	{
@@ -13,7 +13,7 @@ public class SettleService(ISettleLogsRepository SettleLogsRepository) : IGetSer
 			Console.WriteLine(query.message);
 			var res = new SettleResult("0");
 
-			_ = await SettleLogsRepository.AddAsync(query, res, cancellationToken);
+			_ = await apiLogsRepository.AddAsync(query.message.Action, query, res, cancellationToken);
 
 			//TO DO
 			//#1. Validate Settlement: exist player, exist bet???

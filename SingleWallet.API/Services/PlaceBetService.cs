@@ -4,7 +4,7 @@ using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class PlaceBetGetService(IPlaceBetLogsRepository placeBetLogsRepository) : IGetService<PlaceBetRequest, PlaceBetResult>
+public class PlaceBetGetService(IApiLogsRepository apiLogsRepository) : IGetService<PlaceBetRequest, PlaceBetResult>
 {
 	public async ValueTask<PlaceBetResult> GetAsync(PlaceBetRequest query, CancellationToken cancellationToken = default)
 	{
@@ -13,7 +13,7 @@ public class PlaceBetGetService(IPlaceBetLogsRepository placeBetLogsRepository) 
 			Console.WriteLine(query.message);
 			var res = new PlaceBetResult("0", "4200500_2331", "1988754", "");
 
-			_ = await placeBetLogsRepository.AddAsync(query, res, cancellationToken);
+			_ = await apiLogsRepository.AddAsync(query.message.Action, query, res, cancellationToken);
 
 			//TO DO
 			//#1. Check Valid Request

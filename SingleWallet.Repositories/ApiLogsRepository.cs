@@ -1,26 +1,26 @@
 ﻿using System.Text.Json;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using SabaSingleWallet.Repositories.Extensions.Models;
+using SabaSingleWallet.Repositories.Models;
 
 namespace SabaSingleWallet.Repositories;
 
-public interface IPlaceBetLogsRepository
+public interface IApiLogsRepository
 {
-	ValueTask<bool> AddAsync(Object req, Object res, CancellationToken cancellationToken = default);
+	ValueTask<bool> AddAsync(string action, Object req, Object res, CancellationToken cancellationToken = default);
 }
 
-internal class PlaceBetLogsRepository(IMongoClient client) : IPlaceBetLogsRepository
+internal class ApiLogsRepository(IMongoClient client) : IApiLogsRepository
 {
 	private static readonly JsonSerializerOptions _WriteOptions = new()
 	{
 		WriteIndented = true
 	};
 
-	public async ValueTask<bool> AddAsync(Object req, Object res, CancellationToken cancellationToken = default)
+	public async ValueTask<bool> AddAsync(string action, Object req, Object res, CancellationToken cancellationToken = default)
 	{
-		var collection = GetCollection();
-		var document = new PlaceBetLogs()
+		var collection = GetCollection(action);
+		var document = new ApiCallLog()
 		{
 			Time = DateTime.UtcNow,
 			Request = BsonDocument.Parse(JsonSerializer.Serialize(req, _WriteOptions)),
@@ -35,8 +35,8 @@ internal class PlaceBetLogsRepository(IMongoClient client) : IPlaceBetLogsReposi
 		return true;
 	}
 
-	private IMongoCollection<PlaceBetLogs> GetCollection()
+	private IMongoCollection<ApiCallLog> GetCollection(string action)
 	=> client
 	.GetDatabase($"sw_logs_master")
-	.GetCollection<PlaceBetLogs>("placebet_logs");
+	.GetCollection<ApiCallLog>($"{action.ToLower()}_logs");
 }

@@ -17,7 +17,7 @@ builder.Services
 	})
 	.Services
 	.AddSingleton<MongoDBConnectionManager>()
-	.AddGameRecordRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient);
+	.AddApiLogsRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

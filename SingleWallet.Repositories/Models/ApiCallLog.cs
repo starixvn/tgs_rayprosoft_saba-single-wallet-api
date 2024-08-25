@@ -1,10 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using MongoDB.Bson;
+﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-namespace SabaSingleWallet.Repositories.Extensions.Models;
-[Table("placebet_logs")]
-public record PlaceBetLogs
+namespace SabaSingleWallet.Repositories.Models;
+
+public record ApiCallLog
 {
 	[BsonId]
 	public ObjectId Id { get; set; } = default!;
@@ -20,6 +19,3 @@ public record PlaceBetLogs
 	[BsonElement("response")]
 	public BsonDocument Response { get; set; } = default!;
 }
-
-public record PlaceBetRequestLogs(string key, string message);
-public record PlaceBetResponseLogs(string key, string message);
