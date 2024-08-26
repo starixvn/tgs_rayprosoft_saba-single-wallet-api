@@ -3,6 +3,7 @@ using SabaSingleWallet.API.Models.Balance;
 using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.API.Models.ConfirmBet;
 using SabaSingleWallet.API.Models.PlaceBet;
+using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.API.Models.Resettle;
 using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.API.Models.Unsettle;
@@ -85,6 +86,16 @@ namespace SabaSingleWallet.API.Controllers
 			[FromServices] IGetService<UnsettleRequest, UnsettleResult> service,
 			UnsettleRequest source
 			)
+		{
+			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
+
+			return result;
+		}
+
+		[HttpPost("placebetparlay")]
+		public async ValueTask<PlaceBetParlayResult> PlacebetParlay(
+			[FromServices] IGetService<PlaceBetParlayRequest, PlaceBetParlayResult> service,
+			PlaceBetParlayRequest source)
 		{
 			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
 
