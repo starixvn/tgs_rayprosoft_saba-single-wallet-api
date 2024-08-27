@@ -7,6 +7,8 @@ WORKDIR /src
 COPY ["nuget.config", "."]
 COPY ["SabaSingleWallet.API/SabaSingleWallet.API.csproj", "SabaSingleWallet.API/"]
 COPY ["SabaSingleWallet.Repositories/SabaSingleWallet.Repositories.csproj", "SabaSingleWallet.Repositories/"]
+COPY ["SabaSingleWallet.Common/SabaSingleWallet.Common.csproj", "SabaSingleWallet.Common/"]
+COPY ["SabaSingleWallet.Core/SabaSingleWallet.Core.csproj", "SabaSingleWallet.Core/"]
 RUN dotnet restore "./SabaSingleWallet.API/./SabaSingleWallet.API.csproj"
 COPY . .
 WORKDIR "/src/SabaSingleWallet.API"
