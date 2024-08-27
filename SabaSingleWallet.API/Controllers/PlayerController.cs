@@ -6,6 +6,7 @@ using SabaSingleWallet.API.Models.ConfirmBet3rd;
 using SabaSingleWallet.API.Models.ConfirmBetParlay;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.API.Models.Placebet3rd;
+using SabaSingleWallet.API.Models.Placebetent;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.API.Models.Resettle;
 using SabaSingleWallet.API.Models.Settle;
@@ -134,5 +135,16 @@ namespace SabaSingleWallet.API.Controllers
 
 			return result;
 		}
+
+		[HttpPost("placebetent")]
+		public async ValueTask<PlacebetentResult> Placebetent(
+		[FromServices] IGetService<PlacebetentRequest, PlacebetentResult> service,
+		PlacebetentRequest source)
+		{
+			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
+
+			return result;
+		}
+		
 	}
 }
