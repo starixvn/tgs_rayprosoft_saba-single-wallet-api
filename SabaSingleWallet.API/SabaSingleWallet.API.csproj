@@ -33,6 +33,7 @@
   <ItemGroup>
     <ProjectReference Include="..\SabaSingleWallet.Common\SabaSingleWallet.Common.csproj" />
     <ProjectReference Include="..\SabaSingleWallet.Core\SabaSingleWallet.Core.csproj" />
+    <ProjectReference Include="..\SabaSingleWallet.Repositories\SabaSingleWallet.Repositories.csproj" />
     <ProjectReference Include="..\SingleWallet.Repositories\SabaSingleWallet.Repositories.csproj" />
   </ItemGroup>
 
