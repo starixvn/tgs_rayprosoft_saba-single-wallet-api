@@ -5,6 +5,6 @@ public record GetBalanceResult
 	string status,
 	string? userId,
 	decimal? balance,
-	DateTime? balanceTs,
+	string? balanceTs,
 	string? msg = null
 );
