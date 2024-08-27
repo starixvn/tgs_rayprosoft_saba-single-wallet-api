@@ -61,6 +61,7 @@ builder.Services
 			httpContext => !httpContext.Request.Path.HasValue
 				|| !httpContext.Request.Path.StartsWithSegments("/swagger")
 				&& !httpContext.Request.Path.StartsWithSegments("/health")
+				&& !httpContext.Request.Path.StartsWithSegments("/healthcheck")
 				&& !httpContext.Request.Path.StartsWithSegments("/profiler/")
 				&& !httpContext.Request.Path.StartsWithSegments("/metrics")
 				&& !excludeExtensions.Any(
@@ -97,6 +98,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHealthChecks("/health");
+
+app.MapHealthChecks("/healthcheck");
 
 app.MapHealthChecks("/");
 
