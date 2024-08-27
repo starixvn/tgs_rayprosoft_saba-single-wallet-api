@@ -1,14 +1,10 @@
 ﻿using System.Text.Json;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Models;
 
 namespace SabaSingleWallet.Repositories;
-
-public interface IApiLogsRepository
-{
-	ValueTask<bool> AddAsync(string action, Object req, Object res, CancellationToken cancellationToken = default);
-}
 
 internal class ApiLogsRepository(IMongoClient client) : IApiLogsRepository
 {

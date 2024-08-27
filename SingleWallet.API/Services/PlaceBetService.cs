@@ -1,19 +1,29 @@
-﻿using SabaSingleWallet.API.Models.PlaceBet;
-using SabaSingleWallet.Repositories;
+﻿using System.Text.Json;
+using SabaSingleWallet.API.Models.PlaceBet;
+using SabaSingleWallet.Common;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
+using Valhalla.MessageQueue;
 
 namespace SabaSingleWallet.API.Services;
 
-public class PlaceBetGetService(IApiLogsRepository apiLogsRepository) : IGetService<PlaceBetRequest, PlaceBetResult>
+public class PlaceBetGetService(IMessageSender messageSender) : IGetService<PlaceBetRequest, PlaceBetResult>
 {
 	public async ValueTask<PlaceBetResult> GetAsync(PlaceBetRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{
-			Console.WriteLine(query.message);
 			var res = new PlaceBetResult("0", "4200500_2331", "1988754", "");
 
-			_ = await apiLogsRepository.AddAsync(query.message.Action, query, res, cancellationToken);
+			var apiLogMessage = new SabaSingleWalletApiLogMessage()
+			{
+				Key = query.key,
+				Action = query.message.Action,
+				Request = query,
+				Response = res
+			};
+
+			await messageSender.PublishAsync(subject: SabaNatsConst.ApiLogsPublish, data: JsonSerializer.Serialize(apiLogMessage), cancellationToken);
 
 			//TO DO
 			//#1. Check Valid Request

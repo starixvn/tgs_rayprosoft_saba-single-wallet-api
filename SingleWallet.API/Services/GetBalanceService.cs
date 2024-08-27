@@ -1,10 +1,13 @@
-﻿using SabaSingleWallet.API.Models.Balance;
-using SabaSingleWallet.Repositories;
+﻿using System.Text.Json;
+using SabaSingleWallet.API.Models.Balance;
+using SabaSingleWallet.Common;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
+using Valhalla.MessageQueue;
 
 namespace SabaSingleWallet.API.Services;
 
-public class GetBalanceService(IApiLogsRepository apiLogsRepository) : IGetService<GetBalanceRequest, GetBalanceResult>
+public class GetBalanceService(IMessageSender messageSender) : IGetService<GetBalanceRequest, GetBalanceResult>
 {
 	public async ValueTask<GetBalanceResult> GetAsync(GetBalanceRequest query, CancellationToken cancellationToken = default)
 	{
@@ -13,7 +16,14 @@ public class GetBalanceService(IApiLogsRepository apiLogsRepository) : IGetServi
 			Console.WriteLine(query.message);
 			var res = new GetBalanceResult("0", "4200500_2331", 100, new DateTime());
 
-			_ = await apiLogsRepository.AddAsync(query.message.Action, query, res, cancellationToken);
+			var apiLogMessage = new SabaSingleWalletApiLogMessage()
+			{
+				Key = query.key,
+				Action = query.message.Action,
+				Request = query,
+				Response = res
+			};
+			await messageSender.PublishAsync(subject: SabaNatsConst.ApiLogsPublish, data: JsonSerializer.Serialize(apiLogMessage), cancellationToken);
 
 			//TO DO
 			//#1. Check Valid UserId

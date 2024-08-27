@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="PhoenixToolkits.MessageQueue" Version="2.2.0" />
+    <PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="2.2.0" />
+    <PackageReference Include="Tgs.MessageQueue.Nats.Serializers" Version="0.0.2" />
+	<PackageReference Include="TGS.ServiceUtility" Version="0.2.0" />
+    <PackageReference Include="MongoDB.Driver" Version="2.28.0" />
+  </ItemGroup>
+  
+</Project>

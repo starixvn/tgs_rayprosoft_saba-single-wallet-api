@@ -1,10 +1,13 @@
-﻿using SabaSingleWallet.API.Models.Settle;
-using SabaSingleWallet.Repositories;
+﻿using System.Text.Json;
+using SabaSingleWallet.API.Models.Settle;
+using SabaSingleWallet.Common;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
+using Valhalla.MessageQueue;
 
 namespace SabaSingleWallet.API.Services;
 
-public class SettleService(IApiLogsRepository apiLogsRepository) : IGetService<SettleRequest, SettleResult>
+public class SettleService(IMessageSender messageSender) : IGetService<SettleRequest, SettleResult>
 {
 	public async ValueTask<SettleResult> GetAsync(SettleRequest query, CancellationToken cancellationToken = default)
 	{
@@ -13,7 +16,14 @@ public class SettleService(IApiLogsRepository apiLogsRepository) : IGetService<S
 			Console.WriteLine(query.message);
 			var res = new SettleResult("0");
 
-			_ = await apiLogsRepository.AddAsync(query.message.Action, query, res, cancellationToken);
+			var apiLogMessage = new SabaSingleWalletApiLogMessage()
+			{
+				Key = query.key,
+				Action = query.message.Action,
+				Request = query,
+				Response = res
+			};
+			await messageSender.PublishAsync(subject: SabaNatsConst.ApiLogsPublish, data: JsonSerializer.Serialize(apiLogMessage), cancellationToken);
 
 			//TO DO
 			//#1. Validate Settlement: exist player, exist bet???

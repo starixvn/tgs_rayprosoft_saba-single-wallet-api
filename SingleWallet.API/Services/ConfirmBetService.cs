@@ -1,10 +1,13 @@
-﻿using SabaSingleWallet.API.Models.ConfirmBet;
-using SabaSingleWallet.Repositories;
+﻿using System.Text.Json;
+using SabaSingleWallet.API.Models.ConfirmBet;
+using SabaSingleWallet.Common;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
+using Valhalla.MessageQueue;
 
 namespace SabaSingleWallet.API.Services;
 
-public class ConfirmBetService(IApiLogsRepository apiLogsRepository) : IGetService<ConfirmBetRequest, ConfirmBetResult>
+public class ConfirmBetService(IMessageSender messageSender) : IGetService<ConfirmBetRequest, ConfirmBetResult>
 {
 	public async ValueTask<ConfirmBetResult> GetAsync(ConfirmBetRequest query, CancellationToken cancellationToken = default)
 	{
@@ -13,7 +16,14 @@ public class ConfirmBetService(IApiLogsRepository apiLogsRepository) : IGetServi
 			Console.WriteLine(query.message);
 			var res = new ConfirmBetResult("0", 100, "");
 
-			_ = await apiLogsRepository.AddAsync(query.message.Action, query, res, cancellationToken);
+			var apiLogMessage = new SabaSingleWalletApiLogMessage()
+			{
+				Key = query.key,
+				Action = query.message.Action,
+				Request = query,
+				Response = res
+			};
+			await messageSender.PublishAsync(subject: SabaNatsConst.ApiLogsPublish, data: JsonSerializer.Serialize(apiLogMessage), cancellationToken);
 
 			//TO DO
 			//#1. Check Valid Request

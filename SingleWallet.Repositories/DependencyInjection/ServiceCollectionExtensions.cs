@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories;
 
 namespace Microsoft.Extensions.DependencyInjection;

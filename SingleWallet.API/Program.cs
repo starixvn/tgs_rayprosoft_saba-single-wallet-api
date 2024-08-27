@@ -1,9 +1,14 @@
 using Microsoft.AspNetCore.HttpLogging;
+using NATS.Client.Core;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SabaSingleWallet.API;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Middlewares;
+using SabaSingleWallet.Core.DependencyInjection;
+using Tgs.GameRecord.Saba.Common;
+using Tgs.MessageQueue.Nats.Serializers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,7 +22,21 @@ builder.Services
 	})
 	.Services
 	.AddSingleton<MongoDBConnectionManager>()
+	.AddSabaSingleWalletApiCore()
 	.AddApiLogsRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient);
+
+builder.Services
+	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
+	{
+		Url = builder.Configuration.GetConnectionString("Nats")!,
+		SerializerRegistry = TgsNatsSerializerRegistration.Default
+	}))
+	.AddMessageQueue()
+	.AddNatsMessageQueue(config => config
+		.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
+		 .AddHandler<ApiLogsMessageHandler>(SabaNatsConst.ApiLogsPublish, SabaNatsConst.ApiLogsPublish))
+	 .ClearAllExchanges()
+	 .AddNatsGlobPatternExchange(SabaNatsConst.ApiLogsPublish);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
