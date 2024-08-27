@@ -14,7 +14,7 @@ public class ApiLogsMessageHandler(
 	public ValueTask HandleAsync(string subject, ReadOnlyMemory<byte> data, IEnumerable<MessageHeaderValue>? headerValues, CancellationToken cancellationToken = default)
 	{
 		var json = Encoding.UTF8.GetString(data.Span);
-		var message = JsonSerializer.Deserialize<SabaSingleWalletApiLogMessage>(json)
+		var message = JsonSerializer.Deserialize<ApiLogMessage>(json)
 			?? throw new NullReferenceException("The request data resolves to a null value");
 
 		logger.LogInformation("{logInformation}",

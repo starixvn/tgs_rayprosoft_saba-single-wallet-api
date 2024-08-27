@@ -1,13 +1,11 @@
-﻿using System.Text.Json;
+﻿using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.Common;
-using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
-using Valhalla.MessageQueue;
 
 namespace SabaSingleWallet.API.Services;
 
-public class PlaceBetParlayService(IMessageSender messageSender) : IGetService<PlaceBetParlayRequest, PlaceBetParlayResult>
+public class PlaceBetParlayService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<PlaceBetParlayRequest, PlaceBetParlayResult>
 {
 	public async ValueTask<PlaceBetParlayResult> GetAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken = default)
 	{
@@ -16,14 +14,13 @@ public class PlaceBetParlayService(IMessageSender messageSender) : IGetService<P
 			Console.WriteLine(query.message);
 			var res = new PlaceBetParlayResult("0", [], "");
 
-			var apiLogMessage = new SabaSingleWalletApiLogMessage()
+			await messagePublisher.LogApi(new ApiLogMessage()
 			{
 				Key = query.key,
 				Action = query.message.Action,
 				Request = query,
 				Response = res
-			};
-			await messageSender.PublishAsync(subject: SabaNatsConst.ApiLogsPublish, data: JsonSerializer.Serialize(apiLogMessage), cancellationToken);
+			}, cancellationToken);
 
 			return res;
 		}

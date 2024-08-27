@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
 namespace SabaSingleWallet.Common;
-public record SabaSingleWalletApiLogMessage
+public record ApiLogMessage
 {
 	[Key]
 	public string Key { get; init; } = default!;

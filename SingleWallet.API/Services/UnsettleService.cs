@@ -1,13 +1,11 @@
-﻿using System.Text.Json;
+﻿using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Unsettle;
 using SabaSingleWallet.Common;
-using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
-using Valhalla.MessageQueue;
 
 namespace SabaSingleWallet.API.Services;
 
-public class UnsettleService(IMessageSender messageSender) : IGetService<UnsettleRequest, UnsettleResult>
+public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<UnsettleRequest, UnsettleResult>
 {
 	public async ValueTask<UnsettleResult> GetAsync(UnsettleRequest query, CancellationToken cancellationToken = default)
 	{
@@ -16,14 +14,13 @@ public class UnsettleService(IMessageSender messageSender) : IGetService<Unsettl
 			Console.WriteLine(query.message);
 			var res = new UnsettleResult("0");
 
-			var apiLogMessage = new SabaSingleWalletApiLogMessage()
+			await messagePublisher.LogApi(new ApiLogMessage()
 			{
 				Key = query.key,
 				Action = query.message.Action,
 				Request = query,
 				Response = res
-			};
-			await messageSender.PublishAsync(subject: SabaNatsConst.ApiLogsPublish, data: JsonSerializer.Serialize(apiLogMessage), cancellationToken);
+			}, cancellationToken);
 
 			//TO DO
 			//#1. Validate Unsettlement: exist player, exist bet???

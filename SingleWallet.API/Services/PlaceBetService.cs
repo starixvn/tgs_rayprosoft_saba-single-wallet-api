@@ -1,13 +1,11 @@
-﻿using System.Text.Json;
+﻿using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.Common;
-using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
-using Valhalla.MessageQueue;
 
 namespace SabaSingleWallet.API.Services;
 
-public class PlaceBetGetService(IMessageSender messageSender) : IGetService<PlaceBetRequest, PlaceBetResult>
+public class PlaceBetGetService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<PlaceBetRequest, PlaceBetResult>
 {
 	public async ValueTask<PlaceBetResult> GetAsync(PlaceBetRequest query, CancellationToken cancellationToken = default)
 	{
@@ -15,7 +13,7 @@ public class PlaceBetGetService(IMessageSender messageSender) : IGetService<Plac
 		{
 			var res = new PlaceBetResult("0", "4200500_2331", "1988754", "");
 
-			var apiLogMessage = new SabaSingleWalletApiLogMessage()
+			var apiLogMessage = new ApiLogMessage()
 			{
 				Key = query.key,
 				Action = query.message.Action,
@@ -23,7 +21,13 @@ public class PlaceBetGetService(IMessageSender messageSender) : IGetService<Plac
 				Response = res
 			};
 
-			await messageSender.PublishAsync(subject: SabaNatsConst.ApiLogsPublish, data: JsonSerializer.Serialize(apiLogMessage), cancellationToken);
+			await messagePublisher.LogApi(new ApiLogMessage()
+			{
+				Key = query.key,
+				Action = query.message.Action,
+				Request = query,
+				Response = res
+			}, cancellationToken);
 
 			//TO DO
 			//#1. Check Valid Request
