@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SabaSingleWallet.API.Models.Balance;
 using SabaSingleWallet.API.Models.CancelBet;
+using SabaSingleWallet.API.Models.CancelBetEnt;
 using SabaSingleWallet.API.Models.ConfirmBet;
 using SabaSingleWallet.API.Models.ConfirmBet3rd;
 using SabaSingleWallet.API.Models.ConfirmBetParlay;
@@ -151,6 +152,16 @@ namespace SabaSingleWallet.API.Controllers
 		public async ValueTask<SettleEntResult> SettleEnt(
 			[FromServices] IGetService<SettleEntRequest, SettleEntResult> service,
 			SettleEntRequest source)
+		{
+			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
+
+			return result;
+		}
+
+		[HttpPost("cancelbetent")]
+		public async ValueTask<CancelBetEntResult> CancelBetEnt(
+			[FromServices] IGetService<CancelBetEntRequest, CancelBetEntResult> service,
+			CancelBetEntRequest source)
 		{
 			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
 
