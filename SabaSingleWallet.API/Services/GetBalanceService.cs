@@ -12,7 +12,7 @@ public class GetBalanceService(ISapaApiMessagePublishHandler messagePublisher) :
 		try
 		{
 			Console.WriteLine(query.message);
-			var res = new GetBalanceResult("0", "4200500_2331", 100, DateTime.UtcNow.ToString());
+			var res = new GetBalanceResult("0", query.message.UserId, 100, DateTime.UtcNow.ToString());
 
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
