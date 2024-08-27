@@ -29,7 +29,7 @@ namespace SabaSingleWallet.API.Controllers
 		[HttpPost("getbalance")]
 		public async ValueTask<GetBalanceResult> GetBalance(
 			[FromServices] IGetService<GetBalanceRequest, GetBalanceResult> service,
-			GetBalanceRequest source
+			[FromBody] GetBalanceRequest source
 			)
 		{
 			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);

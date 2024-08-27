@@ -24,7 +24,7 @@ namespace SabaSingleWallet.API.Middlewares
                     }
                     decompressedStream.Seek(0, SeekOrigin.Begin);
                     context.Request.Body = decompressedStream;
-					Console.WriteLine($"Request Body - {decompressedStream}");
+					context.Request.ContentLength = decompressedStream.Length;
                 }
             }
 
