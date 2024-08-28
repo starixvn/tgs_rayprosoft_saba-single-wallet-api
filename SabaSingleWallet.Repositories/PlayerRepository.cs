@@ -16,6 +16,8 @@ namespace SabaSingleWallet.Repositories
 
 		Task<SettleDbResult> SettleAsync(SettleCriteria criteria);
 		Task<BetTransSBSWConfirmBetResult> CallBetTransSbswConfirmBetAsync(BetTransSBSWConfirmBetCriteria criteria);
+
+		Task<TResult> CallStoredProcedureAsync<TCriteria, TResult>(TCriteria criteria, string spName);
 	}
 
 	public class PlayerRepositoryImp : IPlayerRepository
@@ -120,6 +122,26 @@ namespace SabaSingleWallet.Repositories
 				string sqlQuery = $"CALL dbo.bet_bettrans_sbsw_bet({string.Join(", ", typeof(PlaceBetCriteria).GetProperties().Select(p => $"@{p.Name.ToLower()}"))})";
 
 				var result = await db.QueryFirstAsync<PlaceBetSPResult>(sqlQuery, parameters);
+
+				return result;
+			}
+		}
+
+		public async Task<TResult> CallStoredProcedureAsync<TCriteria, TResult>(TCriteria criteria, string spName)
+		{
+			using (IDbConnection db = new NpgsqlConnection(_connectionString))
+			{
+				var parameters = new DynamicParameters();
+
+				foreach (var property in typeof(TCriteria).GetProperties())
+				{
+					var value = property.GetValue(criteria);
+					parameters.Add(property.Name.ToLower(), value);
+				}
+
+				string sqlQuery = $"CALL {spName}({string.Join(", ", typeof(TCriteria).GetProperties().Select(p => $"@{p.Name.ToLower()}"))})";
+
+				var result = await db.QueryFirstAsync<TResult>(sqlQuery, parameters);
 
 				return result;
 			}

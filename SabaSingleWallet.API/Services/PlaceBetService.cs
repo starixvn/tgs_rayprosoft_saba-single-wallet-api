@@ -1,9 +1,10 @@
 ﻿using AutoMapper;
+using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
-using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
+using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
@@ -21,13 +22,17 @@ public class PlaceBetGetService(
 	{
 		try
 		{
-			var playerCode = query.message.UserId.Replace("_test", string.Empty).Remove(0, query.message.UserId.IndexOf("_") + 1);
+			var playerCode = PlayerCodeHelpers.GetPlayerCode(query.message.UserId);
 
-			var spResult = await playerRepository.CallBetTransSbswPlaceBetAsync(mapper.Map<PlaceBetCriteria>(query.message));
+			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>
+				(
+				mapper.Map<PlaceBetCriteria>(query.message),
+				StoreProcedureMapper.PlaceBet_SP
+				);
 
 			if (spResult.SpResult != 0)
 			{
-				return new PlaceBetResult("1", query.message.RefId, null,"place bet failed");
+				return new PlaceBetResult("1", query.message.RefId, null, "place bet failed");
 			}
 
 			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, query.message.DebitAmount).ConfigureAwait(false);
