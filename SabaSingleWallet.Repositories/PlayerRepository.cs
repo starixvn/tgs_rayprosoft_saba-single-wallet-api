@@ -6,7 +6,7 @@ using Npgsql;
 using SabaSingleWallet.Repositories.Models.CancelBet;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
-
+using SabaSingleWallet.Repositories.Models.Settle;
 namespace SabaSingleWallet.Repositories
 {
 	public interface IPlayerRepository
@@ -14,7 +14,7 @@ namespace SabaSingleWallet.Repositories
 		Task<CancelBetDBResult> CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria);
 
 		Task<PlaceBetSPResult> CallBetTransSbswPlaceBetAsync(PlaceBetCriteria criteria);
-
+		Task<IEnumerable<SettleDbResult>> SettleAsync(SettleCriteria criteria);
 		Task<BetTransSBSWConfirmBetResult> CallBetTransSbswConfirmBetAsync(BetTransSBSWConfirmBetCriteria criteria);
 	}
 
@@ -77,19 +77,19 @@ namespace SabaSingleWallet.Repositories
 
 		public async Task<CancelBetDBResult> CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria)
 		{
-			using (IDbConnection db = new NpgsqlConnection(_connectionString))
-			{
-				var parameters = new DynamicParameters();
-				parameters.Add("action", criteria.Action);
-				parameters.Add("operationid", criteria.OperationId);
-				parameters.Add("updatetime", criteria.UpdateTime);
-				parameters.Add("refid", criteria.RefId);
-				parameters.Add("creditamount", criteria.CreditAmount);
-				parameters.Add("debitamount", criteria.DebitAmount);
-				parameters.Add("spresult", criteria.SpResult);
-				parameters.Add("sporttype", criteria.SportType);
+			using IDbConnection db = new NpgsqlConnection(_connectionString);
 
-				string sqlQuery = @"
+			var parameters = new DynamicParameters();
+			parameters.Add("action", criteria.Action);
+			parameters.Add("operationid", criteria.OperationId);
+			parameters.Add("updatetime", criteria.UpdateTime);
+			parameters.Add("refid", criteria.RefId);
+			parameters.Add("creditamount", criteria.CreditAmount);
+			parameters.Add("debitamount", criteria.DebitAmount);
+			parameters.Add("spresult", criteria.SpResult);
+			parameters.Add("sporttype", criteria.SportType);
+
+			string sqlQuery = @"
 					CALL dbo.bet_bettrans_sbsw_cancelbet(
 						@action,
 						@operationid,
@@ -101,7 +101,7 @@ namespace SabaSingleWallet.Repositories
 						@sporttype
 					)";
 
-				var result = await db.QueryAsync<CancelBetDBResult>(sqlQuery, parameters);
+			var result = await db.QueryAsync<CancelBetDBResult>(sqlQuery, parameters);
 				return result?.FirstOrDefault();
 			}
 		}
@@ -122,8 +122,28 @@ namespace SabaSingleWallet.Repositories
 
 				var result = await db.QueryFirstAsync<PlaceBetSPResult>(sqlQuery, parameters);
 
-				return result;
-			}
+			return result;
+		}
+
+		public async Task<IEnumerable<SettleDbResult>> SettleAsync(SettleCriteria criteria)
+		{
+			using IDbConnection db = new NpgsqlConnection(_connectionString);
+
+			var parameters = new DynamicParameters();
+			parameters.Add("action", criteria.Action);
+			parameters.Add("operationid", criteria.OperationId);
+			parameters.Add("tnxs", criteria.Txns);
+
+			string sqlQuery = @"
+                    CALL dbo.bet_bettrans_sbsw_settle(
+                        @action,
+                        @operationid,
+                        @tnxs,
+                    )";
+
+			var result = await db.QueryAsync<SettleDbResult>(sqlQuery, parameters);
+
+			return result;
 		}
 	}
 }
