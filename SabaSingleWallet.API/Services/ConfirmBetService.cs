@@ -15,11 +15,9 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 		try
 		{
 			Console.WriteLine(query.message);
-			Console.WriteLine(query.message.Txns);
-			var ticketResults = new List<BetTransSBSWConfirmBetCriteria>();
-			var addAmountResults = new List<BalanceResponse>();
 
 			var confirmBetData = query.message;
+			var addAmountResults = new List<BalanceResponse>();
 			foreach (var ticket in confirmBetData.Txns)
 			{
 				var criteria = new BetTransSBSWConfirmBetCriteria()
@@ -58,7 +56,7 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 				Key = query.key,
 				Action = query.message.Action,
 				Request = query,
-				Response = ticketResults
+				Response = addAmountResults
 			}, cancellationToken);
 
 			//TO DO
@@ -71,7 +69,6 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			throw ex;
 			return new ConfirmBetResult("1", 0, "");
 		}
 	}
