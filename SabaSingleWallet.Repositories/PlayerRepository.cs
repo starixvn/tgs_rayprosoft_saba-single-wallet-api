@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using System.Xml.Linq;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -14,7 +13,8 @@ namespace SabaSingleWallet.Repositories
 		Task<CancelBetDBResult> CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria);
 
 		Task<PlaceBetSPResult> CallBetTransSbswPlaceBetAsync(PlaceBetCriteria criteria);
-		Task<IEnumerable<SettleDbResult>> SettleAsync(SettleCriteria criteria);
+
+		Task<SettleDbResult> SettleAsync(SettleCriteria criteria);
 		Task<BetTransSBSWConfirmBetResult> CallBetTransSbswConfirmBetAsync(BetTransSBSWConfirmBetCriteria criteria);
 	}
 
@@ -102,8 +102,7 @@ namespace SabaSingleWallet.Repositories
 					)";
 
 			var result = await db.QueryAsync<CancelBetDBResult>(sqlQuery, parameters);
-				return result?.FirstOrDefault();
-			}
+			return result?.FirstOrDefault();
 		}
 
 		public async Task<PlaceBetSPResult> CallBetTransSbswPlaceBetAsync(PlaceBetCriteria criteria)
@@ -122,26 +121,26 @@ namespace SabaSingleWallet.Repositories
 
 				var result = await db.QueryFirstAsync<PlaceBetSPResult>(sqlQuery, parameters);
 
-			return result;
+				return result;
+			}
 		}
 
-		public async Task<IEnumerable<SettleDbResult>> SettleAsync(SettleCriteria criteria)
+		public async Task<SettleDbResult> SettleAsync(SettleCriteria criteria)
 		{
 			using IDbConnection db = new NpgsqlConnection(_connectionString);
 
 			var parameters = new DynamicParameters();
-			parameters.Add("action", criteria.Action);
-			parameters.Add("operationid", criteria.OperationId);
-			parameters.Add("tnxs", criteria.Txns);
+			foreach (var property in typeof(SettleCriteria).GetProperties())
+			{
+				var value = property.GetValue(criteria);
+				parameters.Add(property.Name.ToLower(), value);
+			}
 
-			string sqlQuery = @"
-                    CALL dbo.bet_bettrans_sbsw_settle(
-                        @action,
-                        @operationid,
-                        @tnxs,
-                    )";
+			//parameters.Add("tnxs", criteria.Txns);//TODO type json?
 
-			var result = await db.QueryAsync<SettleDbResult>(sqlQuery, parameters);
+			string sqlQuery = $"CALL dbo.bet_bettrans_sbsw_settle({string.Join(", ", typeof(PlaceBetCriteria).GetProperties().Select(p => $"@{p.Name.ToLower()}"))})";
+
+			var result = await db.QueryFirstAsync<SettleDbResult>(sqlQuery, parameters);
 
 			return result;
 		}
