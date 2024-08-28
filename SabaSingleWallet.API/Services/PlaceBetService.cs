@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SabaSingleWallet.API.Messages;
+using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
@@ -23,6 +24,12 @@ public class PlaceBetGetService(
 			var playerCode = query.message.UserId.Replace("_test", string.Empty).Remove(0, query.message.UserId.IndexOf("_") + 1);
 
 			var spResult = await playerRepository.CallBetTransSbswPlaceBetAsync(mapper.Map<PlaceBetCriteria>(query.message));
+
+			if (spResult.SpResult < 0)
+			{
+				return new PlaceBetResult("1", query.message.RefId, null,"cancel failed");
+			}
+
 			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, query.message.DebitAmount).ConfigureAwait(false);
 
 			// TODO: - Validate result
