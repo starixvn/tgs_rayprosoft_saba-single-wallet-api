@@ -86,6 +86,7 @@ builder.Services
 	.AddServiceUtiltiyInterceptors();
 
 builder.Services.AddRequestDecompression();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 var app = builder.Build();
 

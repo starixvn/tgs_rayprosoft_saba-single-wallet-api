@@ -1,26 +1,33 @@
-﻿using SabaSingleWallet.API.Messages;
+﻿using AutoMapper;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.Common;
+using SabaSingleWallet.Repositories;
+using SabaSingleWallet.Repositories.Models.PlaceBet;
+using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class PlaceBetGetService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<PlaceBetRequest, PlaceBetResult>
+public class PlaceBetGetService(
+		ICashServiceClient cashClient,
+		ISapaApiMessagePublishHandler messagePublisher,
+		IPlayerRepository playerRepository,
+		IMapper mapper
+	) : IGetService<PlaceBetRequest, PlaceBetResult>
 {
 	public async ValueTask<PlaceBetResult> GetAsync(PlaceBetRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{
-			var licenseeTxId = Guid.NewGuid().ToString();
-			var res = new PlaceBetResult("0", query.message.RefId, licenseeTxId, "");
+			var playerCode = query.message.UserId.Replace("_test", string.Empty).Remove(0, query.message.UserId.IndexOf("_") + 1);
 
-			var apiLogMessage = new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			};
+			var spResult = await playerRepository.CallBetTransSbswPlaceBetAsync(mapper.Map<PlaceBetCriteria>(query.message));
+			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, query.message.DebitAmount).ConfigureAwait(false);
+
+			// TODO: - Validate result
+
+			var res = new PlaceBetResult("0", query.message.RefId, spResult.Licenseetxid, "");
 
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
@@ -29,13 +36,6 @@ public class PlaceBetGetService(ISapaApiMessagePublishHandler messagePublisher) 
 				Request = query,
 				Response = res
 			}, cancellationToken);
-
-			//TO DO
-			//#1. Check Valid Request
-			//#2. Check Valid Bet Amount
-			//#3. Check Valid Balance
-			//#4. Define PlaceBet Error Codes
-			//#5. Schedule to trigger CheckTicketStatus if not receive ConfirmBet after 10 mins
 
 			return res;
 		}

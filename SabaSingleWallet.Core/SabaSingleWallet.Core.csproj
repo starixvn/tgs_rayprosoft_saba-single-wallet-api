@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="PhoenixToolkits.MessageQueue" Version="2.2.0" />
     <PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="2.2.0" />
     <PackageReference Include="Tgs.MessageQueue.Nats.Serializers" Version="0.0.2" />
