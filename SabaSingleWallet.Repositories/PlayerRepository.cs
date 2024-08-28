@@ -5,7 +5,7 @@ using Npgsql;
 using SabaSingleWallet.Repositories.Models.CancelBet;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
-using SabaSingleWallet.Repositories.Models.Settle;
+
 namespace SabaSingleWallet.Repositories
 {
 	public interface IPlayerRepository
@@ -14,7 +14,6 @@ namespace SabaSingleWallet.Repositories
 
 		Task<PlaceBetSPResult> CallBetTransSbswPlaceBetAsync(PlaceBetCriteria criteria);
 
-		Task<SettleDbResult> SettleAsync(SettleCriteria criteria);
 		Task<BetTransSBSWConfirmBetResult> CallBetTransSbswConfirmBetAsync(BetTransSBSWConfirmBetCriteria criteria);
 
 		Task<TResult> CallStoredProcedureAsync<TCriteria, TResult>(TCriteria criteria, string spName);
@@ -145,26 +144,6 @@ namespace SabaSingleWallet.Repositories
 
 				return result;
 			}
-		}
-
-		public async Task<SettleDbResult> SettleAsync(SettleCriteria criteria)
-		{
-			using IDbConnection db = new NpgsqlConnection(_connectionString);
-
-			var parameters = new DynamicParameters();
-			foreach (var property in typeof(SettleCriteria).GetProperties())
-			{
-				var value = property.GetValue(criteria);
-				parameters.Add(property.Name.ToLower(), value);
-			}
-
-			//parameters.Add("tnxs", criteria.Txns);//TODO type json?
-
-			string sqlQuery = $"CALL dbo.bet_bettrans_sbsw_settle({string.Join(", ", typeof(PlaceBetCriteria).GetProperties().Select(p => $"@{p.Name.ToLower()}"))})";
-
-			var result = await db.QueryFirstAsync<SettleDbResult>(sqlQuery, parameters);
-
-			return result;
 		}
 	}
 }

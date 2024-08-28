@@ -1,7 +1,9 @@
-﻿using SabaSingleWallet.API.Messages;
+﻿using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
+using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Settle;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
@@ -21,10 +23,11 @@ public class SettleService(
 
 			foreach (var transaction in query.message.Txns)
 			{
-				var result = await playerRepository.SettleAsync(new SettleCriteria
+				var result = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>(new SettleCriteria
 				{
 					Action = query.message.Action,
 					OperationId = query.message.OperationId,
+
 					UserId = transaction.UserId,
 					RefId = transaction.RefId,
 					TxId = transaction.TxId,
@@ -36,15 +39,17 @@ public class SettleService(
 					DebitAmount = transaction.DebitAmount,
 					ExtraStatus = transaction.ExtraStatus,
 					TicketType = 0
-				});
+				}, StoreProcedureMapper.SettleSP);
 
 				if (result.SpResult < 1)
 				{
 					return new SettleResult("506", "Unable To Processed. Please Try Again Later");
 				}
 
-				var playerCode = transaction.UserId.Replace("_test", string.Empty).Remove(0, transaction.UserId.IndexOf("_") + 1);
-				var balanceResponse = await cashClient.GameProviderAddBalanceAsync(playerCode, transaction.CreditAmount, cancellationToken: cancellationToken);
+				var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
+					transaction.UserId.ToPlayerCode(),
+					transaction.CreditAmount,
+					cancellationToken: cancellationToken);
 
 				if (!string.IsNullOrWhiteSpace(balanceResponse.ErrorMessage))
 				{

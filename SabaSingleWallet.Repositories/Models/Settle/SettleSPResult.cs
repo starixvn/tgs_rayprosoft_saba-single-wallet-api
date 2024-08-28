@@ -1,4 +1,4 @@
-﻿namespace SabaSingleWallet.Repositories.Models.PlaceBet;
+﻿namespace SabaSingleWallet.Repositories.Models.Settle;
 
 public class SettleSPResult
 {

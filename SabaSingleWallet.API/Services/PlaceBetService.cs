@@ -27,7 +27,7 @@ public class PlaceBetGetService(
 			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>
 				(
 				mapper.Map<PlaceBetCriteria>(query.message),
-				StoreProcedureMapper.PlaceBet_SP
+				StoreProcedureMapper.PlaceBetSP
 				);
 
 			if (spResult.SpResult != 0)
