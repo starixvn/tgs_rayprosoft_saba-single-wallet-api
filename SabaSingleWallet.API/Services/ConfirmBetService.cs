@@ -15,6 +15,7 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 		try
 		{
 			Console.WriteLine(query.message);
+			Console.WriteLine(query.message.Txns);
 			var ticketResults = new List<BetTransSBSWConfirmBetCriteria>();
 			var addAmountResults = new List<BalanceResponse>();
 
@@ -70,6 +71,7 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
+			throw ex;
 			return new ConfirmBetResult("1", 0, "");
 		}
 	}
