@@ -25,9 +25,9 @@ public class PlaceBetGetService(
 
 			var spResult = await playerRepository.CallBetTransSbswPlaceBetAsync(mapper.Map<PlaceBetCriteria>(query.message));
 
-			if (spResult.SpResult < 0)
+			if (spResult.SpResult != 0)
 			{
-				return new PlaceBetResult("1", query.message.RefId, null,"cancel failed");
+				return new PlaceBetResult("1", query.message.RefId, null,"place bet failed");
 			}
 
 			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, query.message.DebitAmount).ConfigureAwait(false);
