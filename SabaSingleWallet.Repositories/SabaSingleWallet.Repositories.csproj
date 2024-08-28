@@ -17,4 +17,8 @@
     <ProjectReference Include="..\SabaSingleWallet.Core\SabaSingleWallet.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Criteria\" />
+  </ItemGroup>
+
 </Project>
