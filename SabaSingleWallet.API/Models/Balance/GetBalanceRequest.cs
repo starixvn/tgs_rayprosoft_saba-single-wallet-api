@@ -1,6 +1,3 @@
 ﻿namespace SabaSingleWallet.API.Models.Balance;
 
-public record GetBalanceRequest(
-	   string key,
-	   GetBalanceData message
-	   );
+public record GetBalanceRequest(string Key, GetBalanceData Message);

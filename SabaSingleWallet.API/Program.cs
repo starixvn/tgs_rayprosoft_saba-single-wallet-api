@@ -5,7 +5,6 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SabaSingleWallet.API;
 using SabaSingleWallet.API.Messages;
-using SabaSingleWallet.API.Middlewares;
 using SabaSingleWallet.Core.DependencyInjection;
 using Tgs.GameRecord.Saba.Common;
 using Tgs.MessageQueue.Nats.Serializers;
@@ -23,7 +22,12 @@ builder.Services
 	.Services
 	.AddSingleton<MongoDBConnectionManager>()
 	.AddSabaSingleWalletApiCore()
-	.AddApiLogsRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient);
+	.AddApiLogsRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient)
+	.AddCashServiceClient((op, sp) =>
+	{
+		var config = sp.GetRequiredService<IConfiguration>();
+		op.BaseUrl = config.GetValue<Uri>("SabaSingleWalletConnectionStrings:CashClientBaseUrl")!;
+	});
 
 builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
@@ -82,7 +86,6 @@ builder.Services
 
 builder.Services.AddRequestDecompression();
 
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -93,7 +96,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 
 app.UseRequestDecompression();
 

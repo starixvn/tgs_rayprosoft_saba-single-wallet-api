@@ -1,31 +1,31 @@
 ﻿using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Balance;
 using SabaSingleWallet.Common;
+using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class GetBalanceService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<GetBalanceRequest, GetBalanceResult>
+public class GetBalanceService(ICashServiceClient cashClient, ISapaApiMessagePublishHandler messagePublisher) : IGetService<GetBalanceRequest, GetBalanceResult>
 {
+	private const int PlayerCodeIndex = 1;
+
 	public async ValueTask<GetBalanceResult> GetAsync(GetBalanceRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{
-			Console.WriteLine(query.message);
-			var res = new GetBalanceResult("0", query.message.UserId, 100, DateTime.UtcNow.ToString());
+			var playerCode = query.Message.UserId.Replace("_test", string.Empty).Remove(0, query.Message.UserId.IndexOf("_") + 1);
+
+			var balance = await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken).ConfigureAwait(false);
+			var res = new GetBalanceResult("0", query.Message.UserId, balance, DateTime.UtcNow.ToString());
 
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
-				Key = query.key,
-				Action = query.message.Action,
+				Key = query.Key,
+				Action = query.Message.Action,
 				Request = query,
 				Response = res
 			}, cancellationToken);
-
-			//TO DO
-			//#1. Check Valid UserId
-			//#2. Get Actual Balance
-			//#3. Define GetBalance Error Codes
 
 			return res;
 		}
