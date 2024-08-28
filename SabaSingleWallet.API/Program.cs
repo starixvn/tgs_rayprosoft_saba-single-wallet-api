@@ -80,6 +80,9 @@ builder.Services
 	.AddInterceptionService()
 	.AddServiceUtiltiyInterceptors();
 
+builder.Services.AddRequestDecompression();
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -91,7 +94,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseMiddleware<DecompressionMiddleware>();
+
+app.UseRequestDecompression();
 
 app.UseAuthorization();
 

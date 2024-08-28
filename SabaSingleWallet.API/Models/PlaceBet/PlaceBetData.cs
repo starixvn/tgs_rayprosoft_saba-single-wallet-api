@@ -23,16 +23,16 @@
         public int OddsId { get; set; }
         public decimal Odds { get; set; }
         public string? BetChoice { get; set; }
-        public string? BetChoiceEn { get; set; }
-        public string UpdateTime { get; set; }
+        public string? BetChoice_en { get; set; }
+		public string UpdateTime { get; set; }
         public int LeagueId { get; set; }
         public string LeagueName { get; set; }
-        public string LeagueNameEn { get; set; }
-        public string SportTypeNameEn { get; set; }
-        public string BetTypeNameEn { get; set; }
-        public string HomeNameEn { get; set; }
-        public string AwayNameEn { get; set; }
-        public string IP { get; set; }
+		public string LeagueName_en { get; set; }
+		public string SportTypeName_en { get; set; }
+		public string HomeName_en { get; set; }
+		public string AwayName_en { get; set; }
+		public string BetTypeName_en { get; set; }
+		public string IP { get; set; }
         public bool IsLive { get; set; }
         public string RefId { get; set; }
         public string? TsId { get; set; }
