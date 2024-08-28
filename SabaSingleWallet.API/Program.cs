@@ -22,6 +22,7 @@ builder.Services
 	.Services
 	.AddSingleton<MongoDBConnectionManager>()
 	.AddSabaSingleWalletApiCore()
+	.AddPlayerRepository()
 	.AddApiLogsRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient)
 	.AddCashServiceClient((op, sp) =>
 	{
@@ -29,7 +30,7 @@ builder.Services
 		op.BaseUrl = config.GetValue<Uri>("SabaSingleWalletConnectionStrings:CashClientBaseUrl")!;
 	});
 
-builder.Services
+    builder.Services
 	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
 	{
 		Url = builder.Configuration.GetConnectionString("Nats")!,

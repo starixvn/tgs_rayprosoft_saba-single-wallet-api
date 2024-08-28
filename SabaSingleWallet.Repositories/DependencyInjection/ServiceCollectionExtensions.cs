@@ -11,4 +11,7 @@ public static class ServiceCollectionExtensions
 		Func<IServiceProvider, IMongoClient> mongoClientResolver)
 		=> services
 		.AddTransient<IApiLogsRepository>((sp) => ActivatorUtilities.CreateInstance<ApiLogsRepository>(sp, mongoClientResolver(sp)));
+
+	public static IServiceCollection AddPlayerRepository(this IServiceCollection services)
+		   => services.AddScoped<IPlayerRepository, PlayerRepositoryImp>();
 }
