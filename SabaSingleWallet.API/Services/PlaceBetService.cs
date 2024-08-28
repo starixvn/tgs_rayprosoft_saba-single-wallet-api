@@ -11,7 +11,8 @@ public class PlaceBetGetService(ISapaApiMessagePublishHandler messagePublisher) 
 	{
 		try
 		{
-			var res = new PlaceBetResult("0", "4200500_2331", "1988754", "");
+			var licenseeTxId = Guid.NewGuid().ToString();
+			var res = new PlaceBetResult("0", query.message.RefId, licenseeTxId, "");
 
 			var apiLogMessage = new ApiLogMessage()
 			{
