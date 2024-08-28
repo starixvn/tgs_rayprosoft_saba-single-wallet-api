@@ -18,7 +18,7 @@ public record ConfirmTicketInfo
 
 	public required long TxId { get; set; }
 
-	public required long LicenseeTxId { get; set; }
+	public required string LicenseeTxId { get; set; }
 
 	public required decimal Odds { get; set; }
 
