@@ -10,7 +10,7 @@ namespace SabaSingleWallet.Repositories
 {
 	public interface IPlayerRepository
 	{
-		Task <IEnumerable<CancelBetDBResult>>  CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria);
+		Task <CancelBetDBResult>  CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria);
 	}
 
 	public class PlayerRepositoryImp  : IPlayerRepository
@@ -22,7 +22,7 @@ namespace SabaSingleWallet.Repositories
 			_connectionString = configuration.GetConnectionString("Tgs");
 		}
 
-		public async Task<IEnumerable<CancelBetDBResult>> CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria)
+		public async Task<CancelBetDBResult> CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria)
 		{
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
@@ -49,7 +49,7 @@ namespace SabaSingleWallet.Repositories
                     )";
 
 				var result = await db.QueryAsync<CancelBetDBResult>(sqlQuery, parameters);
-				return result;
+				return result?.FirstOrDefault();
 			}
 		}
 	}
