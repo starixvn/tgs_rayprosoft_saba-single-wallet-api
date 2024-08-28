@@ -17,7 +17,7 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 			Console.WriteLine(query.message);
 
 			var transaction = query.message.Txns.FirstOrDefault();
-
+			var playerCode = query.message.UserId.Replace("_test", string.Empty).Remove(0, query.message.UserId.IndexOf("_") + 1);
 			var result = await playerRepository.CallBetTransSbswCancelBetAsync(new CancelBetCriteria
 			{
 				Action = query.message.Action,
@@ -36,7 +36,7 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 			}
 
 			var cashResponse = await cashClient
-					.GameProviderAddBalanceAsync(query.message.UserId, transaction.CreditAmount);
+					.GameProviderAddBalanceAsync(playerCode, transaction.CreditAmount).ConfigureAwait(false);
 
 			var res = new CancelBetResult("200", cashResponse.Balance, "cancel success");
 
