@@ -22,7 +22,6 @@ public class SettleEntService(ISapaApiMessagePublishHandler messagePublisher) : 
 			}, cancellationToken);
 
 			
-
 			return res;
 		}
 		catch (Exception ex)

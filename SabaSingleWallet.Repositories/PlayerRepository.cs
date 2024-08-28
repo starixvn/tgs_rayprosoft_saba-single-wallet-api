@@ -3,15 +3,14 @@ using System.Data;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using SabaSingleWallet.Repositories.Models.CancelBet;
 
 
 namespace SabaSingleWallet.Repositories
 {
 	public interface IPlayerRepository
 	{
-		Task<object> GetTableNames();
-
-		Task<object> CallBetTransSbswCancelBetAsync();
+		Task <IEnumerable<CancelBetDBResult>>  CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria);
 	}
 
 	public class PlayerRepositoryImp  : IPlayerRepository
@@ -23,29 +22,19 @@ namespace SabaSingleWallet.Repositories
 			_connectionString = configuration.GetConnectionString("Tgs");
 		}
 
-		public async Task<object> GetTableNames()
-		{
-			using (IDbConnection db = new NpgsqlConnection(_connectionString))
-			{
-				string sqlQuery = "SELECT * FROM information_schema.tables";
-				var result = await db.QueryAsync<object>(sqlQuery);
-				return result;
-			}
-		}
-
-		public async Task<object> CallBetTransSbswCancelBetAsync()
+		public async Task<IEnumerable<CancelBetDBResult>> CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria)
 		{
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
 				var parameters = new DynamicParameters();
-				parameters.Add("action", "action1", DbType.String);
-				parameters.Add("operationid", "opid1", DbType.String);
-				parameters.Add("updatetime", new DateTime(2024, 8, 27, 5, 51, 56, 573, DateTimeKind.Utc), DbType.DateTime);
-				parameters.Add("refid", "refid1", DbType.String);
-				parameters.Add("creditamount", 11.1m, DbType.Decimal);
-				parameters.Add("debitamount", 1.1m, DbType.Decimal);
-				parameters.Add("spresult", 0, DbType.Int32);
-				parameters.Add("sporttype", null, DbType.Int32);
+				parameters.Add("action", criteria.Action);
+				parameters.Add("operationid", criteria.OperationId);
+				parameters.Add("updatetime", criteria.UpdateTime);
+				parameters.Add("refid", criteria.RefId);
+				parameters.Add("creditamount", criteria.CreditAmount);
+				parameters.Add("debitamount", criteria.DebitAmount);
+				parameters.Add("spresult", criteria.SpResult);
+				parameters.Add("sporttype",criteria.SportType);
 
 				string sqlQuery = @"
                     CALL dbo.bet_bettrans_sbsw_cancelbet(
@@ -59,7 +48,7 @@ namespace SabaSingleWallet.Repositories
                         @sporttype
                     )";
 
-				var result = await db.QueryAsync<object>(sqlQuery, parameters);
+				var result = await db.QueryAsync<CancelBetDBResult>(sqlQuery, parameters);
 				return result;
 			}
 		}

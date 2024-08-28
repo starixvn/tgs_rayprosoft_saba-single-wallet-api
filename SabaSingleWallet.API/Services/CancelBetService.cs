@@ -2,6 +2,7 @@
 using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
+using SabaSingleWallet.Repositories.Models.CancelBet;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
@@ -22,12 +23,24 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 				Request = query,
 				Response = res
 			}, cancellationToken);
-			var result = await playerRepository.CallBetTransSbswCancelBetAsync();
+
 			//TO DO
 			//#1. Check Valid Request
 			//#2. Check and update creditAmount, debitAmount
 			//#3. Define CancelBet Error Codes
-	
+
+			var result = await playerRepository.CallBetTransSbswCancelBetAsync(new CancelBetCriteria
+			{
+				Action = "action1",
+				OperationId = "opid1",
+				UpdateTime = DateTime.Parse( "2024-08-27 05:51:56.573351+00"), 
+				RefId = "refid1",
+				CreditAmount = 11.1m,
+				DebitAmount = 1.1m,
+				SpResult = 0,
+				SportType = null
+			});
+			
 			return res;
 		}
 		catch (Exception ex)
