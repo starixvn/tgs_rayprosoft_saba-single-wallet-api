@@ -16,18 +16,19 @@ public class GetBalanceService(ICashServiceClient cashClient, ISapaApiMessagePub
 		{
 			var playerCode = query.Message.UserId.Replace("_test", string.Empty).Remove(0, query.Message.UserId.IndexOf("_") + 1);
 
-			var balance = await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken).ConfigureAwait(false);
-			var res = new GetBalanceResult("0", query.Message.UserId, balance, DateTime.UtcNow.ToString());
+			var response = await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken).ConfigureAwait(false);
+
+			var result = new GetBalanceResult("0", query.Message.UserId, response.Balance, DateTime.UtcNow.ToString(), response.ErrorMessage);
 
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
 				Key = query.Key,
 				Action = query.Message.Action,
 				Request = query,
-				Response = res
+				Response = result
 			}, cancellationToken);
 
-			return res;
+			return result;
 		}
 		catch (Exception ex)
 		{
