@@ -6,6 +6,7 @@ using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.GameBet;
+using SabaSingleWallet.Repositories.Models.GameRound;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
@@ -106,6 +107,44 @@ public class PlaceBetGetService(
 			ResetOn = null,
 			AdditionalData = { }, // Double check
 			ActionType = placeBetData.Action // Done
+		};
+
+		return;
+	}
+
+	private async Task InsertGameRound(PlaceBetRequest query)
+	{
+		var placeBetData = query.message;
+
+		var criteria = new GameRoundSetCriteria()
+		{
+			Id = Guid.NewGuid(),
+			CreatedOn = DateTime.UtcNow,
+			ExternalRoundId = "ROUND123",
+			GameProviderId = Guid.NewGuid(),
+			PlayerCode = "Player001",
+			GameId = 123,
+			CurrencyCode = "USD",
+			Status = 1,
+			GameProviderConfigurationId = Guid.NewGuid(),
+			WalletId = Guid.NewGuid(),
+			ClosedOn = null, // Nullable, can be set to null
+			UpdatedOn = DateTime.UtcNow,
+			BrandId = Guid.NewGuid(),
+			ExternalCreatedOn = DateTime.UtcNow,
+			ExternalClosedOn = null, // Nullable, can be set to null
+			BetAmount = 100.00m,
+			ValidBetAmount = 100.00m,
+			SettleAmount = 50.00m,
+			Commission = 5.00m,
+			Turnover = 100.00m,
+			WinLoss = 50.00m,
+			TieBetAdjustment = 0.00m,
+			ClientStatus = 1,
+			ReopenTurnoverAdjustment = 0.00m,
+			ReopenedOn = null, // Nullable, can be set to null
+			EffectiveBettingPercentage = 100.0m,
+			ActionType = "Settle"
 		};
 
 		return;
