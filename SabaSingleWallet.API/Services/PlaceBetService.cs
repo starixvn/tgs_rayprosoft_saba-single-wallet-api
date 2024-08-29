@@ -2,10 +2,12 @@
 using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBet;
+using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
+using Tgs.Cash.Protos;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 
@@ -32,12 +34,15 @@ public class PlaceBetGetService(
 
 			if (spResult.SpResult != 0)
 			{
-				return new PlaceBetResult("1", query.message.RefId, null, "place bet failed");
+				return new PlaceBetResult("506", query.message.RefId, null, "Unable To Processed. Please Try Again Later");
 			}
 
 			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, query.message.DebitAmount).ConfigureAwait(false);
 
-			// TODO: - Validate result
+			if (!string.IsNullOrWhiteSpace(deductBalanceResult.ErrorMessage))
+			{
+				return new PlaceBetResult("506", query.message.RefId, null, "Unable To Processed. Please Try Again Later");
+			}
 
 			var res = new PlaceBetResult("0", query.message.RefId, spResult.Licenseetxid, "");
 
@@ -54,7 +59,8 @@ public class PlaceBetGetService(
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			return new PlaceBetResult("1", "", "", "");
+			return new PlaceBetResult("503", query.message.RefId, null ,"Internal Error");
+
 		}
 	}
 }
