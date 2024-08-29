@@ -68,7 +68,7 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 
 					if (!string.IsNullOrWhiteSpace(addAmmountResut.ErrorMessage))
 					{
-						return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
+						return await GenerateResponseAsync("307", 0, "Cannot Credit player. Please Try Again Later", query, cancellationToken);
 					}
 				}
 
@@ -77,21 +77,13 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 				return await GenerateResponseAsync("0", balance, "", query, cancellationToken);
 			}
 
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = new ConfirmBetResult("506", 0, "Unable To Processed. Please Try Again Later")
-			}, cancellationToken);
-
-			return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
+			return await GenerateResponseAsync("504", 0, "No Such Ticket", query, cancellationToken);
 		}
 		catch (Exception ex)
 		{
 			SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
-			return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
+			return await GenerateResponseAsync("999", 0, "System Error", query, cancellationToken);
 		}
 	}
 
