@@ -17,7 +17,7 @@ public class PlaceBetParlayService(ISapaApiMessagePublishHandler messagePublishe
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
 				Key = query.key,
-				Action = query.message.Action,
+				Action = "PlaceBetParlay",
 				Request = query,
 				Response = res
 			}, cancellationToken);
