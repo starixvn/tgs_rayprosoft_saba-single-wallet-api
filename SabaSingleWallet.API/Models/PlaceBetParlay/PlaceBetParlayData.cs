@@ -9,9 +9,9 @@ public record PlaceBetParlayData
 	public string BetTime { get; set; }
 	public string UpdateTime { get; set; }
 	public decimal TotalBetAmount { get; set; }
-	public string IP { get; set; }
-	public string TsId { get; set; }
-	public string BetFrom { get; set; }
+	//public string IP { get; set; }
+	//public string TsId { get; set; }
+	//public string BetFrom { get; set; }
 	public decimal CreditAmount { get; set; }
 	public decimal DebitAmount { get; set; }
 	public string VendorTransId { get; set; }
