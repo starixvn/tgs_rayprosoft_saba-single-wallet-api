@@ -15,8 +15,9 @@ public record PlaceBetParlayData
 	public decimal CreditAmount { get; set; }
 	public decimal DebitAmount { get; set; }
 	public string VendorTransId { get; set; }
-	public ComboInfo[] Txns { get; set; }
-	public TicketDetail[] TicketDetail { get; set; }
+
+	//public ComboInfo[] Txns { get; set; }
+	//public TicketDetail[] TicketDetail { get; set; }
 }
 
 //public record PlaceBetParlayData
