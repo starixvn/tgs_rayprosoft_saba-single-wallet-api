@@ -34,51 +34,79 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 		try
 		{
 			var confirmBetData = query.message;
-			var addAmountResults = new List<BalanceResponse>();
-			foreach (var ticket in confirmBetData.Txns)
+			var transaction = confirmBetData.Txns.FirstOrDefault();
+			var playerCode = PlayerCodeHelpers.GetPlayerCodeFromUserId(confirmBetData.UserId);
+
+			if (transaction != null)
 			{
 				var spCallResult = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(new ConfirmBetCriteria
 				{
 					Action = confirmBetData.Action,
-					ActualAmount = ticket.ActualAmount,
-					CreditAmount = ticket.CreditAmount,
-					DebitAmount = ticket.DebitAmount,
-					IsOddsChanged = ticket.IsOddsChanged,
-					LicenseetxId = long.Parse(ticket.LicenseeTxId),
-					Odds = ticket.Odds,
-					OddsType = ticket.OddsType,
+					ActualAmount = transaction.ActualAmount,
+					CreditAmount = transaction.CreditAmount,
+					DebitAmount = transaction.DebitAmount,
+					IsOddsChanged = transaction.IsOddsChanged,
+					LicenseetxId = long.Parse(transaction.LicenseeTxId),
+					Odds = transaction.Odds,
+					OddsType = transaction.OddsType,
 					OperationId = confirmBetData.OperationId,
-					RefId = ticket.RefId,
-					TxId = ticket.TxId,
-					WinLostDate = DateTimeOffset.Parse(ticket.WinlostDate).DateTime,
+					RefId = transaction.RefId,
+					TxId = transaction.TxId,
+					WinLostDate = DateTimeOffset.Parse(transaction.WinlostDate).DateTime,
 					TransactionTime = DateTimeOffset.Parse(confirmBetData.TransactionTime).DateTime,
 					UpdateTime = DateTimeOffset.Parse(confirmBetData.UpdateTime).DateTime,
 				}, StoreProcedureMapper.ConfirmBetSP);
 
 				if (spCallResult.SpResult < 0)
 				{
-					continue;
+					return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
 				}
 
-				if (!ticket.IsOddsChanged)
+				if (transaction.IsOddsChanged)
 				{
-					continue;
+					var addAmmountResut = await client.GameProviderAddBalanceAsync(playerCode, transaction.CreditAmount, cancellationToken: cancellationToken);
+
+					if (!string.IsNullOrWhiteSpace(addAmmountResut.ErrorMessage))
+					{
+						return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
+					}
 				}
 
-				var playerCode = PlayerCodeHelpers.GetPlayerCodeFromUserId(confirmBetData.UserId);
+				var balance = (await client.GameProviderGetBalanceAsync(playerCode, cancellationToken)).Balance;
 
-				var addAmmountResut = await client.GameProviderAddBalanceAsync(playerCode, ticket.CreditAmount, "", null, null, cancellationToken);
-				addAmountResults.Add(addAmmountResut);
+				return await GenerateResponseAsync("0", balance, "", query, cancellationToken);
 			}
 
-			return addAmountResults.Count == 0
-				? new ConfirmBetResult("506", 0, "Unable To Processed. Please Try Again Later")
-				: new ConfirmBetResult("0", addAmountResults.Last().Balance, "");
+			await messagePublisher.LogApi(new ApiLogMessage()
+			{
+				Key = query.key,
+				Action = query.message.Action,
+				Request = query,
+				Response = new ConfirmBetResult("506", 0, "Unable To Processed. Please Try Again Later")
+			}, cancellationToken);
+
+			return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
 		}
 		catch (Exception ex)
 		{
+			SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
-			return new ConfirmBetResult("506", 0, "Unable To Processed. Please Try Again Later");
+			return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
 		}
+	}
+
+	private async Task<ConfirmBetResult> GenerateResponseAsync(string status, decimal balance, string? message, ConfirmBetRequest request, CancellationToken cancellationToken)
+	{
+		var res = new ConfirmBetResult(status, balance, message);
+
+		await messagePublisher.LogApi(new ApiLogMessage()
+		{
+			Key = request.key,
+			Action = request.message.Action,
+			Request = request,
+			Response = res
+		}, cancellationToken);
+
+		return res;
 	}
 }
