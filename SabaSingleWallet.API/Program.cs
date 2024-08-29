@@ -5,8 +5,10 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SabaSingleWallet.API;
 using SabaSingleWallet.API.Messages;
+using SabaSingleWallet.Core;
 using SabaSingleWallet.Core.DependencyInjection;
 using Tgs.GameRecord.Saba.Common;
+using Tgs.GameRecord.Saba.Core;
 using Tgs.MessageQueue.Nats.Serializers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +23,20 @@ builder.Services
 	})
 	.Services
 	.AddSingleton<MongoDBConnectionManager>()
+	.AddOptions<GameProviderInfo>()
+	.Configure((GameProviderInfo options, IServiceProvider sp) =>
+	{
+		var configuration = sp.GetRequiredService<IConfiguration>();
+		configuration.GetSection("GameProviderInfo").Bind(options);
+	})
+	.Services
+	.AddOptions<PolicySettingsOptions>()
+	.Configure((PolicySettingsOptions options, IServiceProvider sp) =>
+	{
+		var configuration = sp.GetRequiredService<IConfiguration>();
+		configuration.GetSection("PolicySettings").Bind(options);
+	})
+	.Services
 	.AddSabaSingleWalletApiCore()
 	.AddPlayerRepository()
 	.AddApiLogsRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient)
@@ -28,20 +44,27 @@ builder.Services
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
 		op.BaseUrl = config.GetValue<Uri>("SabaSingleWalletConnectionStrings:CashClientBaseUrl")!;
-	});
-
-    builder.Services
-	.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
+	})
+	.AddGameRecordHandleClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
 	{
-		Url = builder.Configuration.GetConnectionString("Nats")!,
-		SerializerRegistry = TgsNatsSerializerRegistration.Default
-	}))
-	.AddMessageQueue()
-	.AddNatsMessageQueue(config => config
-		.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
-		 .AddHandler<ApiLogsMessageHandler>(SabaNatsConst.ApiLogsPublish, SabaNatsConst.ApiLogsPublish))
-	 .ClearAllExchanges()
-	 .AddNatsGlobPatternExchange(SabaNatsConst.ApiLogsPublish);
+		var config = sp.GetRequiredService<IConfiguration>();
+		http.BaseAddress = config.GetValue<Uri>("SabaSingleWalletConnectionStrings:GameRecordHandleClientBaseUrl");
+	}));
+
+builder.Services
+.AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
+{
+	Url = builder.Configuration.GetConnectionString("Nats")!,
+	SerializerRegistry = TgsNatsSerializerRegistration.Default
+}))
+.AddMessageQueue()
+.AddNatsMessageQueue(config => config
+	.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
+	 .AddHandler<ApiLogsMessageHandler>(SabaNatsConst.ApiLogsPublish, string.Concat(SabaNatsConst.ApiLogsPublish, ".", Environment.MachineName))
+	 .AddHandler<HandleBetMessageHandler>(SabaNatsConst.HandleBetPublish, string.Concat(SabaNatsConst.HandleBetPublish, ".", Environment.MachineName)))
+ .ClearAllExchanges()
+ .AddNatsGlobPatternExchange(SabaNatsConst.ApiLogsPublish)
+ .AddNatsGlobPatternExchange(SabaNatsConst.HandleBetPublish);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

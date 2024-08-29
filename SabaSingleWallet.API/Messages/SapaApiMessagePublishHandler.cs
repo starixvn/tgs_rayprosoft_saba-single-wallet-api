@@ -11,4 +11,9 @@ public class SapaApiMessagePublishHandler(IMessageSender messageSender) : ISapaA
 	{
 		await messageSender.PublishAsync(subject: SabaNatsConst.ApiLogsPublish, data: JsonSerializer.Serialize(mesage), cancellationToken);
 	}
+
+	public async ValueTask HandleBetAsync(HandleBetMessage mesage, CancellationToken cancellationToken = default)
+	{
+		await messageSender.PublishAsync(subject: SabaNatsConst.HandleBetPublish, data: JsonSerializer.Serialize(mesage), cancellationToken);
+	}
 }
