@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBet;
@@ -24,7 +25,7 @@ public class PlaceBetGetService(
 	{
 		try
 		{
-			var playerCode = PlayerCodeHelpers.GetPlayerCodeFromUserId(query.message.UserId);
+			var playerCode =query.message.UserId.ToPlayerCode();
 
 			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>
 				(

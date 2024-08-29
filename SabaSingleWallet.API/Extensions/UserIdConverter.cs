@@ -4,7 +4,6 @@ public static class UserIdConverter
 {
 	public static string ToPlayerCode(this string userId)
 	{
-		//TODO recheck with userId without _test posfix
-		return userId.Split('_')[userId.Length - 2];
+		return userId.Replace("_test", string.Empty).Remove(0, userId.IndexOf("_") + 1);
 	}
 }

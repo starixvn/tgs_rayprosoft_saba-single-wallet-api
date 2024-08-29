@@ -1,4 +1,5 @@
-﻿using SabaSingleWallet.API.Helpers;
+﻿using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Balance;
 using SabaSingleWallet.Common;
@@ -13,7 +14,7 @@ public class GetBalanceService(ICashServiceClient cashClient, ISapaApiMessagePub
 	{
 		try
 		{
-			var playerCode = PlayerCodeHelpers.GetPlayerCodeFromUserId(query.Message.UserId);
+			var playerCode = query.Message.UserId.ToPlayerCode();
 
 			var response = await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken).ConfigureAwait(false);
 

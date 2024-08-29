@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Resettle;
@@ -43,7 +44,7 @@ public class ResettleService(
 					return new ResettleResult("506", "Unable To Processed. Please Try Again Later");
 				}
 
-				var playerCode = PlayerCodeHelpers.GetPlayerCodeFromUserId(settlement.UserId);
+				var playerCode = settlement.UserId.ToPlayerCode();
 				var adjustAmount = settlement.CreditAmount - settlement.DebitAmount;
 
 				var balanceResponse = adjustAmount > 0
