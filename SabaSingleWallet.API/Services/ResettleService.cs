@@ -2,6 +2,7 @@
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Resettle;
+using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
@@ -22,17 +23,6 @@ public class ResettleService(
 	{
 		try
 		{
-			Console.WriteLine(query.message);
-			var res = new ResettleResult("0");
-
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
-
 			foreach (var settlement in query.message.Txns)
 			{
 				var spResult = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>
@@ -40,7 +30,7 @@ public class ResettleService(
 
 				if (spResult.SpResult < 0)
 				{
-					return new ResettleResult("506", "Unable To Processed. Please Try Again Later");
+					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (SP)");
 				}
 
 				var playerCode = settlement.UserId.ToPlayerCode();
@@ -52,25 +42,31 @@ public class ResettleService(
 
 				if (balanceResponse.ErrorCode > 0)
 				{
-					return new ResettleResult("506", "Unable To Processed. Please Try Again Later");
+					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (CSC)");
 				}
 			}
 
-			return res;
+			return new ResettleResult("0");
 		}
 		catch (Exception ex)
 		{
-			var res = new ResettleResult("803", "No Bet Found");
 			Console.Write(ex.ToString());
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
 
-			return res;
+			return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (500)")
 		}
+	}
+
+	private async Task<ResettleResult> GenerateResultAsync(ResettleRequest query, string status, string msg)
+	{
+		var res = new ResettleResult(status, msg);
+		await messagePublisher.LogApi(new ApiLogMessage()
+		{
+			Key = query.key,
+			Action = query.message.Action,
+			Request = query,
+			Response = res
+		});
+
+		return res;
 	}
 }
