@@ -66,7 +66,7 @@ public record TicketDetail
 	public int AwayId { get; set; }
 	public string HomeName { get; set; }
 	public string AwayName { get; set; }
-	public DateTime KickOffTime { get; set; }
+	public string KickOffTime { get; set; }
 	public int SportType { get; set; }
 	public string SportTypeName { get; set; }
 	public int BetType { get; set; }
@@ -91,7 +91,7 @@ public record TicketDetail
 	public string HomeName_en { get; set; }
 	public string AwayName_en { get; set; }
 	public string BetTypeName_en { get; set; }
-	public DateTime MatchDateTime { get; set; }
+	public string MatchDateTime { get; set; }
 	public string BetRemark { get; set; }
 }
 
