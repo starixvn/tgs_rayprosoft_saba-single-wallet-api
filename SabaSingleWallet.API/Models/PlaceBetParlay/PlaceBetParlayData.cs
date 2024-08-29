@@ -5,22 +5,41 @@ namespace SabaSingleWallet.API.Models.PlaceBetParlay;
 
 public record PlaceBetParlayData
 {
-	public required string Action { get; set; } = "PlaceBetParlay"; // default action for Bet Parlay
-	public required string OperationId { get; set; }
-	public required string UserId { get; set; }
-	public required int Currency { get; set; }
-	public required DateTime BetTime { get; set; }
-	public required DateTime UpdateTime { get; set; }
-	public required decimal TotalBetAmount { get; set; }
-	public required string IP { get; set; }
+	public string Action { get; set; } = "PlaceBetParlay"; // default action for Bet Parlay
+	public string OperationId { get; set; }
+	public string UserId { get; set; }
+	public int Currency { get; set; }
+	public DateTime BetTime { get; set; }
+	public DateTime UpdateTime { get; set; }
+	public decimal TotalBetAmount { get; set; }
+	public string IP { get; set; }
 	public string TsId { get; set; }
-	public required string BetFrom { get; set; }
-	public required decimal CreditAmount { get; set; }
-	public required decimal DebitAmount { get; set; }
+	public string BetFrom { get; set; }
+	public decimal CreditAmount { get; set; }
+	public decimal DebitAmount { get; set; }
 	public string VendorTransId { get; set; }
-	public required ComboInfo [] Txns { get; set; }
-	public required TicketDetail [] TicketDetail { get; set; }
+	public ComboInfo[] Txns { get; set; }
+	public TicketDetail[] TicketDetail { get; set; }
 }
+
+//public record PlaceBetParlayData
+//{
+//	public required string Action { get; set; } = "PlaceBetParlay"; // default action for Bet Parlay
+//	public required string OperationId { get; set; }
+//	public required string UserId { get; set; }
+//	public required int Currency { get; set; }
+//	public required DateTime BetTime { get; set; }
+//	public required DateTime UpdateTime { get; set; }
+//	public required decimal TotalBetAmount { get; set; }
+//	public required string IP { get; set; }
+//	public string TsId { get; set; }
+//	public required string BetFrom { get; set; }
+//	public required decimal CreditAmount { get; set; }
+//	public required decimal DebitAmount { get; set; }
+//	public string VendorTransId { get; set; }
+//	public required ComboInfo[] Txns { get; set; }
+//	public required TicketDetail[] TicketDetail { get; set; }
+//}
 
 public record ComboInfo
 {
@@ -40,10 +59,10 @@ public abstract record ComboInfoDetail
 
 public record SingleBetDetail : ComboInfoDetail
 {
-	public required int  MatchId { get; set; }
+	public required int MatchId { get; set; }
 }
 
-public record ParlayDetail: ComboInfoDetail
+public record ParlayDetail : ComboInfoDetail
 {
 	public required int Type { get; set; }
 	public required string Name { get; set; }
@@ -114,5 +133,5 @@ public class ComboInfoDetailConverter : JsonConverter<ComboInfoDetail[]>
 	}
 
 	public override void Write(Utf8JsonWriter writer, ComboInfoDetail[] value, JsonSerializerOptions options)
-	{}
+	{ }
 }
