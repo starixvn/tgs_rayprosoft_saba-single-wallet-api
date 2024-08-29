@@ -72,6 +72,7 @@ public class SettleService(
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
+			SentrySdk.CaptureException(ex);
 			return new SettleResult("803", "No Bet Found");
 		}
 	}
