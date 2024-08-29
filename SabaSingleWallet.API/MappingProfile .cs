@@ -2,6 +2,7 @@
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.API.Models.Unsettle;
+using SabaSingleWallet.Repositories.Models.GameBet;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using SabaSingleWallet.Repositories.Models.Settle;
 using SabaSingleWallet.Repositories.Models.Unsettle;

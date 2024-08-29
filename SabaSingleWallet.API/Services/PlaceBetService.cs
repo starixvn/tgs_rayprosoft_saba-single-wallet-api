@@ -5,6 +5,7 @@ using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
+using SabaSingleWallet.Repositories.Models.GameBet;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
@@ -22,6 +23,7 @@ public class PlaceBetGetService(
 	{
 		try
 		{
+			InsertGameBet(query);
 			var playerCode = query.message.UserId.ToPlayerCode();
 
 			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>
@@ -59,5 +61,53 @@ public class PlaceBetGetService(
 			Console.Write(ex.ToString());
 			return new PlaceBetResult("503", query.message.RefId, null, "Internal Error");
 		}
+	}
+
+	private async Task InsertGameBet(PlaceBetRequest query)
+	{
+		var placeBetData = query.message;
+		var criteria = new GameBetSetCriteria()
+		{
+			GameProviderId = Guid.NewGuid(), // dbo game_providers
+			GameId = 123, // dbo games
+			WalletId = Guid.NewGuid(), // playerInfo.walletId
+			ExternalBetId = placeBetData.TsId, 
+			ExternalCreatedOn = DateTime.Parse(placeBetData.BetTime), // Need double check
+			Id = Guid.NewGuid(), // dbo rounds
+			GameProviderConfigurationId = Guid.NewGuid(), // dbo.brand_game_providers
+			ResellerId = Guid.NewGuid(), //*PlayerInfo.ResellerId
+			LicenseeId = Guid.NewGuid(), //*PlayerInfo.LicenseeId
+			BrandId = Guid.NewGuid(), // *PlayerInfo.BrandId
+			PlayerCode = placeBetData.UserId.ToPlayerCode(),
+			CurrencyCode = "USD", // *PlayerInfo.CurrencyCode
+			ExternalRoundId = placeBetData.TsId,
+			ExternalClosedOn = null, // Formula
+			ExternalPayoffOn = null,  // Formula
+			ExternalResettleOn = null, //DateTimeOffset.UnixEpoch 
+			BetState = 0, // PlaceBet = 0
+			BetType = 0, // BetType.Normal = 0
+			FreeGameState = 0, //FreeGameState.None
+			GambleState = 0, //GambleState.None
+			CashoutState = 0, // Formular
+			ResettleState = 0, //ResettleState.None
+			JackpotState = 0, //JackpotState.None
+			CurrencyRatio = 1.0m, // Double check
+			Bet = placeBetData.DebitAmount,
+			ValidBet = 0, // Formular
+			Settle = 0,
+			Commission = 0, 
+			Turnover = 0.00m, // Formular
+			WinLoss = 0.00m,
+			Jackpot = 0.00m,
+			CreatedOn = DateTime.UtcNow,
+			ClosedOn = null,
+			UpdatedOn = DateTime.UtcNow,
+			ResetState = 0,
+			ResetOn = null,
+			AdditionalData = { }, // Double check
+			ActionType = placeBetData.Action // Done
+		};
+
+		return;
 	}
 }

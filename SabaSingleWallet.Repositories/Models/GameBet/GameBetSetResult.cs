@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace SabaSingleWallet.Repositories.Models.GameBet;
-internal class GameBetSetResult
+public class GameBetSetResult
 {
+
 }
