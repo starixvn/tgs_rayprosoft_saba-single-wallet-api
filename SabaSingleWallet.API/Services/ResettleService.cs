@@ -52,7 +52,7 @@ public class ResettleService(
 		{
 			Console.Write(ex.ToString());
 
-			return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (500)")
+			return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (500)");
 		}
 	}
 
