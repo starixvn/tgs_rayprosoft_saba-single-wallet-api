@@ -1,18 +1,14 @@
 ﻿using System.Data;
-using System.Xml.Linq;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using SabaSingleWallet.Repositories.Models.CancelBet;
-using SabaSingleWallet.Repositories.Models.PlaceBet;
 
 namespace SabaSingleWallet.Repositories
 {
 	public interface IPlayerRepository
 	{
 		Task<CancelBetDBResult> CallBetTransSbswCancelBetAsync(CancelBetCriteria criteria);
-
-		Task<PlaceBetSPResult> CallBetTransSbswPlaceBetAsync(PlaceBetCriteria criteria);
 
 		Task<TResult> CallStoredProcedureAsync<TCriteria, TResult>(TCriteria criteria, string spName);
 	}
@@ -54,26 +50,6 @@ namespace SabaSingleWallet.Repositories
 
 			var result = await db.QueryAsync<CancelBetDBResult>(sqlQuery, parameters);
 			return result?.FirstOrDefault();
-		}
-
-		public async Task<PlaceBetSPResult> CallBetTransSbswPlaceBetAsync(PlaceBetCriteria criteria)
-		{
-			using (IDbConnection db = new NpgsqlConnection(_connectionString))
-			{
-				var parameters = new DynamicParameters();
-
-				foreach (var property in typeof(PlaceBetCriteria).GetProperties())
-				{
-					var value = property.GetValue(criteria);
-					parameters.Add(property.Name.ToLower(), value);
-				}
-
-				string sqlQuery = $"CALL dbo.bet_bettrans_sbsw_bet({string.Join(", ", typeof(PlaceBetCriteria).GetProperties().Select(p => $"@{p.Name.ToLower()}"))})";
-
-				var result = await db.QueryFirstAsync<PlaceBetSPResult>(sqlQuery, parameters);
-
-				return result;
-			}
 		}
 
 		public async Task<TResult> CallStoredProcedureAsync<TCriteria, TResult>(TCriteria criteria, string spName)
