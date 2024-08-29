@@ -14,10 +14,25 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 {
 	public async ValueTask<ConfirmBetResult> GetAsync(ConfirmBetRequest query, CancellationToken cancellationToken = default)
 	{
+		Console.WriteLine(query.message);
+
+		var response = await ProcessRequestAsync(query, cancellationToken);
+
+		await messagePublisher.LogApi(new ApiLogMessage()
+		{
+			Key = query.key,
+			Action = query.message.Action,
+			Request = query,
+			Response = response
+		}, cancellationToken);
+
+		return response;
+	}
+
+	private async Task<ConfirmBetResult> ProcessRequestAsync(ConfirmBetRequest query, CancellationToken cancellationToken = default)
+	{
 		try
 		{
-			Console.WriteLine(query.message);
-
 			var confirmBetData = query.message;
 			var addAmountResults = new List<BalanceResponse>();
 			foreach (var ticket in confirmBetData.Txns)
@@ -56,24 +71,9 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 				addAmountResults.Add(addAmmountResut);
 			}
 
-			var response = addAmountResults.Count == 0
+			return addAmountResults.Count == 0
 				? new ConfirmBetResult("506", 0, "Unable To Processed. Please Try Again Later")
 				: new ConfirmBetResult("0", addAmountResults.Last().Balance, "");
-
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = response
-			}, cancellationToken);
-
-			//TO DO
-			//#1. Check Valid Request
-			//#2. Check and update ActualAmount, Odds if isOddsChanged = true
-			//#3. Define ConfirmBet Error Codes
-
-			return response;
 		}
 		catch (Exception ex)
 		{
