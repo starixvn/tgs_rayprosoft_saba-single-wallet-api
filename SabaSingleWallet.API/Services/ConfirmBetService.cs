@@ -56,12 +56,16 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 				addAmountResults.Add(addAmmountResut);
 			}
 
+			var response = addAmountResults.Count == 0
+				? new ConfirmBetResult("506", 0, "Unable To Processed. Please Try Again Later")
+				: new ConfirmBetResult("0", addAmountResults.Last().Balance, "");
+
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
 				Key = query.key,
 				Action = query.message.Action,
 				Request = query,
-				Response = addAmountResults
+				Response = response
 			}, cancellationToken);
 
 			//TO DO
@@ -69,9 +73,7 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 			//#2. Check and update ActualAmount, Odds if isOddsChanged = true
 			//#3. Define ConfirmBet Error Codes
 
-			return addAmountResults.Count == 0
-				? new ConfirmBetResult("506", 0, "Unable To Processed. Please Try Again Later")
-				: new ConfirmBetResult("0", addAmountResults.Last().Balance, "");
+			return response;
 		}
 		catch (Exception ex)
 		{
