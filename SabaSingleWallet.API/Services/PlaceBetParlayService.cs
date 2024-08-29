@@ -14,13 +14,13 @@ public class PlaceBetParlayService(ISapaApiMessagePublishHandler messagePublishe
 			Console.WriteLine(query.message);
 			var res = new PlaceBetParlayResult("0", [], "");
 
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
+			//await messagePublisher.LogApi(new ApiLogMessage()
+			//{
+			//	Key = query.key,
+			//	Action = query.message.Action,
+			//	Request = query,
+			//	Response = res
+			//}, cancellationToken);
 
 			return res;
 		}
