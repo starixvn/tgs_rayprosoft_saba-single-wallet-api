@@ -1,4 +1,5 @@
 ﻿using System.IO.Compression;
+using System.Text;
 
 namespace SabaSingleWallet.API.Middlewares
 {
@@ -24,6 +25,12 @@ namespace SabaSingleWallet.API.Middlewares
 				}
 
 				decompressedStream.Seek(0, SeekOrigin.Begin);
+
+				var stream = new MemoryStream();
+				decompressedStream.CopyTo(stream);
+				var data = Encoding.UTF8.GetString(stream.ToArray());
+
+				Console.WriteLine(data);
 
 				context.Request.Body = decompressedStream;
 				context.Request.ContentLength = decompressedStream.Length; 
