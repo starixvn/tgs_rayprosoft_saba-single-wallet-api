@@ -1,7 +1,7 @@
 ﻿
 
 namespace SabaSingleWallet.Repositories.Models.CancelBet;
-public class CancelBetDBResult
+public class CancelBetSPResult
 {
 	public int SpResult { get; set; }
 

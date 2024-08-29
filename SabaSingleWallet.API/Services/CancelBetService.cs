@@ -1,8 +1,13 @@
-﻿using SabaSingleWallet.API.Messages;
+﻿using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Helpers;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.CancelBet;
+using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
+using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.CancelBet;
+using SabaSingleWallet.Repositories.Models.Settle;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 
@@ -14,31 +19,38 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 	{
 		try
 		{
-			Console.WriteLine(query.message);
+			foreach (var transaction in query.message.Txns)
+			{
+				var result = await playerRepository.CallStoredProcedureAsync<CancelBetCriteria, CancelBetSPResult>(new CancelBetCriteria
+				{
+					Action = query.message.Action,
+					OperationId = query.message.OperationId,
+					UpdateTime = DateTime.Parse(query.message.UpdateTime),
+					RefId = transaction?.RefId,
+					CreditAmount = transaction.CreditAmount,
+					DebitAmount = transaction.DebitAmount,
+					SpResult = 0,
+					SportType = null
+				}, StoreProcedureMapper.CancelBetSP);
 
-			var transaction = query.message.Txns.FirstOrDefault();
-			var playerCode = query.message.UserId.Replace("_test", string.Empty).Remove(0, query.message.UserId.IndexOf("_") + 1);
-			var result = await playerRepository.CallBetTransSbswCancelBetAsync(new CancelBetCriteria
-			{
-				Action = query.message.Action,
-				OperationId = query.message.OperationId,
-				UpdateTime = DateTime.Parse(query.message.UpdateTime),
-				RefId = transaction?.RefId,
-				CreditAmount = transaction.CreditAmount,
-				DebitAmount = transaction.DebitAmount,
-				SpResult = 0,
-				SportType = null
-			});
-			
-			if ( result.SpResult < 0 )
-			{
-				return new CancelBetResult("1", 0, "cancel failed");
+				if (result.SpResult < 0)
+				{
+					return new CancelBetResult("506", null, "Unable To Processed. Please Try Again Later");
+				}
+
+				var balanceResponse = await cashClient
+						.GameProviderAddBalanceAsync(
+					query.message.UserId.ToPlayerCode(),
+					transaction.CreditAmount,
+					cancellationToken: cancellationToken);
+
+				if (!string.IsNullOrWhiteSpace(balanceResponse.ErrorMessage))
+				{
+					return new CancelBetResult("506",null, "Unable To Processed. Please Try Again Later");
+				}
 			}
 
-			var cashResponse = await cashClient
-					.GameProviderAddBalanceAsync(playerCode, transaction.CreditAmount).ConfigureAwait(false);
-
-			var res = new CancelBetResult("200", cashResponse.Balance, "cancel success");
+		    var res = new CancelBetResult("0");
 
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
@@ -53,7 +65,7 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			return new CancelBetResult("1", 0, "cancel failed");
+			return new CancelBetResult("803", null, "No Bet Found");
 		}
 	}
 }

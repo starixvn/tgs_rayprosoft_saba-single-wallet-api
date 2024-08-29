@@ -3,6 +3,6 @@
 public record CancelBetResult
 (
 	string status,
-	decimal? balance,
+	decimal? balance = null,
 	string? msg = null
 );
