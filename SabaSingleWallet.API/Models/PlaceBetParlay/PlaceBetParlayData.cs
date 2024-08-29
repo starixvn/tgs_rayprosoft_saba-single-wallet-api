@@ -5,41 +5,22 @@ namespace SabaSingleWallet.API.Models.PlaceBetParlay;
 
 public record PlaceBetParlayData
 {
-	public string Action { get; set; } = "PlaceBetParlay"; // default action for Bet Parlay
-	public string OperationId { get; set; }
-	public string UserId { get; set; }
-	public int Currency { get; set; }
-	public string BetTime { get; set; }
-	public string UpdateTime { get; set; }
-	public decimal TotalBetAmount { get; set; }
-	public string IP { get; set; }
+	public required string Action { get; set; } = "PlaceBetParlay"; // default action for Bet Parlay
+	public required string OperationId { get; set; }
+	public required string UserId { get; set; }
+	public required int Currency { get; set; }
+	public required string BetTime { get; set; }
+	public required string UpdateTime { get; set; }
+	public required decimal TotalBetAmount { get; set; }
+	public required string IP { get; set; }
 	public string TsId { get; set; }
-	public string BetFrom { get; set; }
-	public decimal CreditAmount { get; set; }
-	public decimal DebitAmount { get; set; }
+	public required string BetFrom { get; set; }
+	public required decimal CreditAmount { get; set; }
+	public required decimal DebitAmount { get; set; }
 	public string VendorTransId { get; set; }
-	public ComboInfo[] Txns { get; set; }
-	public TicketDetail[] TicketDetail { get; set; }
+	public required ComboInfo[] Txns { get; set; }
+	public required TicketDetail[] TicketDetail { get; set; }
 }
-
-//public record PlaceBetParlayData
-//{
-//	public required string Action { get; set; } = "PlaceBetParlay"; // default action for Bet Parlay
-//	public required string OperationId { get; set; }
-//	public required string UserId { get; set; }
-//	public required int Currency { get; set; }
-//	public required string BetTime { get; set; }
-//	public required string UpdateTime { get; set; }
-//	public required decimal TotalBetAmount { get; set; }
-//	public required string IP { get; set; }
-//	public string TsId { get; set; }
-//	public required string BetFrom { get; set; }
-//	public required decimal CreditAmount { get; set; }
-//	public required decimal DebitAmount { get; set; }
-//	public string VendorTransId { get; set; }
-//	public required ComboInfo[] Txns { get; set; }
-//	public required TicketDetail[] TicketDetail { get; set; }
-//}
 
 public record ComboInfo
 {
