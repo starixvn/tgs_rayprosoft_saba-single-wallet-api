@@ -8,8 +8,6 @@ using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.Repositories.Models.Unsettle;
-using SabaSingleWallet.Repositories.Models.Settle;
-
 namespace SabaSingleWallet.API.Services;
 
 public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher, 
@@ -29,13 +27,12 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 				var unSettleCriteria = mapper.Map<UnsettleCriteria>(settlement);
 				unSettleCriteria.OperationId = query.message.OperationId;
 				unSettleCriteria.Action = query.message.Action;
-			
 				var spResult = await playerRepository.CallStoredProcedureAsync<UnsettleCriteria, UnsettleSPResult>
 					(unSettleCriteria, StoreProcedureMapper.SettleSP);
 
 				if (spResult.SpResult < 0)
 				{
-					return new UnsettleResult("506", "Unable To Processed. Please Try Again Later");
+					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (SP)");
 				}
 
 				var playerCode = settlement.UserId.ToPlayerCode();
@@ -46,26 +43,29 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 
 				if (balanceResponse.ErrorCode > 0)
 				{
-					return new UnsettleResult("506", "Unable To Processed. Please Try Again Later");
+					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (CSC)");
 				}
 			}
 
-			var res = new UnsettleResult("0");
-
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
-
-			return res;
+		 return	await GenerateResultAsync(query, "0", string.Empty);
 		}
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			return new UnsettleResult("803", "No Bet Found");
+			return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (500)");
 		}
+	}
+	private async Task<UnsettleResult> GenerateResultAsync(UnsettleRequest query, string status, string msg)
+	{
+		var res = new UnsettleResult(status, msg);
+		await messagePublisher.LogApi(new ApiLogMessage()
+		{
+			Key = query.key,
+			Action = query.message.Action,
+			Request = query,
+			Response = res
+		});
+
+		return res;
 	}
 }
