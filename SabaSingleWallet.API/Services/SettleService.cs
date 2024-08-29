@@ -43,7 +43,7 @@ public class SettleService(
 
 				if (result.SpResult < 1)
 				{
-					return new SettleResult("506", "Unable To Processed. Please Try Again Later");
+					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later");
 				}
 
 				var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
@@ -53,7 +53,7 @@ public class SettleService(
 
 				if (!string.IsNullOrWhiteSpace(balanceResponse.ErrorMessage))
 				{
-					return new SettleResult("506", "Unable To Processed. Please Try Again Later");
+					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later");
 				}
 			}
 
@@ -73,7 +73,21 @@ public class SettleService(
 		{
 			Console.Write(ex.ToString());
 			SentrySdk.CaptureException(ex);
-			return new SettleResult("803", "No Bet Found");
+			return await GenerateResultAsync(query, "803", "No Bet Found");
 		}
+	}
+
+	private async Task<SettleResult> GenerateResultAsync(SettleRequest query, string status, string msg)
+	{
+		var res = new SettleResult(status, msg);
+		await messagePublisher.LogApi(new ApiLogMessage()
+		{
+			Key = query.key,
+			Action = query.message.Action,
+			Request = query,
+			Response = res
+		});
+
+		return res;
 	}
 }
