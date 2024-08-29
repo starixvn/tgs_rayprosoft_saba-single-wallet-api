@@ -26,15 +26,17 @@ namespace SabaSingleWallet.API.Middlewares
 
 				decompressedStream.Seek(0, SeekOrigin.Begin);
 
-				var stream = new MemoryStream();
 
-				await decompressedStream.CopyToAsync(stream);
-
-				Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
 
 				context.Request.Body = decompressedStream;
 				context.Request.ContentLength = decompressedStream.Length;
 			}
+
+			var stream = new MemoryStream();
+
+			await context.Request.Body.CopyToAsync(stream);
+
+			Console.WriteLine(Encoding.UTF8.GetString(stream.ToArray()));
 
 			await _next(context);
 		}
