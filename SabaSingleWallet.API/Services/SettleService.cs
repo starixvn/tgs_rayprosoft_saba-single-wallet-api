@@ -1,4 +1,5 @@
-﻿using SabaSingleWallet.API.Extensions;
+﻿using AutoMapper;
+using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
@@ -13,7 +14,8 @@ namespace SabaSingleWallet.API.Services;
 public class SettleService(
 	ICashServiceClient cashClient,
 	IPlayerRepository playerRepository,
-	ISapaApiMessagePublishHandler messagePublisher) : IGetService<SettleRequest, SettleResult>
+	ISapaApiMessagePublishHandler messagePublisher,
+	IMapper mapper) : IGetService<SettleRequest, SettleResult>
 {
 	public async ValueTask<SettleResult> GetAsync(SettleRequest query, CancellationToken cancellationToken = default)
 	{
@@ -23,23 +25,11 @@ public class SettleService(
 
 			foreach (var transaction in query.message.Txns)
 			{
-				var result = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>(new SettleCriteria
-				{
-					Action = query.message.Action,
-					OperationId = query.message.OperationId,
-
-					UserId = transaction.UserId,
-					RefId = transaction.RefId,
-					TxId = transaction.TxId,
-					UpdateTime = DateTime.Parse(transaction.UpdateTime),
-					WinlostDate = DateTime.Parse(transaction.WinlostDate),
-					Status = transaction.Status,
-					Payout = transaction.Payout,
-					CreditAmount = transaction.CreditAmount,
-					DebitAmount = transaction.DebitAmount,
-					ExtraStatus = transaction.ExtraStatus,
-					TicketType = 0
-				}, StoreProcedureMapper.SettleSP);
+				var criteria = mapper.Map<SettleCriteria>(transaction);
+				criteria.OperationId = query.message.OperationId;
+				criteria.Action = query.message.Action;
+				criteria.WinlostDate = null;
+				var result = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>(criteria, StoreProcedureMapper.SettleSP);
 
 				if (result.SpResult < 1)
 				{

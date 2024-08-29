@@ -13,7 +13,8 @@ public class MappingProfile : Profile
 	public MappingProfile()
 	{
 		CreateMap<PlaceBetData, PlaceBetCriteria>();
-		CreateMap<SettlementTransaction, SettleCriteria>();
+		CreateMap<SettlementTransaction, SettleCriteria>()
+			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()));
 		CreateMap<UnsettleTransaction, UnsettleCriteria>()
 			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()));	   	
 	}

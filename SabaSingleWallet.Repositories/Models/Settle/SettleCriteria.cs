@@ -12,13 +12,13 @@ public class SettleCriteria
 
 	public string RefId { get; set; }
 
-	public BigInteger TxId { get; set; }
+	public long TxId { get; set; }
 
-	public DateTimeOffset UpdateTime { get; set; }
+	public DateTimeOffset? UpdateTime { get; set; } = null;
 
-	public DateTimeOffset WinlostDate { get; set; }
+	public DateTime? WinlostDate { get; set; } = null;
 
-	public string Status { get; set; }
+	public string Status { get; set; } = string.Empty;
 
 	public decimal Payout { get; set; }
 
@@ -28,5 +28,5 @@ public class SettleCriteria
 
 	public string? ExtraStatus { get; set; }
 
-	public int TicketType { get; set; }
+	public int tickettype { get; set; }
 }
