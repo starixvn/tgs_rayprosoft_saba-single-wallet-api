@@ -22,7 +22,7 @@ public class PlaceBetGetService(
 	{
 		try
 		{
-			var playerCode = PlayerCodeHelpers.GetPlayerCode(query.message.UserId);
+			var playerCode = PlayerCodeHelpers.GetPlayerCodeFromUserId(query.message.UserId);
 
 			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>
 				(

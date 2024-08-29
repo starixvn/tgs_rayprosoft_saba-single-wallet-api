@@ -43,7 +43,7 @@ public class ResettleService(
 					return new ResettleResult("506", "Unable To Processed. Please Try Again Later");
 				}
 
-				var playerCode = PlayerCodeHelpers.GetPlayerCode(settlement.UserId);
+				var playerCode = PlayerCodeHelpers.GetPlayerCodeFromUserId(settlement.UserId);
 				var adjustAmount = settlement.CreditAmount - settlement.DebitAmount;
 
 				var balanceResponse = adjustAmount > 0
