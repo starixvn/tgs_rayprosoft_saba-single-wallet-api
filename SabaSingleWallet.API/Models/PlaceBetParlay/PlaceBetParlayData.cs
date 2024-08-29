@@ -9,8 +9,8 @@ public record PlaceBetParlayData
 	public string OperationId { get; set; }
 	public string UserId { get; set; }
 	public int Currency { get; set; }
-	public DateTime BetTime { get; set; }
-	public DateTime UpdateTime { get; set; }
+	public string BetTime { get; set; }
+	public string UpdateTime { get; set; }
 	public decimal TotalBetAmount { get; set; }
 	public string IP { get; set; }
 	public string TsId { get; set; }
@@ -28,8 +28,8 @@ public record PlaceBetParlayData
 //	public required string OperationId { get; set; }
 //	public required string UserId { get; set; }
 //	public required int Currency { get; set; }
-//	public required DateTime BetTime { get; set; }
-//	public required DateTime UpdateTime { get; set; }
+//	public required string BetTime { get; set; }
+//	public required string UpdateTime { get; set; }
 //	public required decimal TotalBetAmount { get; set; }
 //	public required string IP { get; set; }
 //	public string TsId { get; set; }
