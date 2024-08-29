@@ -16,6 +16,7 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 	{
 		try
 		{
+			var playerCode = query.message.UserId.ToPlayerCode();
 			foreach (var transaction in query.message.Txns)
 			{
 				var result = await playerRepository.CallStoredProcedureAsync<CancelBetCriteria, CancelBetSPResult>(new CancelBetCriteria
@@ -23,7 +24,8 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 					Action = query.message.Action,
 					OperationId = query.message.OperationId,
 					UpdateTime = DateTime.Parse(query.message.UpdateTime),
-					RefId = transaction?.RefId,
+
+					RefId = transaction.RefId,
 					CreditAmount = transaction.CreditAmount,
 					DebitAmount = transaction.DebitAmount,
 					SpResult = 0,
@@ -32,37 +34,44 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 
 				if (result.SpResult < 0)
 				{
-					return new CancelBetResult("506", null, "Unable To Processed. Please Try Again Later");
+					return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
 				}
 
-				var balanceResponse = await cashClient
-						.GameProviderAddBalanceAsync(
-					query.message.UserId.ToPlayerCode(),
+				var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
+					playerCode,
 					transaction.CreditAmount,
 					cancellationToken: cancellationToken);
 
 				if (!string.IsNullOrWhiteSpace(balanceResponse.ErrorMessage))
 				{
-					return new CancelBetResult("506", null, "Unable To Processed. Please Try Again Later");
+					return await GenerateResponseAsync("307", 0, "Cannot Credit player. Please Try Again Later", query, cancellationToken);
 				}
 			}
 
-			var res = new CancelBetResult("0");
+			var balance = (await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken)).Balance;
 
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
-
-			return res;
+			return await GenerateResponseAsync("0", balance, "", query, cancellationToken);
 		}
 		catch (Exception ex)
 		{
+			SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
 			return new CancelBetResult("803", null, "No Bet Found");
 		}
+	}
+
+	private async Task<CancelBetResult> GenerateResponseAsync(string status, decimal balance, string? message, CancelBetRequest request, CancellationToken cancellationToken)
+	{
+		var res = new CancelBetResult(status, balance, message);
+
+		await messagePublisher.LogApi(new ApiLogMessage()
+		{
+			Key = request.key,
+			Action = request.message.Action,
+			Request = request,
+			Response = res
+		}, cancellationToken);
+
+		return res;
 	}
 }

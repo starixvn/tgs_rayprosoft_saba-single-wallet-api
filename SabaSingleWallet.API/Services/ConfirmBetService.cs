@@ -42,6 +42,8 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 				var spCallResult = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(new ConfirmBetCriteria
 				{
 					Action = confirmBetData.Action,
+					OperationId = confirmBetData.OperationId,
+
 					ActualAmount = transaction.ActualAmount,
 					CreditAmount = transaction.CreditAmount,
 					DebitAmount = transaction.DebitAmount,
@@ -49,7 +51,6 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 					LicenseetxId = long.Parse(transaction.LicenseeTxId),
 					Odds = transaction.Odds,
 					OddsType = transaction.OddsType,
-					OperationId = confirmBetData.OperationId,
 					RefId = transaction.RefId,
 					TxId = transaction.TxId,
 					WinLostDate = DateTimeOffset.Parse(transaction.WinlostDate).DateTime,
