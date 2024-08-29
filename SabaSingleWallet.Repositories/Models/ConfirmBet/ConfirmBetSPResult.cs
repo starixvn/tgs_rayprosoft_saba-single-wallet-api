@@ -1,6 +1,6 @@
 ﻿namespace SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 
-public class BetTransSBSWConfirmBetResult
+public class ConfirmBetSPResult
 {
 	public int SpResult { get; set; }
 

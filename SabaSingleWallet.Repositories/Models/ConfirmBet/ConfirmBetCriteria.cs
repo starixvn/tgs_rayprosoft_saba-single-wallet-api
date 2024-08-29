@@ -1,6 +1,6 @@
 ﻿namespace SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 
-public record BetTransSBSWConfirmBetCriteria
+public record ConfirmBetCriteria
 {
 	public string Action { get; set; }
 
@@ -30,7 +30,7 @@ public record BetTransSBSWConfirmBetCriteria
 
 	public DateTime WinLostDate { get; set; }
 
-	public int? SportType { get; set; }
-
 	public int? SpResult { get; set; }
+
+	public int? SportType { get; set; }
 }

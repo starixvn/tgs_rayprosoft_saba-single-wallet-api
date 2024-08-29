@@ -7,6 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Criteria\**" />
+    <EmbeddedResource Remove="Criteria\**" />
+    <None Remove="Criteria\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Npgsql" Version="8.0.3" />
@@ -15,10 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SabaSingleWallet.Core\SabaSingleWallet.Core.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Criteria\" />
   </ItemGroup>
 
 </Project>

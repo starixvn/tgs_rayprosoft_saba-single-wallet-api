@@ -1,4 +1,5 @@
 ﻿using System.Data;
+using System.Xml.Linq;
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
@@ -14,7 +15,7 @@ namespace SabaSingleWallet.Repositories
 
 		Task<PlaceBetSPResult> CallBetTransSbswPlaceBetAsync(PlaceBetCriteria criteria);
 
-		Task<BetTransSBSWConfirmBetResult> CallBetTransSbswConfirmBetAsync(BetTransSBSWConfirmBetCriteria criteria);
+		Task<ConfirmBetSPResult> CallBetTransSbswConfirmBetAsync(ConfirmBetCriteria criteria);
 
 		Task<TResult> CallStoredProcedureAsync<TCriteria, TResult>(TCriteria criteria, string spName);
 	}
@@ -28,7 +29,7 @@ namespace SabaSingleWallet.Repositories
 			_connectionString = configuration.GetConnectionString("Tgs")!;
 		}
 
-		public async Task<BetTransSBSWConfirmBetResult> CallBetTransSbswConfirmBetAsync(BetTransSBSWConfirmBetCriteria criteria)
+		public async Task<ConfirmBetSPResult> CallBetTransSbswConfirmBetAsync(ConfirmBetCriteria criteria)
 		{
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
@@ -71,7 +72,7 @@ namespace SabaSingleWallet.Repositories
 						@spresult
 					)";
 
-				var result = await db.QueryFirstAsync<BetTransSBSWConfirmBetResult>(sqlQuery, parameters);
+				var result = await db.QueryFirstAsync<ConfirmBetSPResult>(sqlQuery, parameters);
 				return result;
 			}
 		}
