@@ -2,7 +2,7 @@
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
-using SabaSingleWallet.Repositories.Models.CancelBet;
+
 
 namespace SabaSingleWallet.Repositories
 {
