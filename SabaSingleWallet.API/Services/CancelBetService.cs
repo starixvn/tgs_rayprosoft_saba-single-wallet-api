@@ -1,13 +1,10 @@
 ﻿using SabaSingleWallet.API.Extensions;
-using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.CancelBet;
-using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.CancelBet;
-using SabaSingleWallet.Repositories.Models.Settle;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 
@@ -46,11 +43,11 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 
 				if (!string.IsNullOrWhiteSpace(balanceResponse.ErrorMessage))
 				{
-					return new CancelBetResult("506",null, "Unable To Processed. Please Try Again Later");
+					return new CancelBetResult("506", null, "Unable To Processed. Please Try Again Later");
 				}
 			}
 
-		    var res = new CancelBetResult("0");
+			var res = new CancelBetResult("0");
 
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{

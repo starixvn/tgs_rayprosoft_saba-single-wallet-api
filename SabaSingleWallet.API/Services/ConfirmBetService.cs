@@ -1,4 +1,4 @@
-﻿using SabaSingleWallet.API.Helpers;
+﻿using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.ConfirmBet;
 using SabaSingleWallet.Common;
@@ -35,7 +35,7 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 		{
 			var confirmBetData = query.message;
 			var transaction = confirmBetData.Txns.FirstOrDefault();
-			var playerCode = PlayerCodeHelpers.GetPlayerCodeFromUserId(confirmBetData.UserId);
+			var playerCode = confirmBetData.UserId.ToPlayerCode();
 
 			if (transaction != null)
 			{

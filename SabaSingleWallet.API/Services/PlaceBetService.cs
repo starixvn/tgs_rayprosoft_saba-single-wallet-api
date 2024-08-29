@@ -1,14 +1,11 @@
 ﻿using AutoMapper;
 using SabaSingleWallet.API.Extensions;
-using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBet;
-using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
-using Tgs.Cash.Protos;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 
@@ -25,7 +22,7 @@ public class PlaceBetGetService(
 	{
 		try
 		{
-			var playerCode =query.message.UserId.ToPlayerCode();
+			var playerCode = query.message.UserId.ToPlayerCode();
 
 			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>
 				(
@@ -60,8 +57,7 @@ public class PlaceBetGetService(
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			return new PlaceBetResult("503", query.message.RefId, null ,"Internal Error");
-
+			return new PlaceBetResult("503", query.message.RefId, null, "Internal Error");
 		}
 	}
 }
