@@ -29,9 +29,7 @@ public record ComboInfo
 	public decimal BetAmount { get; set; }
 	public decimal CreditAmount { get; set; }
 	public decimal DebitAmount { get; set; }
-
-	[JsonConverter(typeof(ComboInfoDetailConverter))]
-	public List<ComboInfoDetail>? Detail { get; set; }
+	public List<object>? Detail { get; set; }
 }
 
 public abstract record ComboInfoDetail
