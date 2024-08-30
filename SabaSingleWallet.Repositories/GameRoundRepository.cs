@@ -114,4 +114,21 @@ public class GameRoundRepository : IGameRoundRepository
 			return result;
 		}
 	}
+
+	public async Task<decimal> GameRoundDetailSetAsync(GameRoundDetailSetCriteria criteria)
+	{
+		using (IDbConnection db = new NpgsqlConnection(_connectionString))
+		{
+			var parameters = new DynamicParameters();
+
+			parameters.Add("@p_id ", criteria.Id);
+			parameters.Add("@p_data", criteria.Data);
+
+			string sqlQuery = "CALL bet.Bet_round_details_set(@p_id, @p_data);";
+
+			var result = await db.ExecuteAsync(sqlQuery, parameters);
+
+			return result;
+		}
+	}
 }

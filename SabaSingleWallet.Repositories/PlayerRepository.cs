@@ -37,16 +37,7 @@ namespace SabaSingleWallet.Repositories
 			}
 		}
 
-		public async Task<Object>  GetPlaceBetInfoAsync ()
-		{
-			var providerCode = await GetProviderIdByCodeAsync();
-			var gameInfo = await GetGamesByProviderIdAsync();
-			var playerInfo = await GetPlayerInfobyPlayerCodeAsync();
-			var gameProviderConfigurationId = await GetGameProviderConfigurationIdAsync();
-			return null;
-		}
-
-		public async Task<Guid> GetProviderIdByCodeAsync(string code = "VR")
+		public async Task<Guid> GetProviderIdByCodeAsync(string code)
 		{
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
@@ -56,7 +47,7 @@ namespace SabaSingleWallet.Repositories
 			}
 		}
 
-		public async Task<PlayerInfo> GetPlayerInfobyPlayerCodeAsync ( string code = "4unxqhi6faxl")
+		public async Task<PlayerInfo> GetPlayerInfobyPlayerCodeAsync (string code)
 		{
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
@@ -89,7 +80,7 @@ namespace SabaSingleWallet.Repositories
 			}
 		}
 
-		public async Task<GameInfo> GetGamesByProviderIdAsync(Guid gameProviderId = default)
+		public async Task<GameInfo> GetGamesByProviderIdAsync(Guid gameProviderId)
 		{
 			gameProviderId = gameProviderId == default ? Guid.Parse("9d57276a-15ee-4e3f-a1cb-6cb7dd7bb641") : gameProviderId;
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
@@ -118,28 +109,18 @@ namespace SabaSingleWallet.Repositories
 			}
 		}
 
-		public async Task<Guid> GetGameProviderConfigurationIdAsync(
-			Guid gameProviderId = default,
-			Guid brandId = default)
+		public async Task<Guid> GetGameProviderConfigurationIdAsync(Guid gameProviderId, Guid brandId)
 		{
-			// Default values for test
-			gameProviderId = gameProviderId == default
-				? Guid.Parse("9d57276a-15ee-4e3f-a1cb-6cb7dd7bb641")
-				: gameProviderId;
-			brandId = brandId == default
-				? Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af")
-				: brandId;
-
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
 				string sqlQuery = @"
-            SELECT 
-                bgp.game_provider_configuration_id 
-            FROM 
-                dbo.brand_game_providers AS bgp
-            WHERE 
-                bgp.game_provider_id = @GameProviderId 
-                AND bgp.brand_id = @BrandId";
+									SELECT 
+										bgp.game_provider_configuration_id 
+									FROM 
+										dbo.brand_game_providers AS bgp
+									WHERE 
+										bgp.game_provider_id = @GameProviderId 
+										AND bgp.brand_id = @BrandId";
 
 				var parameters = new { GameProviderId = gameProviderId, BrandId = brandId };
 				var result = await db.QueryFirstOrDefaultAsync<Guid>(sqlQuery, parameters);

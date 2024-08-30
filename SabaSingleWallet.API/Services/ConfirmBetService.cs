@@ -65,8 +65,6 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 					return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
 				}
 
-				await messagePublisher.HandleBetAsync(HandleMessageMapper.ConfirmBet(criteria, playerCode), cancellationToken);
-
 				if (transaction.IsOddsChanged)
 				{
 					var addAmmountResut = await client.GameProviderAddBalanceAsync(playerCode, transaction.CreditAmount, cancellationToken: cancellationToken);
@@ -78,6 +76,8 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 				}
 
 				var balance = (await client.GameProviderGetBalanceAsync(playerCode, cancellationToken)).Balance;
+
+				await messagePublisher.HandleBetAsync(HandleMessageMapper.ConfirmBet(criteria, playerCode), cancellationToken);
 
 				return await GenerateResponseAsync("0", balance, "", query, cancellationToken);
 			}

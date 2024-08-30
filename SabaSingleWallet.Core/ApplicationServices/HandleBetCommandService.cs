@@ -21,7 +21,7 @@ public class HandleBetCommandService(
 	{
 		var gameProviderId = await playerRepository.GetProviderIdByCodeAsync(command.GameProviderCode);
 		var playerInfo = await playerRepository.GetPlayerInfobyPlayerCodeAsync(command.PlayerCode);
-		var gameProviderConfigurationId = await playerRepository.GetGameProviderConfigurationIdAsync(gameProviderId);
+		var gameProviderConfigurationId = await playerRepository.GetGameProviderConfigurationIdAsync(gameProviderId, playerInfo.BrandId);
 		var gameInfo = await playerRepository.GetGamesByProviderIdAsync(gameProviderId);
 
 		var exchangeRates = GetExchangeRates(playerInfo.PlayerCode, gameInfo.GameProviderCode);
@@ -29,7 +29,7 @@ public class HandleBetCommandService(
 
 		var id = await serialNumberGenerator.GenerateAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 		var roundStatus = command.BetState is BetState.Running or BetState.Running ? RoundStatus.Open : RoundStatus.Closed;
-		await roundRepository.GameRoundSetAsync(new Models.Criteria.GameRound.GameRoundSetCriteria()
+		var roundCriteria = new Models.Criteria.GameRound.GameRoundSetCriteria()
 		{
 			Id = id,
 			ActionType = command.Action,
@@ -52,7 +52,13 @@ public class HandleBetCommandService(
 			Status = (short)roundStatus,
 			CreatedOn = DateTime.Now,
 			UpdatedOn = DateTime.Now,
-		});
+		};
+		await roundRepository.GameRoundSetAsync(roundCriteria);
+		//await roundRepository.GameRoundDetailSetAsync(new Models.Criteria.GameRound.GameRoundDetailSetCriteria()
+		//{
+		//	Id = id,
+		//	Data = JsonSerializer.Serialize(roundCriteria),
+		//});
 	}
 
 	private decimal ConvertPlatformRounds(decimal exchangeRate, decimal amount)
