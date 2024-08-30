@@ -6,5 +6,5 @@ public interface IGameRoundRepository
 {
 	Task<Guid?> GetIdAsync(Guid gameProviderId, int gameId, Guid walletId, string externalRoundId);
 
-	Task<GameRoundSetResult> GameRoundSetAsync(GameRoundSetCriteria criteria);
+	Task<decimal> GameRoundSetAsync(GameRoundSetCriteria criteria);
 }

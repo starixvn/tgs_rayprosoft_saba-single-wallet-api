@@ -19,7 +19,6 @@ public class HandleBetCommandService(
 {
 	public async ValueTask ExecuteAsync(HandleBetCommand command, CancellationToken cancellationToken = default)
 	{
-		// tgs-gamerecord-handle
 		var gameProviderId = await playerRepository.GetProviderIdByCodeAsync(command.GameProviderCode);
 		var playerInfo = await playerRepository.GetPlayerInfobyPlayerCodeAsync(command.PlayerCode);
 		var gameProviderConfigurationId = await playerRepository.GetGameProviderConfigurationIdAsync(gameProviderId);
@@ -28,34 +27,33 @@ public class HandleBetCommandService(
 		var exchangeRates = GetExchangeRates(playerInfo.PlayerCode, gameInfo.GameProviderCode);
 		var gameCurrencyInfo = GetExchangeRates(playerInfo.PlayerCode, gameInfo.GameProviderCode);
 
-		var id = await roundRepository.GetIdAsync(gameProviderId, gameInfo.GameId, playerInfo.WalletId, command.ExternalRoundId);
-		if (!id.HasValue)
+		//var id = await roundRepository.GetIdAsync(gameProviderId, gameInfo.GameId, playerInfo.WalletId, command.ExternalRoundId);
+		var id = await serialNumberGenerator.GenerateAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
+		var roundStatus = command.BetState is BetState.Running or BetState.Running ? RoundStatus.Open : RoundStatus.Closed;
+		var gameRoundId = await roundRepository.GameRoundSetAsync(new Models.Criteria.GameRound.GameRoundSetCriteria()
 		{
-			id = await serialNumberGenerator.GenerateAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
-			var roundStatus = command.BetState is BetState.Running or BetState.Running ? RoundStatus.Open : RoundStatus.Closed;
-			var gameRoundId = await roundRepository.GameRoundSetAsync(new Models.Criteria.GameRound.GameRoundSetCriteria()
-			{
-				Id = id.Value,
-				ActionType = command.Action,
-				GameProviderId = gameProviderId,
-				GameId = gameInfo.GameId,
-				BrandId = playerInfo.BrandId,
-				PlayerCode = playerInfo.PlayerCode,
-				CurrencyCode = playerInfo.CurrencyCode,
-				WalletId = playerInfo.WalletId,
-				ExternalRoundId = command.ExternalRoundId,
-				ExternalCreatedOn = command.ExternalCreatedOn,
-				ExternalClosedOn = command.ExternalClosedOn,
-				BetAmount = ConvertPlatformRounds(exchangeRates, command.Bet),
-				ValidBetAmount = ConvertPlatformRounds(exchangeRates, command.ValidBet),
-				SettleAmount = ConvertPlatformRounds(exchangeRates, command.Settle),
-				Commission = ConvertPlatformRounds(exchangeRates, command.Commission),
-				Turnover = ConvertPlatformRounds(exchangeRates, command.Turnover),
-				WinLoss = ConvertPlatformRounds(exchangeRates, command.WinLoss),
-				Status = (short)roundStatus,
-				AdditionalData = JsonSerializer.Serialize(command)
-			});
-		}
+			Id = id,
+			ActionType = command.Action,
+			GameProviderId = gameProviderId,
+			GameProviderConfigurationId = gameProviderConfigurationId,
+			GameId = gameInfo.GameId,
+			BrandId = playerInfo.BrandId,
+			PlayerCode = playerInfo.PlayerCode,
+			CurrencyCode = playerInfo.CurrencyCode,
+			WalletId = playerInfo.WalletId,
+			ExternalRoundId = command.ExternalRoundId,
+			ExternalCreatedOn = command.ExternalCreatedOn,
+			ExternalClosedOn = command.ExternalClosedOn,
+			BetAmount = ConvertPlatformRounds(exchangeRates, command.Bet),
+			ValidBetAmount = ConvertPlatformRounds(exchangeRates, command.ValidBet),
+			SettleAmount = ConvertPlatformRounds(exchangeRates, command.Settle),
+			Commission = ConvertPlatformRounds(exchangeRates, command.Commission),
+			Turnover = ConvertPlatformRounds(exchangeRates, command.Turnover),
+			WinLoss = ConvertPlatformRounds(exchangeRates, command.WinLoss),
+			Status = (short)roundStatus,
+			CreatedOn = DateTime.Now,
+			UpdatedOn = DateTime.Now,
+		});
 	}
 
 	private decimal ConvertPlatformRounds(decimal exchangeRate, decimal amount)

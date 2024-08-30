@@ -70,7 +70,7 @@ namespace SabaSingleWallet.Repositories
 								b.Code AS BrandCode,
 								p.player_code AS PlayerCode,
 								p.username AS Username,
-								p.default_wallet_id AS DefaultWalletId,
+								p.default_wallet_id AS WalletId,
 								p.default_wallet_currency_code AS CurrencyCode
 							FROM
 								dbo.Players p
