@@ -41,7 +41,7 @@ namespace SabaSingleWallet.Repositories
 		{
 			var providerCode = await GetProviderIdByCodeAsync();
 			var gameInfo = await GetGamesByProviderIdAsync();
-			var playerInfo = await GetPlayerInfoAsync();
+			var playerInfo = await GetPlayerInfobyPlayerCodeAsync();
 			var gameProviderConfigurationId = await GetGameProviderConfigurationIdAsync();
 			return null;
 		}
@@ -56,7 +56,7 @@ namespace SabaSingleWallet.Repositories
 			}
 		}
 
-		public async Task<object >GetPlayerInfoAsync ( string code = "4unxqhi6faxl")
+		public async Task<PlayerInfo> GetPlayerInfobyPlayerCodeAsync ( string code = "4unxqhi6faxl")
 		{
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
@@ -89,7 +89,7 @@ namespace SabaSingleWallet.Repositories
 			}
 		}
 
-		public async Task<object> GetGamesByProviderIdAsync(Guid gameProviderId = default)
+		public async Task<GameInfo> GetGamesByProviderIdAsync(Guid gameProviderId = default)
 		{
 			gameProviderId = gameProviderId == default ? Guid.Parse("9d57276a-15ee-4e3f-a1cb-6cb7dd7bb641") : gameProviderId;
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
