@@ -18,8 +18,8 @@ public record PlaceBetParlayData
 	public decimal CreditAmount { get; set; }
 	public decimal DebitAmount { get; set; }
 	public string? VendorTransId { get; set; }
-	public ComboInfo[] Txns { get; set; }
-	public TicketDetail[] TicketDetail { get; set; }
+	public List<ComboInfo> Txns { get; set; }
+	public List<TicketDetail> TicketDetail { get; set; }
 }
 
 public record ComboInfo
@@ -31,7 +31,7 @@ public record ComboInfo
 	public decimal DebitAmount { get; set; }
 
 	[JsonConverter(typeof(ComboInfoDetailConverter))]
-	public ComboInfoDetail[] Detail { get; set; }
+	public List<ComboInfoDetail>? Detail { get; set; }
 }
 
 public abstract record ComboInfoDetail
@@ -88,31 +88,47 @@ public record TicketDetail
 	public string? BetRemark { get; set; }
 }
 
-public class ComboInfoDetailConverter : JsonConverter<ComboInfoDetail[]>
+public class ComboInfoDetailConverter : JsonConverter<List<ComboInfoDetail>>
 {
-	public override ComboInfoDetail[] Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+	public override List<ComboInfoDetail> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
 	{
 		var jsonArray = JsonDocument.ParseValue(ref reader).RootElement;
 		var details = new List<ComboInfoDetail>();
+
 		foreach (var element in jsonArray.EnumerateArray())
 		{
 			if (element.TryGetProperty("matchId", out _))
 			{
-				details.Add(JsonSerializer.Deserialize<SingleBetDetail>(element.GetRawText(), options));
+				var singleBet = JsonSerializer.Deserialize<SingleBetDetail>(element.GetRawText(), options);
+
+				if (singleBet != null)
+				{
+					details.Add(singleBet);
+				}
 			}
 			else if (element.TryGetProperty("type", out _))
 			{
-				details.Add(JsonSerializer.Deserialize<ParlayDetail>(element.GetRawText(), options));
-			}
-			else
-			{
-				throw new JsonException("Unknown detail type");
+				var parlay = JsonSerializer.Deserialize<ParlayDetail>(element.GetRawText(), options);
+
+				if (parlay != null)
+				{
+					details.Add(parlay);
+				}
 			}
 		}
 
-		return details.ToArray();
+		return details;
 	}
 
-	public override void Write(Utf8JsonWriter writer, ComboInfoDetail[] value, JsonSerializerOptions options)
-	{ }
+	public override void Write(Utf8JsonWriter writer, List<ComboInfoDetail> value, JsonSerializerOptions options)
+	{
+		writer.WriteStartArray();
+
+		foreach (var element in value)
+		{
+			JsonSerializer.Serialize(writer, element);
+		}
+
+		writer.WriteEndArray();
+	}
 }
