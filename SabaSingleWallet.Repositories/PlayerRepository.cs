@@ -39,13 +39,14 @@ namespace SabaSingleWallet.Repositories
 
 		public async Task<Object>  GetPlaceBetInfoAsync ()
 		{
-			var providerCode = await GetProviderByCodeAsync();
-			var playserInfo = await GetPlayerInfoAsync();
-
+			var providerCode = await GetProviderIdByCodeAsync();
+			var gameInfo = await GetGamesByProviderIdAsync();
+			var playerInfo = await GetPlayerInfoAsync();
+			var gameProviderConfigurationId = await GetGameProviderConfigurationIdAsync();
 			return null;
 		}
 
-		public async Task<Guid> GetProviderByCodeAsync(string code = "VR")
+		public async Task<Guid> GetProviderIdByCodeAsync(string code = "VR")
 		{
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
@@ -83,10 +84,67 @@ namespace SabaSingleWallet.Repositories
 								p.player_code = @PlayerCode;";
 
 				var parameters = new { PlayerCode = code };
-				var playerInfo = await db.QueryFirstOrDefaultAsync<PlayerInfo>(sql, parameters);
+				var playerInfo = await db.QueryFirstOrDefaultAsync<PlayerInfo>(sql, parameters); // check correct property later 
 				return playerInfo;
 			}
 		}
 
+		public async Task<object> GetGamesByProviderIdAsync(Guid gameProviderId = default)
+		{
+			gameProviderId = gameProviderId == default ? Guid.Parse("9d57276a-15ee-4e3f-a1cb-6cb7dd7bb641") : gameProviderId;
+			using (IDbConnection db = new NpgsqlConnection(_connectionString))
+			{
+				string sqlQuery = @"
+            SELECT 
+                id as GameId, 
+                status, 
+                external_id AS ExternalGameId, 
+                game_provider_id AS GameProviderId, 
+                sub_game AS SubGame, 
+                available_currencies AS AvailableCurrencies, 
+                code as GameCode, 
+                name, 
+                sub_game_provider_code AS SubGameProviderCode
+            FROM 
+                dbo.games
+            WHERE 
+                game_provider_id = @GameProviderId";
+
+				var parameters = new { GameProviderId = gameProviderId };
+				var games = await db.QueryFirstOrDefaultAsync<GameInfo>(sqlQuery, parameters); // check correct property later 
+				return games;
+
+				
+			}
+		}
+
+		public async Task<Guid> GetGameProviderConfigurationIdAsync(
+			Guid gameProviderId = default,
+			Guid brandId = default)
+		{
+			// Default values for test
+			gameProviderId = gameProviderId == default
+				? Guid.Parse("9d57276a-15ee-4e3f-a1cb-6cb7dd7bb641")
+				: gameProviderId;
+			brandId = brandId == default
+				? Guid.Parse("4e86719f-243f-46f6-b010-5c758b7285af")
+				: brandId;
+
+			using (IDbConnection db = new NpgsqlConnection(_connectionString))
+			{
+				string sqlQuery = @"
+            SELECT 
+                bgp.game_provider_configuration_id 
+            FROM 
+                dbo.brand_game_providers AS bgp
+            WHERE 
+                bgp.game_provider_id = @GameProviderId 
+                AND bgp.brand_id = @BrandId";
+
+				var parameters = new { GameProviderId = gameProviderId, BrandId = brandId };
+				var result = await db.QueryFirstOrDefaultAsync<Guid>(sqlQuery, parameters);
+				return result;
+			}
+		}
 	}
 }

@@ -1,8 +1,10 @@
 ﻿namespace SabaSingleWallet.Core.Models;
-public record GameInfo(
-	int GameId,
-	string GameCode,
-	Guid GameProviderId,
-	string GameProviderCode,
-	string ExternalGameId,
-	string SubGameProviderCode);
+public class GameInfo
+{
+	public int GameId { get; set; }
+	public string GameCode { get; set; }
+	public Guid GameProviderId { get; set; }
+	public string GameProviderCode { get; set; }
+	public string ExternalGameId { get; set; }
+	public string SubGameProviderCode { get; set; }
+}
