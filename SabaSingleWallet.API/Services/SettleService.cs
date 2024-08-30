@@ -28,7 +28,6 @@ public class SettleService(
 				var criteria = mapper.Map<SettleCriteria>(transaction);
 				criteria.OperationId = query.message.OperationId;
 				criteria.Action = query.message.Action;
-				criteria.WinlostDate = null;
 				var result = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>(criteria, StoreProcedureMapper.SettleSP);
 
 				if (result.SpResult < 1)

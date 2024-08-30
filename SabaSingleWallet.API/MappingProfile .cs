@@ -14,6 +14,7 @@ public class MappingProfile : Profile
 	{
 		CreateMap<PlaceBetData, PlaceBetCriteria>();
 		CreateMap<SettlementTransaction, SettleCriteria>()
+			.ForMember(dest => dest.WinlostDate, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.WinlostDate).ToUniversalTime()))
 			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()));
 		CreateMap<UnsettleTransaction, UnsettleCriteria>()
 			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()));	   	

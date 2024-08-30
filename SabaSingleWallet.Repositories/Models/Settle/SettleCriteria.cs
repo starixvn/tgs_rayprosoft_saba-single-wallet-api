@@ -16,7 +16,7 @@ public class SettleCriteria
 
 	public DateTimeOffset? UpdateTime { get; set; } = null;
 
-	public DateTime? WinlostDate { get; set; } = null;
+	public DateTimeOffset? WinlostDate { get; set; } = null;
 
 	public string Status { get; set; } = string.Empty;
 

@@ -10,7 +10,7 @@ namespace SabaSingleWallet.API.Messages;
 public class ApiLogsMessageHandler(
 	ILogger<ApiLogsMessageHandler> logger,
 	IApiLogsDispatcher dispatcher) : IMessageHandler<ReadOnlyMemory<byte>>
-{
+{	
 	public ValueTask HandleAsync(string subject, ReadOnlyMemory<byte> data, IEnumerable<MessageHeaderValue>? headerValues, CancellationToken cancellationToken = default)
 	{
 		var json = Encoding.UTF8.GetString(data.Span);
