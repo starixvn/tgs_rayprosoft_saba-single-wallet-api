@@ -8,22 +8,22 @@ namespace SabaSingleWallet.Core;
 
 public interface IMessageConverter
 {
-	HandleBetCommand ToHandleBetCommand(HandleBetMessage command);
+	HandleBetCommand ToHandleBetCommand(HandleBetMessage message);
 }
 
 public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) : IMessageConverter
 {
 	private readonly GameProviderInfo _gameRecordInfoOptions = gameRecordInfoOptions.Value;
 
-	public HandleBetCommand ToHandleBetCommand(HandleBetMessage command)
+	public HandleBetCommand ToHandleBetCommand(HandleBetMessage message)
 	{
-		var betState = (BetState)command.BetState;
+		var betState = (BetState)message.BetState;
 		var isClosed = betState is not BetState.Running;
 		var idVoid = betState is BetState.Void or BetState.Running or BetState.Refund or BetState.Refund;
-		var isCashOut = command.ExtraStatus.Equals("cashout", StringComparison.OrdinalIgnoreCase);
+		var isCashOut = message.ExtraStatus.Equals("cashout", StringComparison.OrdinalIgnoreCase);
 
-		var bet = command.BetAmount;
-		var validBet = isCashOut ? 0 : !idVoid ? command.BetAmount : 0;
+		var bet = message.BetAmount;
+		var validBet = isCashOut ? 0 : !idVoid ? message.BetAmount : 0;
 
 		var settle = 0.0m;
 		var turnover = 0.0m;
@@ -33,22 +33,22 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 
 		if (isClosed)
 		{
-			turnover = command.BetAmount;
-			settle = command.Settle;
-			externalClosedOn = command.WinlostDate;
-			winLoss = command.ActualAmount;
+			turnover = message.BetAmount;
+			settle = message.Settle;
+			externalClosedOn = message.WinlostDate;
+			winLoss = message.ActualAmount;
 			cashoutState = isCashOut ? CashoutState.Cashout : CashoutState.None;
 		}
 
 		return new HandleBetCommand
 		{
-			Action = command.Action,
+			Action = message.Action,
 			GameProviderCode = _gameRecordInfoOptions.GameProviderCode,
 			ExternalGameId = _gameRecordInfoOptions.GameExternalId,
-			PlayerCode = command.PlayerCode,
-			ExternalBetId = command.TxId,
-			ExternalRoundId = command.TxId,
-			ExternalCreatedOn = command.TransactionTime,
+			PlayerCode = message.PlayerCode,
+			ExternalBetId = message.TxId,
+			ExternalRoundId = message.TxId,
+			ExternalCreatedOn = message.TransactionTime,
 			ExternalClosedOn = externalClosedOn,
 			ExternalPayoffOn = externalClosedOn,
 			ExternalResettleOn = DateTimeOffset.UnixEpoch.DateTime,
@@ -66,7 +66,7 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 			Turnover = turnover,
 			WinLoss = winLoss,
 			Jackpot = 0.0M,
-			AdditionalData = JsonSerializer.Serialize(command)
+			AdditionalData = JsonSerializer.Serialize(message)
 		};
 	}
 }

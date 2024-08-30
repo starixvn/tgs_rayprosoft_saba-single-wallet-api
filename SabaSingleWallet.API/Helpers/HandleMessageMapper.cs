@@ -1,4 +1,5 @@
-﻿using SabaSingleWallet.Common;
+﻿using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories.Models.CancelBet;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
@@ -12,11 +13,12 @@ public class HandleMessageMapper
 	{
 		return new HandleBetMessage()
 		{
-			PlayerCode = "4ulmnvs1skex",
+			Action = "PlaceBet",
+			PlayerCode = data.UserId.ToPlayerCode(),
 			BetState = (int)BetState.Waiting,
-			TxId = "BG-592664351",
-			BetAmount = 69696969,
-			ActualAmount = 696969696,
+			TxId = data.TxId.ToString(),
+			BetAmount = data.BetAmount,
+			ActualAmount = data.BetAmount,
 			TransactionTime = DateTime.Now,
 		};
 	}
@@ -25,6 +27,7 @@ public class HandleMessageMapper
 	{
 		return new HandleBetMessage()
 		{
+			Action = "ConfirmBet",
 			PlayerCode = PlayerCode,
 			BetState = (int)BetState.Waiting,
 			TxId = data.TxId.ToString(),
@@ -34,10 +37,11 @@ public class HandleMessageMapper
 		};
 	}
 
-	public static HandleBetMessage CancelBet(CancelBetCriteria data, string PlayerCode)
+	public static HandleBetMessage CancelBet(string PlayerCode)
 	{
 		return new HandleBetMessage()
 		{
+			Action = "CancelBet",
 			PlayerCode = PlayerCode,
 			BetState = (int)BetState.Cancel,
 		};
