@@ -1,4 +1,4 @@
-﻿namespace SabaSingleWallet.Repositories.Models.GameRound;
+﻿namespace SabaSingleWallet.Core.Models.Criteria.GameRound;
 
 public class GameRoundSetCriteria
 {

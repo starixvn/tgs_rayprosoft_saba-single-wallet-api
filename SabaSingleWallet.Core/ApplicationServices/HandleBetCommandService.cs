@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using SabaSingleWallet.Core.Models;
+using Tgs.GameInterface.SabaService.Client;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.Core.ApplicationServices;

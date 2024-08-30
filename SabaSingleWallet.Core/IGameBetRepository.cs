@@ -1,6 +1,6 @@
-﻿using SabaSingleWallet.Repositories.Models.GameBet;
+﻿using SabaSingleWallet.Core.Models.Criteria.GameBet;
 
-namespace SabaSingleWallet.Repositories;
+namespace SabaSingleWallet.Core;
 
 public interface IGameBetRepository
 {

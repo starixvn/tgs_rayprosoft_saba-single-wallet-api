@@ -1,4 +1,4 @@
-﻿namespace SabaSingleWallet.Repositories.Models.GameBet;
+﻿namespace SabaSingleWallet.Core.Models.Criteria.GameBet;
 
 public class GameBetSetCriteria
 {

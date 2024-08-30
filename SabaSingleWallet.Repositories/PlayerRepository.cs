@@ -3,7 +3,6 @@ using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 
-
 namespace SabaSingleWallet.Repositories
 {
 	public interface IPlayerRepository
@@ -49,6 +48,5 @@ namespace SabaSingleWallet.Repositories
 				return result;
 			}
 		}
-
 	}
 }

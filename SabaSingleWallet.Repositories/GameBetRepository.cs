@@ -2,7 +2,8 @@
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
-using SabaSingleWallet.Repositories.Models.GameBet;
+using SabaSingleWallet.Core;
+using SabaSingleWallet.Core.Models.Criteria.GameBet;
 
 namespace SabaSingleWallet.Repositories;
 
