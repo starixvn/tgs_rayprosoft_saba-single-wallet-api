@@ -6,7 +6,7 @@ using Tgs.GameRecord.Handle.Common.Protos;
 
 namespace SabaSingleWallet.API.Helpers;
 
-public class MapActionToHandleBetMessage
+public class HandleMessageMapper
 {
 	public static HandleBetMessage PlaceBet(PlaceBetCriteria data)
 	{
