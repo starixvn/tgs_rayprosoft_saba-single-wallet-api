@@ -1,13 +1,14 @@
 ﻿namespace SabaSingleWallet.Core.Models;
-
-public record PlayerInfo(
-	Guid ResellerId,
-	string ResellerCode,
-	Guid LicenseeId,
-	string LicenseeCode,
-	Guid BrandId,
-	string BrandCode,
-	string PlayerCode,
-	string Username,
-	Guid WalletId,
-	string CurrencyCode);
+public class PlayerInfo
+{
+	public Guid ResellerId { get; set; }
+	public string ResellerCode { get; set; }
+	public Guid LicenseeId { get; set; }
+	public string LicenseeCode { get; set; }
+	public Guid BrandId { get; set; }
+	public string BrandCode { get; set; }
+	public string PlayerCode { get; set; }
+	public string Username { get; set; }
+	public Guid WalletId { get; set; }
+	public string CurrencyCode { get; set; }
+}

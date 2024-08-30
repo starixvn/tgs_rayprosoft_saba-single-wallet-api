@@ -3,6 +3,8 @@ using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using SabaSingleWallet.Core;
+using SabaSingleWallet.Core.Models;
+
 
 namespace SabaSingleWallet.Repositories
 {
@@ -35,14 +37,56 @@ namespace SabaSingleWallet.Repositories
 			}
 		}
 
-		public async Task<Guid> GetProviderBycode(string code)
+		public async Task<Object>  GetPlaceBetInfoAsync ()
+		{
+			var providerCode = await GetProviderByCodeAsync();
+			var playserInfo = await GetPlayerInfoAsync();
+
+			return null;
+		}
+
+		public async Task<Guid> GetProviderByCodeAsync(string code = "VR")
 		{
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
-				string sqlQuery = $"SELECT * FROM dbo.game_providers WHERE {code}";
-				var result = await db.QueryFirstAsync<Guid>(sqlQuery);
+				string sqlQuery = "SELECT ga.Id FROM dbo.game_providers ga WHERE ga.code = @Code";
+				var result = await db.QueryFirstOrDefaultAsync<Guid>(sqlQuery, new { Code = code });
 				return result;
 			}
 		}
+
+		public async Task<object >GetPlayerInfoAsync ( string code = "4unxqhi6faxl")
+		{
+			using (IDbConnection db = new NpgsqlConnection(_connectionString))
+			{
+				string sql = @"
+							SELECT
+								r.Id AS ResellerId,
+								r.Code AS ResellerCode,
+								l.Id AS LicenseeId,
+								l.Code AS LicenseeCode,
+								b.Id AS BrandId,
+								b.Code AS BrandCode,
+								p.player_code AS PlayerCode,
+								p.username AS Username,
+								p.default_wallet_id AS DefaultWalletId,
+								p.default_wallet_currency_code AS CurrencyCode
+							FROM
+								dbo.Players p
+							INNER JOIN
+								dbo.Brands b ON p.brand_id = b.id
+							INNER JOIN
+								dbo.Licensees l ON b.licensee_id = l.id
+							INNER JOIN
+								dbo.Resellers r ON l.reseller_id = r.id
+							WHERE
+								p.player_code = @PlayerCode;";
+
+				var parameters = new { PlayerCode = code };
+				var playerInfo = await db.QueryFirstOrDefaultAsync<PlayerInfo>(sql, parameters);
+				return playerInfo;
+			}
+		}
+
 	}
 }

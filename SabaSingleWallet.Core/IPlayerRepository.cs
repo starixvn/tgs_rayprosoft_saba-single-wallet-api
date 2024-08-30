@@ -3,4 +3,6 @@
 public interface IPlayerRepository
 {
 	Task<TResult> CallStoredProcedureAsync<TCriteria, TResult>(TCriteria criteria, string spName);
+
+	Task<Object> GetPlaceBetInfoAsync();
 }
