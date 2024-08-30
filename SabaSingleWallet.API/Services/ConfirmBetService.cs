@@ -1,4 +1,5 @@
 ﻿using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.ConfirmBet;
 using SabaSingleWallet.Common;
@@ -39,11 +40,10 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 
 			if (transaction != null)
 			{
-				var spCallResult = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(new ConfirmBetCriteria
+				var criteria = new ConfirmBetCriteria
 				{
 					Action = confirmBetData.Action,
 					OperationId = confirmBetData.OperationId,
-
 					ActualAmount = transaction.ActualAmount,
 					CreditAmount = transaction.CreditAmount,
 					DebitAmount = transaction.DebitAmount,
@@ -56,12 +56,16 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 					WinLostDate = DateTimeOffset.Parse(transaction.WinlostDate).DateTime,
 					TransactionTime = DateTimeOffset.Parse(confirmBetData.TransactionTime).DateTime,
 					UpdateTime = DateTimeOffset.Parse(confirmBetData.UpdateTime).DateTime,
-				}, StoreProcedureMapper.ConfirmBetSP);
+				};
+
+				var spCallResult = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(criteria, StoreProcedureMapper.ConfirmBetSP);
 
 				if (spCallResult.SpResult < 0)
 				{
 					return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
 				}
+
+				await messagePublisher.HandleBetAsync(HandleMessageMapper.ConfirmBet(criteria, playerCode), cancellationToken);
 
 				if (transaction.IsOddsChanged)
 				{
