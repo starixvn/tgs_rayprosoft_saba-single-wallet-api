@@ -1,19 +1,20 @@
 ﻿using System.Text;
 using System.Text.Json;
+using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
-using SabaSingleWallet.Core.ApplicationServices;
 using Valhalla.MessageQueue;
 
 namespace SabaSingleWallet.API.Messages;
 
 public class HandleBetMessageHandler(
 	ILogger<HandleBetMessageHandler> logger,
+	IMessageConverter messageConverter,
 	IHandleBetDispatcher dispatcher) : IMessageHandler<ReadOnlyMemory<byte>>
 {
 	public ValueTask HandleAsync(string subject, ReadOnlyMemory<byte> data, IEnumerable<MessageHeaderValue>? headerValues, CancellationToken cancellationToken = default)
 	{
 		var json = Encoding.UTF8.GetString(data.Span);
-		var message = JsonSerializer.Deserialize<HandleBetCommand>(json)
+		var message = JsonSerializer.Deserialize<HandleBetMessage>(json)
 			?? throw new NullReferenceException("The request data resolves to a null value");
 
 		logger.LogInformation("{logInformation}",
@@ -38,7 +39,7 @@ public class HandleBetMessageHandler(
 			}));
 
 		return dispatcher.PushCommandAsync(
-			command: message,
+			command: messageConverter.ToHandleBetCommand(message),
 			cancellationToken: cancellationToken);
 	}
 }

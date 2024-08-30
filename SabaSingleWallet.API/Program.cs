@@ -44,12 +44,7 @@ builder.Services
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
 		op.BaseUrl = config.GetValue<Uri>("SabaSingleWalletConnectionStrings:CashClientBaseUrl")!;
-	})
-	.AddGameRecordHandleClient(httpClientBuilder => httpClientBuilder.ConfigureHttpClient((sp, http) =>
-	{
-		var config = sp.GetRequiredService<IConfiguration>();
-		http.BaseAddress = config.GetValue<Uri>("SabaSingleWalletConnectionStrings:GameRecordHandleClientBaseUrl");
-	}));
+	});
 
 builder.Services
 .AddKeyedSingleton("Nats", (sp, _) => new NatsConnection(NatsOpts.Default with
@@ -70,6 +65,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddGameInterfaceCommon();
 builder.Services.AddGameInterfaceCore();
 builder.Services
 	.AddHttpLogging(logging => logging.LoggingFields = HttpLoggingFields.All)

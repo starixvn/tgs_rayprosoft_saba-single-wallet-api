@@ -1,6 +1,6 @@
 ﻿namespace SabaSingleWallet.Common;
 
-public partial class HandleBetMessage
+public class HandleBetMessage
 {
 	public string Action { get; set; } = "";
 

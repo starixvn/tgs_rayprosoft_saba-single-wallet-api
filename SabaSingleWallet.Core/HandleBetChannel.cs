@@ -127,19 +127,7 @@ internal class HandleBetChannel(
 						JsonSerializer.Serialize(new
 						{
 							LogOn = DateTime.Now.ToString("u"),
-							Data = new
-							{
-								command.Action,
-								command.PlayerCode,
-								command.ExtraStatus,
-								command.BetState,
-								command.WinlostDate,
-								command.TransactionTime,
-								command.Settle,
-								command.BetAmount,
-								command.ActualAmount,
-								command.TxId
-							},
+							Data = command,
 							Message = "This pull handle bet command."
 						}));
 					using var scope = serviceProvider.CreateScope();
@@ -155,19 +143,7 @@ internal class HandleBetChannel(
 						JsonSerializer.Serialize(new
 						{
 							LogOn = DateTime.Now.ToString("u"),
-							Data = new
-							{
-								command.Action,
-								command.PlayerCode,
-								command.ExtraStatus,
-								command.BetState,
-								command.WinlostDate,
-								command.TransactionTime,
-								command.Settle,
-								command.BetAmount,
-								command.ActualAmount,
-								command.TxId
-							},
+							Data = command,
 							Message = "This pull handle bet command exception occurs."
 						}));
 				}

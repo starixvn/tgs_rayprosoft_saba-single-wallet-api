@@ -9,7 +9,6 @@ public static class ServiceCollecitonExtensions
 	this IServiceCollection services)
 	=> services
 	.RegisterAllServiceUtilityTypes(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient)
-	.AddSingleton<IGameCalculate, GameCalculate>()
 	.AddSingleton<IApiLogsDispatcher, ApiLogsDispatcher>()
 	.AddSingleton<IHandleBetDispatcher, HandleBetDispatcher>();
 }

@@ -1,23 +1,23 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Options;
+using SabaSingleWallet.Common;
 using SabaSingleWallet.Core.ApplicationServices;
-using SabaSingleWallet.Core.Models;
 using Tgs.GameRecord.Handle.Common.Protos;
 
 namespace SabaSingleWallet.Core;
 
-public interface IGameCalculate
+public interface IMessageConverter
 {
-	GameBetHandle Execute(HandleBetCommand command);
+	HandleBetCommand ToHandleBetCommand(HandleBetMessage command);
 }
 
-internal class GameCalculate(IOptions<GameProviderInfo> gameRecordInfoOptions) : IGameCalculate
+public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) : IMessageConverter
 {
 	private readonly GameProviderInfo _gameRecordInfoOptions = gameRecordInfoOptions.Value;
 
-	public GameBetHandle Execute(HandleBetCommand command)
+	public HandleBetCommand ToHandleBetCommand(HandleBetMessage command)
 	{
-		var betState = command.BetState;
+		var betState = (BetState)command.BetState;
 		var isClosed = betState is not BetState.Running;
 		var idVoid = betState is BetState.Void or BetState.Running or BetState.Refund or BetState.Refund;
 		var isCashOut = command.ExtraStatus.Equals("cashout", StringComparison.OrdinalIgnoreCase);
@@ -40,7 +40,7 @@ internal class GameCalculate(IOptions<GameProviderInfo> gameRecordInfoOptions) :
 			cashoutState = isCashOut ? CashoutState.Cashout : CashoutState.None;
 		}
 
-		return new GameBetHandle
+		return new HandleBetCommand
 		{
 			Action = command.Action,
 			GameProviderCode = _gameRecordInfoOptions.GameProviderCode,
