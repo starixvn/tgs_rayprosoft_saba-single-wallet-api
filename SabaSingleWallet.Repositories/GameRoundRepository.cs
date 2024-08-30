@@ -15,6 +15,32 @@ public class GameRoundRepository : IGameRoundRepository
 		_connectionString = configuration.GetConnectionString("Tgs")!;
 	}
 
+	public async Task<Guid?> GetIdAsync(Guid gameProviderId, int gameId, Guid walletId, string externalRoundId)
+	{
+		using (IDbConnection db = new NpgsqlConnection(_connectionString))
+		{
+			var parameters = new DynamicParameters();
+
+			parameters.Add("@external_round_id", externalRoundId);
+			parameters.Add("@game_provider_id", gameProviderId);
+			parameters.Add("@game_id", gameId);
+			parameters.Add("@wallet_id", walletId);
+
+			string sqlQuery = @"
+								SELECT r.id
+								FROM rounds r
+								WHERE r.created_on >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '7 days'
+								  AND r.created_on <= NOW() AT TIME ZONE 'UTC'
+								  AND r.external_round_id = @external_round_id
+								  AND r.game_provider_id = @game_provider_id
+								  AND r.game_id = @game_id
+								  AND r.wallet_id = @wallet_id;";
+
+			var id = await db.QueryFirstOrDefaultAsync<Guid?>(sqlQuery, parameters); // check correct property later
+			return id;
+		}
+	}
+
 	public async Task<GameRoundSetResult> GameRoundSetAsync(GameRoundSetCriteria criteria)
 	{
 		using (IDbConnection db = new NpgsqlConnection(_connectionString))

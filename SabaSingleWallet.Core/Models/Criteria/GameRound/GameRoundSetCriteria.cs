@@ -29,4 +29,5 @@ public class GameRoundSetCriteria
 	public DateTime? ReopenedOn { get; set; } // timestamp with time zone (nullable)
 	public decimal EffectiveBettingPercentage { get; set; } // numeric
 	public string ActionType { get; set; } // character varying
+	public string AdditionalData { get; set; }
 }
