@@ -39,5 +39,16 @@ namespace SabaSingleWallet.Repositories
 				return result;
 			}
 		}
+
+		public async Task<Guid> GetProviderBycode(string code)
+		{
+			using (IDbConnection db = new NpgsqlConnection(_connectionString))
+			{
+				string sqlQuery = $"SELECT * FROM dbo.game_providers WHERE {code}";
+				var result = await db.QueryFirstAsync<Guid>(sqlQuery);
+				return result;
+			}
+		}
+
 	}
 }
