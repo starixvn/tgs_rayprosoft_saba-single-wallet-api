@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SabaSingleWallet.API.Models.AdjustBalance;
 using SabaSingleWallet.API.Models.Balance;
 using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.API.Models.CancelBetEnt;
@@ -173,6 +174,16 @@ namespace SabaSingleWallet.API.Controllers
 		public async ValueTask<GetTicketInfoResult> GetTicketInfo(
 	[FromServices] IGetService<GetTicketInfoRequest, GetTicketInfoResult> service,
 	GetTicketInfoRequest source)
+		{
+			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
+
+			return result;
+		}
+
+		[HttpPost("adjustbalance")]
+		public async ValueTask<AdjustBalanceResult> AdjustBalance(
+[FromServices] IGetService<AdjustBalanceRequest,AdjustBalanceResult > service,
+AdjustBalanceRequest source)
 		{
 			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
 
