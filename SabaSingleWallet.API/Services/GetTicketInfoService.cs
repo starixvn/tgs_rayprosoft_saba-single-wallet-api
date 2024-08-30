@@ -36,7 +36,7 @@ public class GetTicketInfoService(ISapaApiMessagePublishHandler messagePublisher
 	
 			return await GenerateResultAsync(query, new GetTicketInfoResult
 			{
-				Status = spResult.TicketStatus,
+				Status = "0",
 				TicketStatus = spResult.TicketStatus,
 				ActualStake = spResult.ActualStake,
 				WinlostAmount = spResult.WinlostAmount,
