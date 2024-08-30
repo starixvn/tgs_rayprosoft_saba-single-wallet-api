@@ -7,6 +7,7 @@ using SabaSingleWallet.API;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.Core.DependencyInjection;
+using SabaSingleWallet.Repositories.DependencyInjection;
 using Tgs.GameRecord.Saba.Common;
 using Tgs.GameRecord.Saba.Core;
 using Tgs.MessageQueue.Nats.Serializers;
@@ -38,7 +39,7 @@ builder.Services
 	})
 	.Services
 	.AddSabaSingleWalletApiCore()
-	.AddPlayerRepository()
+	.AddRepositories()
 	.AddApiLogsRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient)
 	.AddCashServiceClient((op, sp) =>
 	{

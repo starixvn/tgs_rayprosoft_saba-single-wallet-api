@@ -2,9 +2,8 @@
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Resettle;
-using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Repositories;
+using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Settle;
 using Tgs.CashService.Client;

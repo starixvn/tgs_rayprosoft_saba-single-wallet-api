@@ -1,8 +1,8 @@
-﻿using MongoDB.Driver;
+﻿using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 using SabaSingleWallet.Core;
-using SabaSingleWallet.Repositories;
 
-namespace Microsoft.Extensions.DependencyInjection;
+namespace SabaSingleWallet.Repositories.DependencyInjection;
 
 public static class ServiceCollectionExtensions
 {
@@ -12,6 +12,8 @@ public static class ServiceCollectionExtensions
 		=> services
 		.AddTransient<IApiLogsRepository>((sp) => ActivatorUtilities.CreateInstance<ApiLogsRepository>(sp, mongoClientResolver(sp)));
 
-	public static IServiceCollection AddPlayerRepository(this IServiceCollection services)
-		   => services.AddScoped<IPlayerRepository, PlayerRepositoryImp>();
+	public static IServiceCollection AddRepositories(this IServiceCollection services)
+		   => services.AddScoped<IPlayerRepository, PlayerRepositoryImp>()
+		.AddScoped<IGameBetRepository, GameBetRepository>()
+		.AddScoped<IGameRoundRepository, GameRoundRepository>();
 }

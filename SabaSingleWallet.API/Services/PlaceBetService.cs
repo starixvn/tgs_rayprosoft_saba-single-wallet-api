@@ -3,10 +3,10 @@ using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Repositories;
+using SabaSingleWallet.Core;
+using SabaSingleWallet.Core.Models.Criteria.GameBet;
+using SabaSingleWallet.Core.Models.Criteria.GameRound;
 using SabaSingleWallet.Repositories.Helpers;
-using SabaSingleWallet.Repositories.Models.GameBet;
-using SabaSingleWallet.Repositories.Models.GameRound;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
@@ -72,7 +72,7 @@ public class PlaceBetGetService(
 			GameProviderId = Guid.NewGuid(), // dbo game_providers
 			GameId = 123, // dbo games
 			WalletId = Guid.NewGuid(), // playerInfo.walletId
-			ExternalBetId = placeBetData.TsId, 
+			ExternalBetId = placeBetData.TsId,
 			ExternalCreatedOn = DateTime.Parse(placeBetData.BetTime), // Need double check
 			Id = Guid.NewGuid(), // dbo rounds
 			GameProviderConfigurationId = Guid.NewGuid(), // dbo.brand_game_providers
@@ -84,7 +84,7 @@ public class PlaceBetGetService(
 			ExternalRoundId = placeBetData.TsId,
 			ExternalClosedOn = null, // Formula
 			ExternalPayoffOn = null,  // Formula
-			ExternalResettleOn = null, //DateTimeOffset.UnixEpoch 
+			ExternalResettleOn = null, //DateTimeOffset.UnixEpoch
 			BetState = 0, // PlaceBet = 0
 			BetType = 0, // BetType.Normal = 0
 			FreeGameState = 0, //FreeGameState.None
@@ -96,7 +96,7 @@ public class PlaceBetGetService(
 			Bet = placeBetData.DebitAmount,
 			ValidBet = 0, // Formular
 			Settle = 0,
-			Commission = 0, 
+			Commission = 0,
 			Turnover = 0.00m, // Formular
 			WinLoss = 0.00m,
 			Jackpot = 0.00m,

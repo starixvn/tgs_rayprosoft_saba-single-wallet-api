@@ -2,6 +2,7 @@
 using SabaSingleWallet.API.Models.GetTicketInfo;
 using SabaSingleWallet.API.Models.Unsettle;
 using SabaSingleWallet.Common;
+using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.GetTicketInfo;

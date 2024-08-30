@@ -8,6 +8,7 @@ using Tgs.CashService.Client;
 using Tgs.ServiceUtility;
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.Repositories.Models.Unsettle;
+using SabaSingleWallet.Core;
 namespace SabaSingleWallet.API.Services;
 
 public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher, 

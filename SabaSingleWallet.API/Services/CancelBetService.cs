@@ -2,7 +2,7 @@
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Repositories;
+using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.CancelBet;
 using Tgs.CashService.Client;

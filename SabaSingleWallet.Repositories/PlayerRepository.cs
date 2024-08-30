@@ -2,14 +2,10 @@
 using Dapper;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using SabaSingleWallet.Core;
 
 namespace SabaSingleWallet.Repositories
 {
-	public interface IPlayerRepository
-	{
-		Task<TResult> CallStoredProcedureAsync<TCriteria, TResult>(TCriteria criteria, string spName);
-	}
-
 	public class PlayerRepositoryImp : IPlayerRepository
 	{
 		private readonly string _connectionString;
