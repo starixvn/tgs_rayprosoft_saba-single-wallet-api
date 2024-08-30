@@ -100,14 +100,8 @@ public class HandleBetCommandService(
 			ResetOn = DateTimeOffset.UnixEpoch.UtcDateTime,
 			ActionType = command.Action
 		};
-		try
-		{
-			 await gameBetRepository.GameBetSetAsync(gameBetCriteria);
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine(ex.ToString());
-		}
+
+		await gameBetRepository.GameBetSetAsync(gameBetCriteria);
 	}
 
 	private decimal ConvertPlatformRounds(decimal exchangeRate, decimal amount)
