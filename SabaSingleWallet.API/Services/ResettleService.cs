@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Resettle;
 using SabaSingleWallet.Common;
@@ -24,8 +25,9 @@ public class ResettleService(
 		{
 			foreach (var settlement in query.message.Txns)
 			{
+				var criteria = mapper.Map<SettleCriteria>(settlement);
 				var spResult = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>
-					(mapper.Map<SettleCriteria>(settlement), StoreProcedureMapper.SettleSP);
+					(criteria, StoreProcedureMapper.SettleSP);
 
 				if (spResult.SpResult < 0)
 				{
@@ -45,6 +47,8 @@ public class ResettleService(
 				{
 					return await GenerateResultAsync(query, "307", "Cannot Credit player. Please Try Again Later");
 				}
+
+				await messagePublisher.HandleBetAsync(HandleMessageMapper.Resettle(criteria), cancellationToken);
 			}
 
 			return new ResettleResult("0");

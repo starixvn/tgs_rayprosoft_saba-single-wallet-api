@@ -3,6 +3,8 @@ using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories.Models.CancelBet;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
+using SabaSingleWallet.Repositories.Models.Settle;
+using Tgs.GameInterface.SabaService.Protos;
 using Tgs.GameRecord.Handle.Common.Protos;
 
 namespace SabaSingleWallet.API.Helpers;
@@ -18,8 +20,7 @@ public class HandleMessageMapper
 			BetState = (int)BetState.Waiting,
 			TxId = data.TxId.ToString(),
 			BetAmount = data.BetAmount,
-			ActualAmount = data.BetAmount,
-			TransactionTime = DateTime.Now,
+			WinLoss = data.BetAmount,
 		};
 	}
 
@@ -32,7 +33,7 @@ public class HandleMessageMapper
 			BetState = (int)BetState.Waiting,
 			TxId = data.TxId.ToString(),
 			BetAmount = data.ActualAmount,
-			ActualAmount = data.ActualAmount,
+			WinLoss = data.ActualAmount,
 			TransactionTime = data.TransactionTime,
 		};
 	}
@@ -45,5 +46,46 @@ public class HandleMessageMapper
 			PlayerCode = PlayerCode,
 			BetState = (int)BetState.Cancel,
 		};
+	}
+
+	public static HandleBetMessage Resettle(SettleCriteria data)
+	{
+		return new HandleBetMessage()
+		{
+			Action = "Resettle",
+			PlayerCode = data.UserId.ToPlayerCode(),
+			BetState = (int)StatusToInt(data.Status),
+			TxId = data.TxId.ToString(),
+			WinLoss = data.Payout,
+			TransactionTime = DateTime.Now,
+			Settle = data.Payout,
+			ExtraStatus = data.ExtraStatus,
+			WinlostDate = data.WinlostDate?.Date ?? DateTimeOffset.UnixEpoch.DateTime,
+		};
+	}
+
+	private static BetState StatusToInt(string status)
+	{
+		switch (status.ToLower())
+		{
+			case "won":
+				return BetState.Win;
+			case "lost":
+				return BetState.Loss;
+			case "draw":
+				return BetState.Draw;
+			case "void":
+				return BetState.Void;
+			case "refund":
+				return BetState.Refund;
+			case "reject":
+				return BetState.Cancel;
+			case "half won":
+				return BetState.HalfWin;
+			case "half lost":
+				return BetState.HalfLoss;
+			default:
+				return BetState.Running;
+		}
 	}
 }

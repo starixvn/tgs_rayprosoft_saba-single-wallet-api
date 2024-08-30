@@ -36,7 +36,7 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 			turnover = message.BetAmount;
 			settle = message.Settle;
 			externalClosedOn = message.WinlostDate;
-			winLoss = message.ActualAmount;
+			winLoss = message.WinLoss;
 			cashoutState = isCashOut ? CashoutState.Cashout : CashoutState.None;
 		}
 

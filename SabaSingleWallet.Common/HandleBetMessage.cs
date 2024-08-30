@@ -14,11 +14,11 @@ public class HandleBetMessage
 
 	public DateTime TransactionTime { get; set; } = DateTimeOffset.UnixEpoch.Date;
 
-	public int Settle { get; set; } = 0;
+	public decimal Settle { get; set; } = 0;
 
 	public decimal BetAmount { get; set; } = 0;
 
-	public decimal ActualAmount { get; set; } = 0;
+	public decimal WinLoss { get; set; } = 0;
 
 	public string TxId { get; set; } = "";
 }
