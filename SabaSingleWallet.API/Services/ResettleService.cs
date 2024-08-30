@@ -32,6 +32,8 @@ public class ResettleService(
 					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (SP)");
 				}
 
+				//TODO if isOnlyWinlostDateChanged, then no need to recalculate params
+
 				var playerCode = settlement.UserId.ToPlayerCode();
 				var adjustAmount = settlement.CreditAmount - settlement.DebitAmount;
 
@@ -41,7 +43,7 @@ public class ResettleService(
 
 				if (balanceResponse.ErrorCode > 0)
 				{
-					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (CSC)");
+					return await GenerateResultAsync(query, "307", "Cannot Credit player. Please Try Again Later");
 				}
 			}
 
@@ -51,7 +53,7 @@ public class ResettleService(
 		{
 			Console.Write(ex.ToString());
 
-			return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (500)");
+			return await GenerateResultAsync(query, "803", "No Bet Found");
 		}
 	}
 
