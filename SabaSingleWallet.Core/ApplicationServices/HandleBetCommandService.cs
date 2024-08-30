@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using SabaSingleWallet.Core.Constant;
-using SabaSingleWallet.Core.Models;
+using SabaSingleWallet.Core.Models.Criteria.GameBet;
 using SabaSingleWallet.Core.Models.Enum;
 using SabaSingleWallet.Repositories;
 using Tgs.GameRecord.Handle.Common.Protos;
@@ -59,6 +59,56 @@ public class HandleBetCommandService(
 		//	Id = id,
 		//	Data = JsonSerializer.Serialize(roundCriteria),
 		//});
+
+		var gameBetCriteria = new GameBetSetCriteria()
+		{
+			GameProviderId = gameProviderId,
+			GameId = gameInfo.GameId,
+			WalletId = playerInfo.WalletId,
+			ExternalBetId = command.ExternalBetId,
+			ExternalCreatedOn = command.ExternalCreatedOn.ToUniversalTime(),
+			Id = id,
+			GameProviderConfigurationId = gameProviderConfigurationId,
+			ResellerId = playerInfo.ResellerId,
+			LicenseeId = playerInfo.LicenseeId,
+			BrandId = playerInfo.BrandId,
+			PlayerCode = playerInfo.PlayerCode,
+			CurrencyCode = playerInfo.CurrencyCode,
+			ExternalRoundId = command.ExternalRoundId,
+			ExternalClosedOn = command.ExternalClosedOn.ToUniversalTime(),
+			ExternalPayoffOn = command.ExternalPayoffOn.ToUniversalTime(),
+			ExternalResettleOn = command.ExternalResettleOn.ToUniversalTime(),
+			BetState = (int)command.BetState,
+			BetType = (int)command.BetType,
+			FreeGameState = (int)command.FreeGameState,
+			GambleState = (int)command.GambleState,
+			CashoutState = (int)command.CashoutState,
+			ResettleState = (int)command.ResettleState,
+			JackpotState = (int)command.JackpotState,
+			CurrencyRatio = exchangeRates, // Double check
+			Bet = ConvertPlatformRounds(exchangeRates, command.Bet),
+			ValidBet = ConvertPlatformRounds(exchangeRates, command.ValidBet),
+			Settle = ConvertPlatformRounds(exchangeRates, command.Settle),
+			Commission = ConvertPlatformRounds(exchangeRates, command.Commission),
+			Turnover = ConvertPlatformRounds(exchangeRates, command.Turnover),
+			WinLoss = ConvertPlatformRounds(exchangeRates, command.WinLoss),
+			Jackpot = ConvertPlatformRounds(exchangeRates, command.Jackpot),
+			CreatedOn = DateTimeOffset.UtcNow,
+			ClosedOn = DateTimeOffset.UnixEpoch.UtcDateTime,
+			UpdatedOn = DateTimeOffset.UtcNow,
+			ResetState = 0,
+			ResetOn = DateTimeOffset.UnixEpoch.UtcDateTime,
+			AdditionalData = JsonSerializer.Serialize(command),
+			ActionType = command.Action
+		};
+		try
+		{
+			 await gameBetRepository.GameBetSetAsync(gameBetCriteria);
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine(ex.ToString());
+		}
 	}
 
 	private decimal ConvertPlatformRounds(decimal exchangeRate, decimal amount)

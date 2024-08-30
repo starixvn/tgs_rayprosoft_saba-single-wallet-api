@@ -6,7 +6,7 @@ public class GameBetSetCriteria
 	public int GameId { get; set; } // integer
 	public Guid WalletId { get; set; } // uuid
 	public string ExternalBetId { get; set; } // character varying
-	public DateTime ExternalCreatedOn { get; set; } // timestamp with time zone
+	public DateTimeOffset? ExternalCreatedOn { get; set; } // timestamp with time zone
 	public Guid Id { get; set; } // uuid
 	public Guid GameProviderConfigurationId { get; set; } // uuid
 	public Guid ResellerId { get; set; } // uuid
@@ -15,9 +15,9 @@ public class GameBetSetCriteria
 	public string PlayerCode { get; set; } // text
 	public string CurrencyCode { get; set; } // character varying
 	public string ExternalRoundId { get; set; } // character varying
-	public DateTime? ExternalClosedOn { get; set; } // timestamp with time zone (nullable)
-	public DateTime? ExternalPayoffOn { get; set; } // timestamp with time zone (nullable)
-	public DateTime? ExternalResettleOn { get; set; } // timestamp with time zone (nullable)
+	public DateTimeOffset? ExternalClosedOn { get; set; } // timestamp with time zone (nullable)
+	public DateTimeOffset? ExternalPayoffOn { get; set; } // timestamp with time zone (nullable)
+	public DateTimeOffset? ExternalResettleOn { get; set; } // timestamp with time zone (nullable)
 	public int BetState { get; set; } // integer
 	public int BetType { get; set; } // integer
 	public int FreeGameState { get; set; } // integer
@@ -33,11 +33,11 @@ public class GameBetSetCriteria
 	public decimal Turnover { get; set; } // numeric
 	public decimal WinLoss { get; set; } // numeric
 	public decimal Jackpot { get; set; } // numeric
-	public DateTime CreatedOn { get; set; } // timestamp with time zone
-	public DateTime? ClosedOn { get; set; } // timestamp with time zone (nullable)
-	public DateTime? UpdatedOn { get; set; } // timestamp with time zone (nullable)
+	public DateTimeOffset? CreatedOn { get; set; } // timestamp with time zone
+	public DateTimeOffset? ClosedOn { get; set; } // timestamp with time zone (nullable)
+	public DateTimeOffset? UpdatedOn { get; set; } // timestamp with time zone (nullable)
 	public int ResetState { get; set; } // integer
-	public DateTime? ResetOn { get; set; } // timestamp with time zone (nullable)
+	public DateTimeOffset? ResetOn { get; set; } // timestamp with time zone (nullable)
 	public string AdditionalData { get; set; } // jsonb, using string to hold JSON data
 	public string ActionType { get; set; } // character varying
 }

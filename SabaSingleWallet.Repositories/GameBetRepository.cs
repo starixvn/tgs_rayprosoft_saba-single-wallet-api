@@ -16,7 +16,7 @@ public class GameBetRepository : IGameBetRepository
 		_connectionString = configuration.GetConnectionString("Tgs")!;
 	}
 
-	public async Task<GameBetSetResult> GameBetSetAsync(GameBetSetCriteria criteria)
+	public async Task GameBetSetAsync(GameBetSetCriteria criteria)
 	{
 		using (IDbConnection db = new NpgsqlConnection(_connectionString))
 		{
@@ -61,49 +61,13 @@ public class GameBetRepository : IGameBetRepository
 			parameters.Add("@additional_data", criteria.AdditionalData);
 			parameters.Add("@actiontype", criteria.ActionType);
 
-			string sqlQuery = "CALL dbo.game_bets_set(" +
-					  "game_provider_id => @game_provider_id, " +
-					  "game_id => @game_id, " +
-					  "wallet_id => @wallet_id, " +
-					  "external_bet_id => @external_bet_id, " +
-					  "external_created_on => @external_created_on, " +
-					  "id => @id, " +
-					  "game_provider_configuration_id => @game_provider_configuration_id, " +
-					  "reseller_id => @reseller_id, " +
-					  "licensee_id => @licensee_id, " +
-					  "brand_id => @brand_id, " +
-					  "player_code => @player_code, " +
-					  "currency_code => @currency_code, " +
-					  "external_round_id => @external_round_id, " +
-					  "external_closed_on => @external_closed_on, " +
-					  "external_payoff_on => @external_payoff_on, " +
-					  "external_resettle_on => @external_resettle_on, " +
-					  "bet_state => @bet_state, " +
-					  "bet_type => @bet_type, " +
-					  "free_game_state => @free_game_state, " +
-					  "gamble_state => @gamble_state, " +
-					  "cashout_state => @cashout_state, " +
-					  "resettle_state => @resettle_state, " +
-					  "jackpot_state => @jackpot_state, " +
-					  "currency_ratio => @currency_ratio, " +
-					  "bet => @bet, " +
-					  "valid_bet => @valid_bet, " +
-					  "settle => @settle, " +
-					  "commission => @commission, " +
-					  "turnover => @turnover, " +
-					  "win_loss => @win_loss, " +
-					  "jackpot => @jackpot, " +
-					  "created_on => @created_on, " +
-					  "closed_on => @closed_on, " +
-					  "updated_on => @updated_on, " +
-					  "reset_state => @reset_state, " +
-					  "reset_on => @reset_on, " +
-					  "additional_data => @additional_data, " +
-					  "actiontype => @actiontype)";
 
-			var result = await db.QueryFirstAsync<GameBetSetResult>(sqlQuery, parameters);
 
-			return result;
+			string sqlQuery = "CALL dbo.game_bets_set(@game_provider_id, @game_id, @wallet_id, @external_bet_id, @external_created_on, @id, @game_provider_configuration_id, @reseller_id, @licensee_id, @brand_id, @player_code, @currency_code, @external_round_id, @external_closed_on, @external_payoff_on, @external_resettle_on, @bet_state, @bet_type, @free_game_state, @gamble_state, @cashout_state, @resettle_state, @jackpot_state, @currency_ratio, @bet, @valid_bet, @settle, @commission, @turnover, @win_loss, @jackpot, @created_on, @closed_on, @updated_on, @reset_state, @reset_on, @additional_data, @actiontype)";
+
+			 await db.QueryFirstAsync<GameBetSetResult>(sqlQuery, parameters);
+
+			return ;
 		}
 	}
 }
