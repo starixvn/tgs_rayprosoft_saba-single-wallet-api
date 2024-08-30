@@ -1,4 +1,6 @@
-﻿namespace SabaSingleWallet.Core.Models.Criteria.GameBet;
+﻿using System.Text.Json;
+
+namespace SabaSingleWallet.Core.Models.Criteria.GameBet;
 
 public class GameBetSetCriteria
 {
@@ -38,6 +40,8 @@ public class GameBetSetCriteria
 	public DateTimeOffset? UpdatedOn { get; set; } // timestamp with time zone (nullable)
 	public int ResetState { get; set; } // integer
 	public DateTimeOffset? ResetOn { get; set; } // timestamp with time zone (nullable)
-	public string AdditionalData { get; set; } // jsonb, using string to hold JSON data
+
+	public string? AdditionalData { get; set; } // jsonb
+
 	public string ActionType { get; set; } // character varying
 }

@@ -55,17 +55,6 @@ public class PlaceBetGetService(
 				Response = res
 			}, cancellationToken);
 
-			await messagePublisher.HandleBetAsync(new HandleBetMessage()
-			{
-				Action=query.message.Action,
-				PlayerCode=query.message.UserId.ToPlayerCode(),
-				ExtraStatus="",
-				BetState=(int)BetState.Waiting,
-				BetAmount=query.message.DebitAmount,
-				ActualAmount=query.message.ActualAmount,
-				TxId=query.message.TsId
-			}, cancellationToken);
-
 			return res;
 		}
 		catch (Exception ex)

@@ -98,7 +98,6 @@ public class HandleBetCommandService(
 			UpdatedOn = DateTimeOffset.UtcNow,
 			ResetState = 0,
 			ResetOn = DateTimeOffset.UnixEpoch.UtcDateTime,
-			AdditionalData = JsonSerializer.Serialize(command),
 			ActionType = command.Action
 		};
 		try
