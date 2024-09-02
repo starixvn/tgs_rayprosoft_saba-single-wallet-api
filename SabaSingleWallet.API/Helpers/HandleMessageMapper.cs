@@ -48,6 +48,22 @@ public class HandleMessageMapper
 		};
 	}
 
+	public static HandleBetMessage Settle(SettleCriteria data)
+	{
+		return new HandleBetMessage()
+		{
+			Action = "Settle",
+			PlayerCode = data.UserId.ToPlayerCode(),
+			BetState = (int)StatusToInt(data.Status),
+			TxId = data.TxId.ToString(),
+			WinLoss = data.Payout,
+			TransactionTime = DateTime.Now,
+			Settle = data.Payout,
+			ExtraStatus = data.ExtraStatus,
+			WinlostDate = data.WinlostDate?.Date ?? DateTimeOffset.UnixEpoch.DateTime,
+		};
+	}
+
 	public static HandleBetMessage Resettle(SettleCriteria data)
 	{
 		return new HandleBetMessage()

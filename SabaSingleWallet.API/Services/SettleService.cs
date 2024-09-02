@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
@@ -44,6 +45,8 @@ public class SettleService(
 				{
 					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later");
 				}
+
+				await messagePublisher.HandleBetAsync(HandleMessageMapper.Settle(criteria), cancellationToken);
 			}
 
 			var res = new SettleResult("0");
