@@ -4,6 +4,7 @@ using SabaSingleWallet.Repositories.Models.CancelBet;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using SabaSingleWallet.Repositories.Models.Settle;
+using SabaSingleWallet.Repositories.Models.Unsettle;
 using Tgs.GameInterface.SabaService.Protos;
 using Tgs.GameRecord.Handle.Common.Protos;
 
@@ -53,6 +54,22 @@ public class HandleMessageMapper
 		return new HandleBetMessage()
 		{
 			Action = "Settle",
+			PlayerCode = data.UserId.ToPlayerCode(),
+			BetState = (int)StatusToInt(data.Status),
+			TxId = data.TxId.ToString(),
+			WinLoss = data.Payout,
+			TransactionTime = DateTime.Now,
+			Settle = data.Payout,
+			ExtraStatus = data.ExtraStatus,
+			WinlostDate = data.WinlostDate?.Date ?? DateTimeOffset.UnixEpoch.DateTime,
+		};
+	}
+
+	public static HandleBetMessage Unsettle(UnsettleCriteria data)
+	{
+		return new HandleBetMessage()
+		{
+			Action = "Unsettle",
 			PlayerCode = data.UserId.ToPlayerCode(),
 			BetState = (int)StatusToInt(data.Status),
 			TxId = data.TxId.ToString(),

@@ -9,6 +9,7 @@ using Tgs.ServiceUtility;
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.Repositories.Models.Unsettle;
 using SabaSingleWallet.Core;
+using SabaSingleWallet.API.Helpers;
 namespace SabaSingleWallet.API.Services;
 
 public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher, 
@@ -46,9 +47,11 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 				{
 					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (CSC)");
 				}
+
+				await messagePublisher.HandleBetAsync(HandleMessageMapper.Unsettle(unSettleCriteria), cancellationToken);
 			}
 
-		 return	await GenerateResultAsync(query, "0", string.Empty);
+			return	await GenerateResultAsync(query, "0", string.Empty);
 		}
 		catch (Exception ex)
 		{
