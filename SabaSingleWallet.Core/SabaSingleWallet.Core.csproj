@@ -10,6 +10,7 @@
     <PackageReference Include="AutoMapper" Version="13.0.1" />
     <PackageReference Include="PhoenixToolkits.MessageQueue" Version="2.2.0" />
     <PackageReference Include="PhoenixToolkits.MessageQueue.Nats" Version="2.2.0" />
+    <PackageReference Include="Sentry" Version="4.10.2" />
     <PackageReference Include="Tgs.MessageQueue.Nats.Serializers" Version="0.0.2" />
 	<PackageReference Include="TGS.ServiceUtility" Version="0.2.0" />
     <PackageReference Include="MongoDB.Driver" Version="2.28.0" />

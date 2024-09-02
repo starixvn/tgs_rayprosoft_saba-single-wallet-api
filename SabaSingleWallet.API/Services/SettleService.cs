@@ -36,15 +36,19 @@ public class SettleService(
 					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later");
 				}
 
-				var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
+				if(transaction.CreditAmount > 0)
+				{
+					var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
 					transaction.UserId.ToPlayerCode(),
 					transaction.CreditAmount,
 					cancellationToken: cancellationToken);
 
-				if (!string.IsNullOrWhiteSpace(balanceResponse.ErrorMessage))
-				{
-					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later");
+					if (!string.IsNullOrWhiteSpace(balanceResponse.ErrorMessage))
+					{
+						return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later");
+					}
 				}
+				
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Settle(criteria), cancellationToken);
 			}
