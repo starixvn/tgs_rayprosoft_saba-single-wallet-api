@@ -28,7 +28,7 @@ public class GameRoundRepository : IGameRoundRepository
 
 			string sqlQuery = @"
 								SELECT r.id
-								FROM rounds r
+								FROM bet.rounds r
 								WHERE r.created_on >= (NOW() AT TIME ZONE 'UTC') - INTERVAL '7 days'
 								  AND r.created_on <= NOW() AT TIME ZONE 'UTC'
 								  AND r.external_round_id = @external_round_id
@@ -36,13 +36,9 @@ public class GameRoundRepository : IGameRoundRepository
 								  AND r.game_id = @game_id
 								  AND r.wallet_id = @wallet_id;";
 
-			var ids = await db.QueryAsync<Guid>(sqlQuery, parameters); // check correct property later
-			if (ids.Any())
-			{
-				return ids.First();
-			}
+			var ids = await db.QueryFirstOrDefaultAsync<Guid?>(sqlQuery, parameters); // check correct property later
 
-			return null;
+			return ids;
 		}
 	}
 
