@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Newtonsoft.Json;
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
@@ -76,10 +77,11 @@ public class PlaceBetParlayService(
 	private async ValueTask<PlaceBetParlayResult?> DeductBalanceAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken)
 	{
 		var playerCode = query.message.UserId.ToPlayerCode();
+		var refIds = JsonConvert.SerializeObject(query.message.Txns.Select(t => t.RefId));
 		var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(
 				playerCode,
 				query.message.TotalBetAmount,
-				"",
+				refIds,
 				query.message.OperationId,
 				null,
 				cancellationToken
@@ -99,11 +101,12 @@ public class PlaceBetParlayService(
 	private async ValueTask RefundAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken)
 	{
 		var playerCode = query.message.UserId.ToPlayerCode();
+		var refIds = JsonConvert.SerializeObject(query.message.Txns.Select(t => t.RefId));
 
 		_ = await cashClient.GameProviderAddBalanceAsync(
 				playerCode,
 				query.message.TotalBetAmount,
-				"",
+				refIds,
 				query.message.OperationId,
 				null,
 				cancellationToken
