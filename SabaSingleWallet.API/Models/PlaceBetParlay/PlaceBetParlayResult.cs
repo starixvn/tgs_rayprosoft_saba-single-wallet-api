@@ -2,7 +2,7 @@
 
 public record PlaceBetParlayResult
 (	string status,
-	TicketInfoMapping[]? txns,
+	List<TicketInfoMapping>? txns,
 	string? msg);
 
 public record TicketInfoMapping(

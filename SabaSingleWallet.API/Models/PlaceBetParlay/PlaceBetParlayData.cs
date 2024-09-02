@@ -29,7 +29,9 @@ public record ComboInfo
 	public decimal BetAmount { get; set; }
 	public decimal CreditAmount { get; set; }
 	public decimal DebitAmount { get; set; }
-	public List<object>? Detail { get; set; }
+
+	[JsonConverter(typeof(ComboInfoDetailConverter))]
+	public List<ComboInfoDetail>? Detail { get; set; }
 }
 
 public abstract record ComboInfoDetail
@@ -124,7 +126,15 @@ public class ComboInfoDetailConverter : JsonConverter<List<ComboInfoDetail>>
 
 		foreach (var element in value)
 		{
-			JsonSerializer.Serialize(writer, element);
+			if (element is SingleBetDetail single)
+			{
+				JsonSerializer.Serialize(writer, single);
+			}
+
+			if (element is ParlayDetail parlay)
+			{
+				JsonSerializer.Serialize(writer, parlay);
+			}
 		}
 
 		writer.WriteEndArray();

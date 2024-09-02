@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SabaSingleWallet.API.Models.PlaceBet;
+using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.API.Models.Unsettle;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
@@ -18,5 +19,6 @@ public class MappingProfile : Profile
 			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()));
 		CreateMap<UnsettleTransaction, UnsettleCriteria>()
 			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()));
+		CreateMap<PlaceBetParlayData, PlaceBetCriteria>();
 	}
 }
