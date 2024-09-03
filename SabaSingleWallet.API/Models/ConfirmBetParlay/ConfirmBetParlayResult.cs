@@ -1,7 +1,7 @@
 ﻿namespace SabaSingleWallet.API.Models.ConfirmBetParlay;
 
 public record ConfirmBetParlayResult(
-	string statusCode,
+	string status,
 	decimal balance,
-	string? msg 
+	string? msg
 );
