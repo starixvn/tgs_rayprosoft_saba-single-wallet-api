@@ -121,7 +121,7 @@ public class ConfirmBetParlayService(
 	{
 		return code switch
 		{
-			0 => new ConfirmBetParlayResult("0", balance, ""),
+			0 => new ConfirmBetParlayResult("0", balance, null),
 			307 => new ConfirmBetParlayResult("307", balance, "Cannot Credit player. Please Try Again Later"),
 			506 => new ConfirmBetParlayResult("506", balance, "Unable To Processed. Please Try Again Later"),
 			_ => new ConfirmBetParlayResult("-1", balance, "Undefined"),
