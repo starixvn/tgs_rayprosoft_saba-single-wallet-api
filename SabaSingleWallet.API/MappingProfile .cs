@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using SabaSingleWallet.API.Models.ConfirmBetParlay;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.API.Models.Resettle;
 using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.API.Models.Unsettle;
+using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using SabaSingleWallet.Repositories.Models.Settle;
 using SabaSingleWallet.Repositories.Models.Unsettle;
@@ -24,5 +26,6 @@ public class MappingProfile : Profile
 			.ForMember(dest => dest.WinlostDate, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.WinlostDate).ToUniversalTime()))
 			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()));
 		CreateMap<PlaceBetParlayData, PlaceBetCriteria>();
+		CreateMap<TicketInfo, ConfirmBetCriteria>();
 	}
 }

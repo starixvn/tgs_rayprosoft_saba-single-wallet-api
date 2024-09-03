@@ -1,41 +1,40 @@
-﻿
-namespace SabaSingleWallet.API.Models.ConfirmBetParlay;
+﻿namespace SabaSingleWallet.API.Models.ConfirmBetParlay;
 
 public record ConfirmBetParlayData
 {
-	public required string Action { get; set; } = "confirm bet parlay";
-	public required string OperationId { get; set; }
-	public required string UserId { get; set; }
-	public required string UpdateTime { get; set; }
-	public required decimal CreditAmount { get; set; }
-	public required decimal DebitAmount { get; set; }
-	public required TicketInfo [] Txns { get; set; }
-	public required BetParlayTicketDetail[] TicketDetail { get; set; }
-	public required string TransactionTime { get; set; }
+	public string Action { get; set; } = "ConfirmBetParlay";
+	public string OperationId { get; set; }
+	public string UserId { get; set; }
+	public string UpdateTime { get; set; }
+	public decimal CreditAmount { get; set; }
+	public decimal DebitAmount { get; set; }
+	public List<TicketInfo> Txns { get; set; }
+	public List<BetParlayTicketDetail> TicketDetail { get; set; }
+	public string TransactionTime { get; set; }
 }
 
 public record TicketInfo
 {
-	public required string RefId { get; set; }
-	public required long TxId { get; set; }
-	public required string LicenseeTxId { get; set; }
-	public required decimal ActualAmount { get; set; }
-	public required bool IsOddsChanged { get; set; }
-	public required decimal CreditAmount { get; set; }
-	public required decimal DebitAmount { get; set; }
-	public required string WinlostDate { get; set; }
-	public decimal? Odds { get; set; } 
+	public string RefId { get; set; }
+	public long TxId { get; set; }
+	public string LicenseeTxId { get; set; }
+	public decimal ActualAmount { get; set; }
+	public bool IsOddsChanged { get; set; }
+	public decimal CreditAmount { get; set; }
+	public decimal DebitAmount { get; set; }
+	public string WinlostDate { get; set; }
+	public decimal? Odds { get; set; }
 }
 
 public record BetParlayTicketDetail
 {
-	public required int MatchId { get; set; }
-	public required int SportType { get; set; }
-	public required int BetType { get; set; }
-	public required int OddsId { get; set; }
-	public required decimal Odds { get; set; }
-	public required short OddsType { get; set; }
-	public required int LeagueId { get; set; }
-	public required bool IsLive { get; set; }
-	public required bool IsOddsChanged { get; set; }
+	public int MatchId { get; set; }
+	public int SportType { get; set; }
+	public int BetType { get; set; }
+	public int OddsId { get; set; }
+	public decimal Odds { get; set; }
+	public short OddsType { get; set; }
+	public int LeagueId { get; set; }
+	public bool IsLive { get; set; }
+	public bool IsOddsChanged { get; set; }
 }
