@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.ConfirmBetParlay;
 using SabaSingleWallet.Common;
@@ -34,6 +35,10 @@ public class ConfirmBetParlayService(
 
 					return await WriteLogAndReturnResponseAsync(query, insertError, cancellationToken);
 				}
+
+				var confirmData = HandleMessageMapper.ConfirmBet(ticket, playerCode);
+
+				await messagePublisher.HandleBetAsync(confirmData, cancellationToken);
 
 				var increaseError = await IncreaseBalanceIfNeededAsync(playerCode, ticket, cancellationToken);
 
