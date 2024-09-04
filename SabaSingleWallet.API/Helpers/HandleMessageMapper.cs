@@ -30,7 +30,7 @@ public class HandleMessageMapper
 		{
 			Action = "ConfirmBet",
 			PlayerCode = PlayerCode,
-			BetState = (int)BetState.Waiting,
+			BetState = (int)BetState.Running,
 			TxId = data.TxId.ToString(),
 			BetAmount = data.ActualAmount,
 			WinLoss = data.ActualAmount,
@@ -58,9 +58,8 @@ public class HandleMessageMapper
 			BetState = (int)StatusToInt(data.Status),
 			TxId = data.TxId.ToString(),
 			WinLoss = data.Payout,
-			TransactionTime = DateTime.Now,
 			Settle = data.Payout,
-			ExtraStatus = data.ExtraStatus,
+			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate?.Date ?? DateTimeOffset.UnixEpoch.DateTime,
 		};
 	}
@@ -74,9 +73,8 @@ public class HandleMessageMapper
 			BetState = (int)StatusToInt(data.Status),
 			TxId = data.TxId.ToString(),
 			WinLoss = data.Payout,
-			TransactionTime = DateTime.Now,
 			Settle = data.Payout,
-			ExtraStatus = data.ExtraStatus,
+			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate?.Date ?? DateTimeOffset.UnixEpoch.DateTime,
 		};
 	}
@@ -90,9 +88,8 @@ public class HandleMessageMapper
 			BetState = (int)StatusToInt(data.Status),
 			TxId = data.TxId.ToString(),
 			WinLoss = data.Payout,
-			TransactionTime = DateTime.Now,
 			Settle = data.Payout,
-			ExtraStatus = data.ExtraStatus,
+			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate?.Date ?? DateTimeOffset.UnixEpoch.DateTime,
 		};
 	}

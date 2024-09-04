@@ -56,8 +56,8 @@ public class HandleBetCommandService(
 				Turnover = ConvertPlatformRounds(exchangeRates, command.Turnover),
 				Payout = ConvertPlatformRounds(exchangeRates, command.Payout),
 				Status = (short)roundStatus,
-				CreatedOn = DateTime.Now,
-				UpdatedOn = DateTime.Now,
+				CreatedOn = DateTimeOffset.UtcNow.DateTime,
+				UpdatedOn = DateTimeOffset.UtcNow.DateTime,
 			};
 			await roundRepository.GameRoundSetAsync(roundCriteria);
 
@@ -96,9 +96,9 @@ public class HandleBetCommandService(
 				Payout = ConvertPlatformRounds(exchangeRates, command.Payout),
 				Jackpot = ConvertPlatformRounds(exchangeRates, command.Jackpot),
 				ResetState = 0,
-				CreatedOn = DateTimeOffset.UtcNow,
+				CreatedOn = DateTimeOffset.UtcNow.DateTime,
+				UpdatedOn = DateTimeOffset.UtcNow.DateTime,
 				ClosedOn = DateTimeOffset.UnixEpoch.UtcDateTime,
-				UpdatedOn = DateTimeOffset.UtcNow,
 				ResetOn = DateTimeOffset.UnixEpoch.UtcDateTime,
 				ActionType = command.Action
 			};
