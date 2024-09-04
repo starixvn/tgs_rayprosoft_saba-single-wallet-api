@@ -29,7 +29,7 @@ public class PlaceBetGetService(
 
 			if (!string.IsNullOrWhiteSpace(deductBalanceResult.ErrorMessage))
 			{
-				return new PlaceBetResult("506", query.message.RefId, null, "Unable To Processed. Please Try Again Later");
+				return await GenerateResponseAsync (query,  new PlaceBetResult("307", query.message.RefId, null, "Cannot Credit player. Please Try Again Later"), cancellationToken);
 			}
 
 			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>
@@ -40,18 +40,10 @@ public class PlaceBetGetService(
 
 			if (spResult.SpResult != 0)
 			{
-				return new PlaceBetResult("506", query.message.RefId, null, "Unable To Processed. Please Try Again Later");
+				return await GenerateResponseAsync(query, new PlaceBetResult("506", query.message.RefId, null, "Unable To Processed. Please Try Again Later"), cancellationToken);
 			}
 
 			var res = new PlaceBetResult("0", query.message.RefId, spResult.Licenseetxid, "");
-
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
 
 			await messagePublisher.HandleBetAsync(new HandleBetMessage()
 			{
@@ -64,12 +56,25 @@ public class PlaceBetGetService(
 				TxId = query.message.TsId
 			}, cancellationToken);
 
-			return res;
+			return await GenerateResponseAsync (query, res, cancellationToken);
 		}
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			return new PlaceBetResult("503", query.message.RefId, null, "Internal Error");
+			return await GenerateResponseAsync(query, new PlaceBetResult("803", query.message.RefId, null, "No Bet Found"), cancellationToken);
 		}
+	}
+
+	private async Task<PlaceBetResult> GenerateResponseAsync( PlaceBetRequest request, PlaceBetResult result, CancellationToken cancellationToken)
+	{
+		await messagePublisher.LogApi(new ApiLogMessage()
+		{
+			Key = request.key,
+			Action = request.message.Action,
+			Request = request,
+			Response = result
+		}, cancellationToken);
+
+		return result;
 	}
 }
