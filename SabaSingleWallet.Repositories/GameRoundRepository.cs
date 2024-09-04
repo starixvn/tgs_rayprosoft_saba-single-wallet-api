@@ -61,6 +61,7 @@ public class GameRoundRepository : IGameRoundRepository
 			parameters.Add("@brand_id", criteria.BrandId);
 			parameters.Add("@external_created_on", criteria.ExternalCreatedOn);
 			parameters.Add("@external_closed_on", criteria.ExternalClosedOn);
+			parameters.Add("@bet_type", criteria.BetType);
 			parameters.Add("@bet_amount", criteria.BetAmount);
 			parameters.Add("@actual_bet_amount", criteria.ActualAmount);
 			parameters.Add("@valid_bet_amount", criteria.ValidBetAmount);
@@ -93,6 +94,7 @@ public class GameRoundRepository : IGameRoundRepository
 						"brand_id => @brand_id, " +
 						"external_created_on => @external_created_on, " +
 						"external_closed_on => @external_closed_on, " +
+						"bet_type => @bet_type, " +
 						"bet_amount => @bet_amount, " +
 						"actual_bet_amount => @actual_bet_amount, " +
 						"valid_bet_amount => @valid_bet_amount, " +

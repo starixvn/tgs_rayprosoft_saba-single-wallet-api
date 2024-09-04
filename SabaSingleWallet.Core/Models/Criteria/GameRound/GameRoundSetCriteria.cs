@@ -1,4 +1,6 @@
-﻿namespace SabaSingleWallet.Core.Models.Criteria.GameRound;
+﻿using Tgs.GameRecord.Handle.Common.Protos;
+
+namespace SabaSingleWallet.Core.Models.Criteria.GameRound;
 
 public class GameRoundSetCriteria
 {
@@ -30,4 +32,5 @@ public class GameRoundSetCriteria
 	public DateTime? ReopenedOn { get; set; } // timestamp with time zone (nullable)
 	public decimal EffectiveBettingPercentage { get; set; } // numeric
 	public string ActionType { get; set; } // character varying
+	public short BetType { get; internal set; } // smallint varying
 }
