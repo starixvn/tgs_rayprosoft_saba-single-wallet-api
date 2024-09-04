@@ -19,8 +19,8 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 	{
 		var betState = (BetState)message.BetState;
 		var isClosed = betState is not BetState.Running;
-		var idVoid = betState is BetState.Void or BetState.Running or BetState.Refund or BetState.Refund;
-		var isCashOut = message.ExtraStatus.Equals("cashout", StringComparison.OrdinalIgnoreCase);
+		var isVoid = betState is BetState.Void or BetState.Running or BetState.Refund or BetState.Refund;
+		var isCashout = !string.IsNullOrEmpty(message.ExtraStatus) || message.ExtraStatus.Equals("void cashout", StringComparison.OrdinalIgnoreCase);
 
 		var bet = message.BetAmount;
 		var validBet = message.BetAmount;
@@ -33,12 +33,13 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 
 		if (isClosed)
 		{
-			validBet = isCashOut ? 0 : !idVoid ? message.BetAmount : 0;
-			turnover = message.BetAmount;
 			settle = message.Settle;
-			externalClosedOn = message.WinlostDate;
 			payout = message.Payout;
-			cashoutState = isCashOut ? CashoutState.Cashout : CashoutState.None;
+			externalClosedOn = message.WinlostDate;
+
+			validBet = isCashout ? 0 : !isVoid ? message.BetAmount : 0;
+			turnover = isCashout ? 0 : !isVoid ? message.BetAmount : 0;
+			cashoutState = isCashout ? CashoutState.Cashout : CashoutState.None;
 		}
 
 		return new HandleBetCommand
