@@ -67,7 +67,6 @@ public class GameRoundRepository : IGameRoundRepository
 			parameters.Add("@settle_amount", criteria.SettleAmount);
 			parameters.Add("@commission", criteria.Commission);
 			parameters.Add("@turnover", criteria.Turnover);
-			parameters.Add("@win_loss", criteria.Payout);
 			parameters.Add("@payout", criteria.Payout);
 			parameters.Add("@tie_bet_adjustment", criteria.TieBetAdjustment);
 			parameters.Add("@client_status", criteria.ClientStatus);
