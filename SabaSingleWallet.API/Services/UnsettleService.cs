@@ -45,7 +45,7 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 
 				if (balanceResponse.ErrorCode > 0)
 				{
-					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (CSC)");
+					return await GenerateResultAsync(query, "307", "Cannot Credit player. Please Try Again Later");
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Unsettle(unSettleCriteria), cancellationToken);
@@ -56,7 +56,7 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (500)");
+			return await GenerateResultAsync(query, "803", "No Bet Found");
 		}
 	}
 	private async Task<UnsettleResult> GenerateResultAsync(UnsettleRequest query, string status, string msg)
