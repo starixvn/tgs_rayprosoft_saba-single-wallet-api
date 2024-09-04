@@ -23,7 +23,7 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 		var isCashOut = message.ExtraStatus.Equals("cashout", StringComparison.OrdinalIgnoreCase);
 
 		var bet = message.BetAmount;
-		var validBet = isCashOut ? 0 : !idVoid ? message.BetAmount : 0;
+		var validBet = message.BetAmount;
 
 		var settle = 0.0m;
 		var turnover = 0.0m;
@@ -33,6 +33,7 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 
 		if (isClosed)
 		{
+			validBet = isCashOut ? 0 : !idVoid ? message.BetAmount : 0;
 			turnover = message.BetAmount;
 			settle = message.Settle;
 			externalClosedOn = message.WinlostDate;
