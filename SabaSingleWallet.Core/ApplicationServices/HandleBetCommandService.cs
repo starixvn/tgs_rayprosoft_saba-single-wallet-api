@@ -33,6 +33,7 @@ public class HandleBetCommandService(
 			var existedRoundId = await roundRepository.GetIdAsync(gameProviderId, gameInfo.GameId, playerInfo.WalletId, command.ExternalRoundId);
 			var id = existedRoundId.HasValue ? existedRoundId : await serialNumberGenerator.GenerateAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 			var roundStatus = command.BetState is BetState.Waiting or BetState.Running ? RoundStatus.Open : RoundStatus.Closed;
+
 			var roundCriteria = new Models.Criteria.GameRound.GameRoundSetCriteria()
 			{
 				Id = (Guid)id,
@@ -56,6 +57,7 @@ public class HandleBetCommandService(
 				Turnover = ConvertPlatformRounds(exchangeRates, command.Turnover),
 				Payout = ConvertPlatformRounds(exchangeRates, command.Payout),
 				Status = (short)roundStatus,
+				ClientStatus = (short)GetClientStatus(command.BetState),
 				CreatedOn = DateTimeOffset.UtcNow.DateTime,
 				UpdatedOn = DateTimeOffset.UtcNow.DateTime,
 			};
@@ -112,10 +114,35 @@ public class HandleBetCommandService(
 		}
 	}
 
-	private decimal ConvertPlatformRounds(decimal exchangeRate, decimal amount)
+	private static RoundClientStatus GetClientStatus(BetState betState)
+	{
+		if (betState is BetState.Waiting or BetState.Running)
+		{
+			return RoundClientStatus.New;
+		}
+
+		if (betState is BetState.Loss or BetState.HalfLoss)
+		{
+			return RoundClientStatus.Loss;
+		}
+
+		if (betState is BetState.Win or BetState.HalfWin)
+		{
+			return RoundClientStatus.Win;
+		}
+
+		if (betState is BetState.Draw)
+		{
+			return RoundClientStatus.Draw;
+		}
+
+		return RoundClientStatus.Void;
+	}
+
+	private static decimal ConvertPlatformRounds(decimal exchangeRate, decimal amount)
 	=> amount == 0 ? amount : decimal.Round(amount * exchangeRate, 6, MidpointRounding.ToZero);
 
-	private decimal GetExchangeRates(string gameProviderCode, string currencyCode)
+	private static decimal GetExchangeRates(string gameProviderCode, string currencyCode)
 		=> GameCurrencySettings.GameProviderExchangeRates
 			.Where(x => x.GameProviderCode.Equals(gameProviderCode, StringComparison.InvariantCultureIgnoreCase)
 				&& x.CurrencyCode.Equals(currencyCode, StringComparison.OrdinalIgnoreCase))
