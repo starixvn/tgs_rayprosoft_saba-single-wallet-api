@@ -27,7 +27,7 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 
 		var settle = 0.0m;
 		var turnover = 0.0m;
-		var winLoss = 0.0m;
+		var payout = 0.0m;
 		var cashoutState = CashoutState.None;
 		var externalClosedOn = DateTimeOffset.UnixEpoch.DateTime;
 
@@ -36,7 +36,7 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 			turnover = message.BetAmount;
 			settle = message.Settle;
 			externalClosedOn = message.WinlostDate;
-			winLoss = message.WinLoss;
+			payout = message.Payout;
 			cashoutState = isCashOut ? CashoutState.Cashout : CashoutState.None;
 		}
 
@@ -65,7 +65,7 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 			Settle = settle,
 			Commission = 0.0m,
 			Turnover = turnover,
-			Payout = winLoss,
+			Payout = payout,
 			Jackpot = 0.0M,
 			AdditionalData = JsonSerializer.Serialize(message)
 		};

@@ -52,7 +52,7 @@ public class PlaceBetGetService(
 				ExtraStatus = "",
 				BetState = (int)BetState.Waiting,
 				BetAmount = query.message.DebitAmount,
-				WinLoss = query.message.ActualAmount,
+				Payout = query.message.ActualAmount,
 				TxId = query.message.TsId
 			}, cancellationToken);
 
