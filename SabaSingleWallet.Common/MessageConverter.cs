@@ -55,7 +55,7 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 			ExternalPayoffOn = externalClosedOn,
 			ExternalResettleOn = DateTimeOffset.UnixEpoch.DateTime,
 			BetState = betState,
-			BetType = BetType.Normal,
+			BetType = (BetType)message.BetType,
 			FreeGameState = FreeGameState.None,
 			GambleState = GambleState.None,
 			CashoutState = cashoutState,

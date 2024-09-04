@@ -81,7 +81,8 @@ public class HandleBetCommandService(
 				ExternalClosedOn = command.ExternalClosedOn.ToUniversalTime(),
 				ExternalPayoffOn = command.ExternalPayoffOn.ToUniversalTime(),
 				ExternalResettleOn = command.ExternalResettleOn.ToUniversalTime(),
-				BetState = (int)command.BetState,
+				// TO DO: BetType is hard code
+				BetState = (int)BetType.Normal,
 				BetType = (int)command.BetType,
 				FreeGameState = (int)command.FreeGameState,
 				GambleState = (int)command.GambleState,

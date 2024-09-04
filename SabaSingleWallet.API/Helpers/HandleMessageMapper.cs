@@ -18,9 +18,10 @@ public class HandleMessageMapper
 			PlayerCode = data.UserId.ToPlayerCode(),
 			BetState = (int)BetState.Waiting,
 			TxId = data.TxId.ToString(),
-			BetAmount = data.BetAmount,
-			Payout = data.BetAmount,
 			ActualAmount = data.BetAmount,
+			BetAmount = data.DebitAmount,
+			Payout = data.ActualAmount,
+			BetType = data.BetType,
 		};
 	}
 
