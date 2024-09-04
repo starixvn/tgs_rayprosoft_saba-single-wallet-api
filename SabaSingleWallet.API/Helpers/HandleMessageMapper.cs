@@ -1,11 +1,9 @@
 ﻿using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Repositories.Models.CancelBet;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using SabaSingleWallet.Repositories.Models.Settle;
 using SabaSingleWallet.Repositories.Models.Unsettle;
-using Tgs.GameInterface.SabaService.Protos;
 using Tgs.GameRecord.Handle.Common.Protos;
 
 namespace SabaSingleWallet.API.Helpers;
@@ -22,6 +20,7 @@ public class HandleMessageMapper
 			TxId = data.TxId.ToString(),
 			BetAmount = data.BetAmount,
 			WinLoss = data.BetAmount,
+			ActualAmount = data.BetAmount,
 		};
 	}
 
@@ -36,6 +35,7 @@ public class HandleMessageMapper
 			BetAmount = data.ActualAmount,
 			WinLoss = data.ActualAmount,
 			TransactionTime = data.TransactionTime,
+			ActualAmount = data.ActualAmount,
 		};
 	}
 
@@ -99,26 +99,17 @@ public class HandleMessageMapper
 
 	private static BetState StatusToInt(string status)
 	{
-		switch (status.ToLower())
+		return status.ToLower() switch
 		{
-			case "won":
-				return BetState.Win;
-			case "lost":
-				return BetState.Loss;
-			case "draw":
-				return BetState.Draw;
-			case "void":
-				return BetState.Void;
-			case "refund":
-				return BetState.Refund;
-			case "reject":
-				return BetState.Cancel;
-			case "half won":
-				return BetState.HalfWin;
-			case "half lost":
-				return BetState.HalfLoss;
-			default:
-				return BetState.Running;
-		}
+			"won" => BetState.Win,
+			"lost" => BetState.Loss,
+			"draw" => BetState.Draw,
+			"void" => BetState.Void,
+			"refund" => BetState.Refund,
+			"reject" => BetState.Cancel,
+			"half won" => BetState.HalfWin,
+			"half lost" => BetState.HalfLoss,
+			_ => BetState.Running,
+		};
 	}
 }

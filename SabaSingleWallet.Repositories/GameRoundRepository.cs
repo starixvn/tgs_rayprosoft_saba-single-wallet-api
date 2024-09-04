@@ -42,7 +42,7 @@ public class GameRoundRepository : IGameRoundRepository
 		}
 	}
 
-	public async Task<decimal> GameRoundSetAsync(GameRoundSetCriteria criteria)
+	public async Task GameRoundSetAsync(GameRoundSetCriteria criteria)
 	{
 		using (IDbConnection db = new NpgsqlConnection(_connectionString))
 		{
@@ -62,11 +62,13 @@ public class GameRoundRepository : IGameRoundRepository
 			parameters.Add("@external_created_on", criteria.ExternalCreatedOn);
 			parameters.Add("@external_closed_on", criteria.ExternalClosedOn);
 			parameters.Add("@bet_amount", criteria.BetAmount);
+			parameters.Add("@actual_bet_amount", criteria.ActualAmount);
 			parameters.Add("@valid_bet_amount", criteria.ValidBetAmount);
 			parameters.Add("@settle_amount", criteria.SettleAmount);
 			parameters.Add("@commission", criteria.Commission);
 			parameters.Add("@turnover", criteria.Turnover);
-			parameters.Add("@win_loss", criteria.WinLoss);
+			parameters.Add("@win_loss", criteria.Payout);
+			parameters.Add("@payout", criteria.Payout);
 			parameters.Add("@tie_bet_adjustment", criteria.TieBetAdjustment);
 			parameters.Add("@client_status", criteria.ClientStatus);
 			parameters.Add("@reopen_turnover_adjustment", criteria.ReopenTurnoverAdjustment);
@@ -93,11 +95,12 @@ public class GameRoundRepository : IGameRoundRepository
 						"external_created_on => @external_created_on, " +
 						"external_closed_on => @external_closed_on, " +
 						"bet_amount => @bet_amount, " +
+						"actual_bet_amount => @actual_bet_amount, " +
 						"valid_bet_amount => @valid_bet_amount, " +
 						"settle_amount => @settle_amount, " +
 						"commission => @commission, " +
 						"turnover => @turnover, " +
-						"win_loss => @win_loss, " +
+						"payout => @payout, " +
 						"tie_bet_adjustment => @tie_bet_adjustment, " +
 						"client_status => @client_status, " +
 						"reopen_turnover_adjustment => @reopen_turnover_adjustment, " +
@@ -105,9 +108,7 @@ public class GameRoundRepository : IGameRoundRepository
 						"effective_betting_percentage => @effective_betting_percentage, " +
 						"actiontype => @actiontype);";
 
-			var result = await db.ExecuteAsync(sqlQuery, parameters);
-
-			return result;
+			_ = await db.ExecuteAsync(sqlQuery, parameters);
 		}
 	}
 

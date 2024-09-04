@@ -51,7 +51,7 @@ public class GameBetRepository : IGameBetRepository
 			parameters.Add("@settle", criteria.Settle);
 			parameters.Add("@commission", criteria.Commission);
 			parameters.Add("@turnover", criteria.Turnover);
-			parameters.Add("@payout", criteria.WinLoss);
+			parameters.Add("@payout", criteria.Payout);
 			parameters.Add("@jackpot", criteria.Jackpot);
 			parameters.Add("@created_on", criteria.CreatedOn);
 			parameters.Add("@closed_on", criteria.ClosedOn);

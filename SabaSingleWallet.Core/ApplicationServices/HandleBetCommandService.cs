@@ -29,6 +29,7 @@ public class HandleBetCommandService(
 
 			var exchangeRates = GetExchangeRates(playerInfo.PlayerCode, gameInfo.GameProviderCode);
 			var gameCurrencyInfo = GetExchangeRates(playerInfo.PlayerCode, gameInfo.GameProviderCode);
+			
 			var existedRoundId = await roundRepository.GetIdAsync(gameProviderId, gameInfo.GameId, playerInfo.WalletId, command.ExternalRoundId);
 			var id = existedRoundId.HasValue ? existedRoundId : await serialNumberGenerator.GenerateAsync(cancellationToken: cancellationToken).ConfigureAwait(false);
 			var roundStatus = command.BetState is BetState.Waiting or BetState.Running ? RoundStatus.Open : RoundStatus.Closed;
@@ -47,21 +48,17 @@ public class HandleBetCommandService(
 				ExternalCreatedOn = command.ExternalCreatedOn,
 				ExternalClosedOn = command.ExternalClosedOn,
 				BetAmount = ConvertPlatformRounds(exchangeRates, command.Bet),
+				ActualAmount = ConvertPlatformRounds(exchangeRates, command.ActualAmount),
 				ValidBetAmount = ConvertPlatformRounds(exchangeRates, command.ValidBet),
 				SettleAmount = ConvertPlatformRounds(exchangeRates, command.Settle),
 				Commission = ConvertPlatformRounds(exchangeRates, command.Commission),
 				Turnover = ConvertPlatformRounds(exchangeRates, command.Turnover),
-				WinLoss = ConvertPlatformRounds(exchangeRates, command.WinLoss),
+				Payout = ConvertPlatformRounds(exchangeRates, command.Payout),
 				Status = (short)roundStatus,
 				CreatedOn = DateTime.Now,
 				UpdatedOn = DateTime.Now,
 			};
-			_ = await roundRepository.GameRoundSetAsync(roundCriteria);
-			//await roundRepository.GameRoundDetailSetAsync(new Models.Criteria.GameRound.GameRoundDetailSetCriteria()
-			//{
-			//	Id = id,
-			//	Data = JsonSerializer.Serialize(roundCriteria),
-			//});
+			await roundRepository.GameRoundSetAsync(roundCriteria);
 
 			var gameBetCriteria = new GameBetSetCriteria()
 			{
@@ -90,16 +87,17 @@ public class HandleBetCommandService(
 				JackpotState = (int)command.JackpotState,
 				CurrencyRatio = exchangeRates, // Double check
 				Bet = ConvertPlatformRounds(exchangeRates, command.Bet),
+				ActualAmount = ConvertPlatformRounds(exchangeRates, command.ActualAmount),
 				ValidBet = ConvertPlatformRounds(exchangeRates, command.ValidBet),
 				Settle = ConvertPlatformRounds(exchangeRates, command.Settle),
 				Commission = ConvertPlatformRounds(exchangeRates, command.Commission),
 				Turnover = ConvertPlatformRounds(exchangeRates, command.Turnover),
-				WinLoss = ConvertPlatformRounds(exchangeRates, command.WinLoss),
+				Payout = ConvertPlatformRounds(exchangeRates, command.Payout),
 				Jackpot = ConvertPlatformRounds(exchangeRates, command.Jackpot),
+				ResetState = 0,
 				CreatedOn = DateTimeOffset.UtcNow,
 				ClosedOn = DateTimeOffset.UnixEpoch.UtcDateTime,
 				UpdatedOn = DateTimeOffset.UtcNow,
-				ResetState = 0,
 				ResetOn = DateTimeOffset.UnixEpoch.UtcDateTime,
 				ActionType = command.Action
 			};

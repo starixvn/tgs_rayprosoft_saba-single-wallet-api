@@ -60,11 +60,12 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 			ResettleState = ResettleState.None,
 			JackpotState = JackpotState.None,
 			Bet = bet,
+			ActualAmount = message.ActualAmount,
 			ValidBet = validBet,
 			Settle = settle,
 			Commission = 0.0m,
 			Turnover = turnover,
-			WinLoss = winLoss,
+			Payout = winLoss,
 			Jackpot = 0.0M,
 			AdditionalData = JsonSerializer.Serialize(message)
 		};

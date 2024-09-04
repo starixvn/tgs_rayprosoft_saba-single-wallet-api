@@ -18,11 +18,12 @@ public class GameRoundSetCriteria
 	public DateTime ExternalCreatedOn { get; set; } // timestamp with time zone
 	public DateTime? ExternalClosedOn { get; set; } // timestamp with time zone (nullable)
 	public decimal BetAmount { get; set; } // numeric
+	public decimal ActualAmount { get; internal set; } // numeric
 	public decimal ValidBetAmount { get; set; } // numeric
 	public decimal SettleAmount { get; set; } // numeric
 	public decimal Commission { get; set; } // numeric
 	public decimal Turnover { get; set; } // numeric
-	public decimal WinLoss { get; set; } // numeric
+	public decimal Payout { get; set; } // numeric
 	public decimal TieBetAdjustment { get; set; } // numeric
 	public short ClientStatus { get; set; } // smallint
 	public decimal ReopenTurnoverAdjustment { get; set; } // numeric

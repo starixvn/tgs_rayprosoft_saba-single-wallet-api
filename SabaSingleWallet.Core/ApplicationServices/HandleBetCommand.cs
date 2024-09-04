@@ -26,7 +26,8 @@ public class HandleBetCommand
 	public decimal Settle { get; set; }
 	public decimal Commission { get; set; }
 	public decimal Turnover { get; set; }
-	public decimal WinLoss { get; set; }
+	public decimal Payout { get; set; }
 	public decimal Jackpot { get; set; }
 	public string AdditionalData { get; set; }
+	public decimal ActualAmount { get; set; }
 }
