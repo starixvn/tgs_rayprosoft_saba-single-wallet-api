@@ -56,11 +56,11 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 		{
 			SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
-			return new CancelBetResult("803", null, "No Bet Found");
+			return await GenerateResponseAsync("803", null, "No Bet Found", query, cancellationToken);
 		}
 	}
 
-	private async Task<CancelBetResult> GenerateResponseAsync(string status, decimal balance, string? message, CancelBetRequest request, CancellationToken cancellationToken)
+	private async Task<CancelBetResult> GenerateResponseAsync(string status, decimal? balance, string? message, CancelBetRequest request, CancellationToken cancellationToken)
 	{
 		var res = new CancelBetResult(status, balance, message);
 
