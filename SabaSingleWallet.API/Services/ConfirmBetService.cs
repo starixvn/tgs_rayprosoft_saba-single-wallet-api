@@ -53,9 +53,9 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 					OddsType = transaction.OddsType,
 					RefId = transaction.RefId,
 					TxId = transaction.TxId,
-					WinLostDate = DateTimeOffset.Parse(transaction.WinlostDate).DateTime,
-					TransactionTime = DateTimeOffset.Parse(confirmBetData.TransactionTime).DateTime,
-					UpdateTime = DateTimeOffset.Parse(confirmBetData.UpdateTime).DateTime,
+					WinLostDate = DateTimeOffset.Parse(transaction.WinlostDate).ToUniversalTime().DateTime,
+					TransactionTime = DateTimeOffset.Parse(confirmBetData.TransactionTime).ToUniversalTime().DateTime,
+					UpdateTime = DateTimeOffset.Parse(confirmBetData.UpdateTime).ToUniversalTime().DateTime,
 				};
 
 				var spCallResult = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(criteria, StoreProcedureMapper.ConfirmBetSP);
