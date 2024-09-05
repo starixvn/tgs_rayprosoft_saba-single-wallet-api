@@ -52,8 +52,6 @@ public class PlaceBetParlayService(
 
 			if (error)
 			{
-				await RefundAsync(query, cancellationToken);
-
 				var errorResponse = new PlaceBetParlayResult("506", ticketInfos, "Unable To Processed. Please Try Again Later");
 
 				await WriteLogAsync(query, errorResponse, cancellationToken);
@@ -96,21 +94,6 @@ public class PlaceBetParlayService(
 		}
 
 		return null;
-	}
-
-	private async ValueTask RefundAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken)
-	{
-		var playerCode = query.message.UserId.ToPlayerCode();
-		var refIds = JsonConvert.SerializeObject(query.message.Txns.Select(t => t.RefId));
-
-		_ = await cashClient.GameProviderAddBalanceAsync(
-				playerCode,
-				query.message.TotalBetAmount,
-				refIds,
-				query.message.OperationId,
-				null,
-				cancellationToken
-			).ConfigureAwait(false);
 	}
 
 	private async ValueTask WriteLogAsync(PlaceBetParlayRequest request, PlaceBetParlayResult response, CancellationToken cancellationToken)
