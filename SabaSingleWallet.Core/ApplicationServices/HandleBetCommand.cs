@@ -11,8 +11,8 @@ public class HandleBetCommand
 	public string ExternalBetId { get; set; }
 	public string ExternalGameId { get; set; }
 	public DateTime ExternalCreatedOn { get; set; }
-	public DateTime ExternalClosedOn { get; set; }
-	public DateTime ExternalPayoffOn { get; set; }
+	public DateTime? ExternalClosedOn { get; set; }
+	public DateTime? ExternalPayoffOn { get; set; }
 	public DateTime ExternalResettleOn { get; set; }
 	public BetState BetState { get; set; }
 	public BetType BetType { get; set; }

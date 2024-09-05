@@ -78,8 +78,8 @@ public class HandleBetCommandService(
 				PlayerCode = playerInfo.PlayerCode,
 				CurrencyCode = playerInfo.CurrencyCode,
 				ExternalRoundId = command.ExternalRoundId,
-				ExternalClosedOn = command.ExternalClosedOn.ToUniversalTime(),
-				ExternalPayoffOn = command.ExternalPayoffOn.ToUniversalTime(),
+				ExternalClosedOn = command.ExternalClosedOn?.ToUniversalTime(),
+				ExternalPayoffOn = command.ExternalPayoffOn?.ToUniversalTime(),
 				ExternalResettleOn = command.ExternalResettleOn.ToUniversalTime(),
 				// TO DO: BetType is hard code
 				BetState = (int)BetType.Normal,
@@ -119,7 +119,7 @@ public class HandleBetCommandService(
 	{
 		if (betState is BetState.Waiting or BetState.Running)
 		{
-			return RoundClientStatus.New;
+			return RoundClientStatus.Open;
 		}
 
 		if (betState is BetState.Loss or BetState.HalfLoss)

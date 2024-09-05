@@ -29,7 +29,7 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 		var turnover = 0.0m;
 		var payout = 0.0m;
 		var cashoutState = CashoutState.None;
-		var externalClosedOn = DateTimeOffset.UnixEpoch.DateTime;
+		var externalClosedOn = (DateTimeOffset?)null;
 
 		if (isClosed)
 		{
@@ -51,8 +51,8 @@ public class MessageConverter(IOptions<GameProviderInfo> gameRecordInfoOptions) 
 			ExternalBetId = message.TxId,
 			ExternalRoundId = message.TxId,
 			ExternalCreatedOn = message.TransactionTime,
-			ExternalClosedOn = externalClosedOn,
-			ExternalPayoffOn = externalClosedOn,
+			ExternalClosedOn = externalClosedOn?.DateTime,
+			ExternalPayoffOn = externalClosedOn?.DateTime,
 			ExternalResettleOn = DateTimeOffset.UnixEpoch.DateTime,
 			BetState = betState,
 			BetType = (BetType)message.BetType,
