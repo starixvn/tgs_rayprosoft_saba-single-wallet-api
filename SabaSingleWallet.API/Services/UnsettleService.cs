@@ -38,10 +38,13 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 				}
 
 				var playerCode = settlement.UserId.ToPlayerCode();
-				var adjustAmount = settlement.CreditAmount - settlement.DebitAmount;
-				var balanceResponse = adjustAmount > 0
-					? await cashServiceClient.GameProviderAddBalanceAsync(playerCode, adjustAmount, cancellationToken: cancellationToken)
-					: await cashServiceClient.GameProviderDeductBalanceAsync(playerCode, -adjustAmount, cancellationToken: cancellationToken);
+				var balanceResponse = await cashServiceClient.GameProviderAdjustBalanceAsync(
+					playerCode,
+					settlement.CreditAmount,
+					settlement.DebitAmount,
+					query.message.Action,
+					query.message.OperationId,
+					cancellationToken: cancellationToken);
 
 				if (balanceResponse.ErrorCode > 0)
 				{

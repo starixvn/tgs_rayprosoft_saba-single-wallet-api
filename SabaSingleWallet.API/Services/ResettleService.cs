@@ -37,17 +37,18 @@ public class ResettleService(
 				//TODO if isOnlyWinlostDateChanged, then no need to recalculate params
 
 				var playerCode = settlement.UserId.ToPlayerCode();
-				var adjustAmount = settlement.CreditAmount - settlement.DebitAmount;
-				if (adjustAmount != 0)
-				{
-					var balanceResponse = adjustAmount > 0
-						? await cashServiceClient.GameProviderAddBalanceAsync(playerCode, adjustAmount, cancellationToken: cancellationToken)
-						: await cashServiceClient.GameProviderDeductBalanceAsync(playerCode, -adjustAmount, cancellationToken: cancellationToken);
 
-					if (balanceResponse.ErrorCode > 0)
-					{
-						return await GenerateResultAsync(query, "307", "Cannot Credit player. Please Try Again Later");
-					}
+				var balanceResponse = await cashServiceClient.GameProviderAdjustBalanceAsync(
+					playerCode,
+					settlement.CreditAmount,
+					settlement.DebitAmount,
+					query.message.Action,
+					query.message.OperationId,
+					cancellationToken: cancellationToken);
+
+				if (balanceResponse.ErrorCode > 0)
+				{
+					return await GenerateResultAsync(query, "307", "Cannot Credit player. Please Try Again Later");
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Resettle(criteria), cancellationToken);
