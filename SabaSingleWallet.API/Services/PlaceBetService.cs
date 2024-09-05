@@ -43,17 +43,7 @@ public class PlaceBetGetService(
 
 			var res = new PlaceBetResult("0", query.message.RefId, spResult.Licenseetxid, "");
 
-			//await messagePublisher.HandleBetAsync(HandleMessageMapper.PlaceBet(criteria), cancellationToken);
-			await messagePublisher.HandleBetAsync(new HandleBetMessage()
-			{
-				Action = query.message.Action,
-				PlayerCode = query.message.UserId.ToPlayerCode(),
-				ExtraStatus = "",
-				BetState = (int)BetState.Waiting,
-				BetAmount = query.message.DebitAmount,
-				Payout = query.message.ActualAmount,
-				TxId = query.message.TsId
-			}, cancellationToken);
+			await messagePublisher.HandleBetAsync(HandleMessageMapper.PlaceBet(criteria), cancellationToken);
 
 			return await GenerateResponseAsync(query, res, cancellationToken);
 		}

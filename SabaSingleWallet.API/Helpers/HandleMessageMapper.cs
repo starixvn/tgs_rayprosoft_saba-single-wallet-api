@@ -17,7 +17,6 @@ public class HandleMessageMapper
 			Action = "PlaceBet",
 			PlayerCode = data.UserId.ToPlayerCode(),
 			BetState = (int)BetState.Waiting,
-			TxId = data.TxId.ToString(),
 			ActualAmount = data.BetAmount,
 			BetAmount = data.DebitAmount,
 			Payout = data.ActualAmount,
