@@ -24,7 +24,6 @@ builder.Services
 	.AddSingleton<MongoDBConnectionManager>()
 	.AddSabaSingleWalletApiCore()
 	.AddRepositories()
-	.AddApiLogsRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient)
 	.AddCashServiceClient((op, sp) =>
 	{
 		var config = sp.GetRequiredService<IConfiguration>();
@@ -38,9 +37,7 @@ builder.Services
 	SerializerRegistry = TgsNatsSerializerRegistration.Default
 }))
 .AddMessageQueue()
-.AddNatsMessageQueue(config => config
-	.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
-	 .AddHandler<ApiLogsMessageHandler>(SabaNatsConst.ApiLogsPublish, string.Concat(SabaNatsConst.ApiLogsPublish, ".", Environment.MachineName)))
+.AddNatsMessageQueue(config => config.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats")))
  .ClearAllExchanges()
  .AddNatsGlobPatternExchange(SabaNatsConst.ApiLogsPublish)
  .AddNatsGlobPatternExchange(SabaNatsConst.HandleBetPublish);

@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.Common;
@@ -29,14 +30,11 @@ public class PlaceBetGetService(
 
 			if (!string.IsNullOrWhiteSpace(deductBalanceResult.ErrorMessage))
 			{
-				return await GenerateResponseAsync (query,  new PlaceBetResult("307", query.message.RefId, null, "Cannot Credit player. Please Try Again Later"), cancellationToken);
+				return await GenerateResponseAsync(query, new PlaceBetResult("307", query.message.RefId, null, "Cannot Credit player. Please Try Again Later"), cancellationToken);
 			}
 
-			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>
-				(
-				mapper.Map<PlaceBetCriteria>(query.message),
-				StoreProcedureMapper.PlaceBetSP
-				);
+			var criteria = mapper.Map<PlaceBetCriteria>(query.message);
+			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>(criteria, StoreProcedureMapper.PlaceBetSP);
 
 			if (spResult.SpResult != 0)
 			{
@@ -45,6 +43,7 @@ public class PlaceBetGetService(
 
 			var res = new PlaceBetResult("0", query.message.RefId, spResult.Licenseetxid, "");
 
+			//await messagePublisher.HandleBetAsync(HandleMessageMapper.PlaceBet(criteria), cancellationToken);
 			await messagePublisher.HandleBetAsync(new HandleBetMessage()
 			{
 				Action = query.message.Action,
@@ -56,7 +55,7 @@ public class PlaceBetGetService(
 				TxId = query.message.TsId
 			}, cancellationToken);
 
-			return await GenerateResponseAsync (query, res, cancellationToken);
+			return await GenerateResponseAsync(query, res, cancellationToken);
 		}
 		catch (Exception ex)
 		{
@@ -65,7 +64,7 @@ public class PlaceBetGetService(
 		}
 	}
 
-	private async Task<PlaceBetResult> GenerateResponseAsync( PlaceBetRequest request, PlaceBetResult result, CancellationToken cancellationToken)
+	private async Task<PlaceBetResult> GenerateResponseAsync(PlaceBetRequest request, PlaceBetResult result, CancellationToken cancellationToken)
 	{
 		await messagePublisher.LogApi(new ApiLogMessage()
 		{

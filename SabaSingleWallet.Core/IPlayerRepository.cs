@@ -1,14 +1,6 @@
-﻿using SabaSingleWallet.Core.Models;
-
-namespace SabaSingleWallet.Core;
+﻿namespace SabaSingleWallet.Core;
 
 public interface IPlayerRepository
 {
 	Task<TResult> CallStoredProcedureAsync<TCriteria, TResult>(TCriteria criteria, string spName);
-
-	Task<Guid> GetProviderIdByCodeAsync(string code);
-
-	Task<GameInfo> GetGamesByProviderIdAsync(Guid gameProviderId);
-
-	Task<Guid> GetGameProviderConfigurationIdAsync(Guid gameProviderId, Guid brandId);
 }
