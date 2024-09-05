@@ -10,6 +10,5 @@ public static class ServiceCollecitonExtensions
 	=> services
 	.RegisterAllServiceUtilityTypes(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient)
 	.AddSerialNumberGenerator()
-	.AddSingleton<IApiLogsDispatcher, ApiLogsDispatcher>()
-	.AddSingleton<IHandleBetDispatcher, HandleBetDispatcher>();
+	.AddSingleton<IApiLogsDispatcher, ApiLogsDispatcher>();
 }

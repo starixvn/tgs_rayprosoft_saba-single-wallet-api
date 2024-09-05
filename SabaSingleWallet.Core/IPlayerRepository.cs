@@ -8,8 +8,6 @@ public interface IPlayerRepository
 
 	Task<Guid> GetProviderIdByCodeAsync(string code);
 
-	Task<PlayerInfo> GetPlayerInfobyPlayerCodeAsync(string code);
-
 	Task<GameInfo> GetGamesByProviderIdAsync(Guid gameProviderId);
 
 	Task<Guid> GetGameProviderConfigurationIdAsync(Guid gameProviderId, Guid brandId);

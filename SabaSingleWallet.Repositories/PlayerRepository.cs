@@ -5,7 +5,6 @@ using Npgsql;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.Core.Models;
 
-
 namespace SabaSingleWallet.Repositories
 {
 	public class PlayerRepositoryImp : IPlayerRepository
@@ -47,65 +46,30 @@ namespace SabaSingleWallet.Repositories
 			}
 		}
 
-		public async Task<PlayerInfo> GetPlayerInfobyPlayerCodeAsync (string code)
-		{
-			using (IDbConnection db = new NpgsqlConnection(_connectionString))
-			{
-				string sql = @"
-							SELECT
-								r.Id AS ResellerId,
-								r.Code AS ResellerCode,
-								l.Id AS LicenseeId,
-								l.Code AS LicenseeCode,
-								b.Id AS BrandId,
-								b.Code AS BrandCode,
-								p.player_code AS PlayerCode,
-								p.username AS Username,
-								p.default_wallet_id AS WalletId,
-								p.default_wallet_currency_code AS CurrencyCode
-							FROM
-								dbo.Players p
-							INNER JOIN
-								dbo.Brands b ON p.brand_id = b.id
-							INNER JOIN
-								dbo.Licensees l ON b.licensee_id = l.id
-							INNER JOIN
-								dbo.Resellers r ON l.reseller_id = r.id
-							WHERE
-								p.player_code = @PlayerCode;";
-
-				var parameters = new { PlayerCode = code };
-				var playerInfo = await db.QueryFirstOrDefaultAsync<PlayerInfo>(sql, parameters); // check correct property later 
-				return playerInfo;
-			}
-		}
-
 		public async Task<GameInfo> GetGamesByProviderIdAsync(Guid gameProviderId)
 		{
 			gameProviderId = gameProviderId == default ? Guid.Parse("9d57276a-15ee-4e3f-a1cb-6cb7dd7bb641") : gameProviderId;
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
 				string sqlQuery = @"
-            SELECT 
-                id as GameId, 
-                status, 
-                external_id AS ExternalGameId, 
-                game_provider_id AS GameProviderId, 
-                sub_game AS SubGame, 
-                available_currencies AS AvailableCurrencies, 
-                code as GameCode, 
-                name, 
+            SELECT
+                id as GameId,
+                status,
+                external_id AS ExternalGameId,
+                game_provider_id AS GameProviderId,
+                sub_game AS SubGame,
+                available_currencies AS AvailableCurrencies,
+                code as GameCode,
+                name,
                 sub_game_provider_code AS SubGameProviderCode
-            FROM 
+            FROM
                 dbo.games
-            WHERE 
+            WHERE
                 game_provider_id = @GameProviderId";
 
 				var parameters = new { GameProviderId = gameProviderId };
-				var games = await db.QueryFirstOrDefaultAsync<GameInfo>(sqlQuery, parameters); // check correct property later 
+				var games = await db.QueryFirstOrDefaultAsync<GameInfo>(sqlQuery, parameters); // check correct property later
 				return games;
-
-				
 			}
 		}
 
@@ -114,12 +78,12 @@ namespace SabaSingleWallet.Repositories
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
 				string sqlQuery = @"
-									SELECT 
-										bgp.game_provider_configuration_id 
-									FROM 
+									SELECT
+										bgp.game_provider_configuration_id
+									FROM
 										dbo.brand_game_providers AS bgp
-									WHERE 
-										bgp.game_provider_id = @GameProviderId 
+									WHERE
+										bgp.game_provider_id = @GameProviderId
 										AND bgp.brand_id = @BrandId";
 
 				var parameters = new { GameProviderId = gameProviderId, BrandId = brandId };

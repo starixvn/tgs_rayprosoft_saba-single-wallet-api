@@ -5,11 +5,9 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SabaSingleWallet.API;
 using SabaSingleWallet.API.Messages;
-using SabaSingleWallet.Core;
 using SabaSingleWallet.Core.DependencyInjection;
 using SabaSingleWallet.Repositories.DependencyInjection;
 using Tgs.GameRecord.Saba.Common;
-using Tgs.GameRecord.Saba.Core;
 using Tgs.MessageQueue.Nats.Serializers;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,20 +22,6 @@ builder.Services
 	})
 	.Services
 	.AddSingleton<MongoDBConnectionManager>()
-	.AddOptions<GameProviderInfo>()
-	.Configure((GameProviderInfo options, IServiceProvider sp) =>
-	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		configuration.GetSection("GameProviderInfo").Bind(options);
-	})
-	.Services
-	.AddOptions<PolicySettingsOptions>()
-	.Configure((PolicySettingsOptions options, IServiceProvider sp) =>
-	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		configuration.GetSection("PolicySettings").Bind(options);
-	})
-	.Services
 	.AddSabaSingleWalletApiCore()
 	.AddRepositories()
 	.AddApiLogsRepositories(mongoClientResolver: (sp) => sp.GetRequiredService<MongoDBConnectionManager>().MongoClient)
@@ -56,8 +40,7 @@ builder.Services
 .AddMessageQueue()
 .AddNatsMessageQueue(config => config
 	.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats"))
-	 .AddHandler<ApiLogsMessageHandler>(SabaNatsConst.ApiLogsPublish, string.Concat(SabaNatsConst.ApiLogsPublish, ".", Environment.MachineName))
-	 .AddHandler<HandleBetMessageHandler>(SabaNatsConst.HandleBetPublish, string.Concat(SabaNatsConst.HandleBetPublish, ".", Environment.MachineName)))
+	 .AddHandler<ApiLogsMessageHandler>(SabaNatsConst.ApiLogsPublish, string.Concat(SabaNatsConst.ApiLogsPublish, ".", Environment.MachineName)))
  .ClearAllExchanges()
  .AddNatsGlobPatternExchange(SabaNatsConst.ApiLogsPublish)
  .AddNatsGlobPatternExchange(SabaNatsConst.HandleBetPublish);
@@ -66,7 +49,6 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddGameInterfaceCommon();
 builder.Services.AddGameInterfaceCore();
 builder.Services
 	.AddHttpLogging(logging => logging.LoggingFields = HttpLoggingFields.All)
