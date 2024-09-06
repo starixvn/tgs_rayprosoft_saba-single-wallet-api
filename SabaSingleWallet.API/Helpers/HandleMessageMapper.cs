@@ -1,7 +1,6 @@
 ﻿using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
-using SabaSingleWallet.Repositories.Models.PlaceBet;
 using SabaSingleWallet.Repositories.Models.Settle;
 using SabaSingleWallet.Repositories.Models.Unsettle;
 using Tgs.GameRecord.Handle.Common.Protos;
@@ -18,6 +17,7 @@ public class HandleMessageMapper
 			PlayerCode = PlayerCode,
 			BetState = (int)BetState.Running,
 			TxId = data.TxId.ToString(),
+			//TO DO: remove BetAmount
 			BetAmount = data.ActualAmount,
 			LicenseeTxid = data.LicenseetxId,
 			Payout = data.ActualAmount,
@@ -46,7 +46,7 @@ public class HandleMessageMapper
 			TxId = data.TxId.ToString(),
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
-			WinlostDate = data.WinlostDate?.Date ?? DateTimeOffset.UnixEpoch.DateTime,
+			WinlostDate = data.WinlostDate?.DateTime,
 		};
 	}
 
@@ -60,7 +60,7 @@ public class HandleMessageMapper
 			TxId = data.TxId.ToString(),
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
-			WinlostDate = data.WinlostDate?.Date ?? DateTimeOffset.UnixEpoch.DateTime,
+			WinlostDate = data.WinlostDate,
 		};
 	}
 
@@ -74,7 +74,7 @@ public class HandleMessageMapper
 			TxId = data.TxId.ToString(),
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
-			WinlostDate = data.WinlostDate?.Date ?? DateTimeOffset.UnixEpoch.DateTime,
+			WinlostDate = data.WinlostDate?.DateTime,
 		};
 	}
 
