@@ -24,5 +24,7 @@ public class HandleBetMessage
 
 	public string TxId { get; set; } = "";
 
+	public long LicenseeTxid { get; set; }
+
 	public int BetType { get; set; } = 0;
 }

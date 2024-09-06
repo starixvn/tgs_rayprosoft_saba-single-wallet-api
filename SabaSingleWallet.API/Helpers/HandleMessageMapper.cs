@@ -10,20 +10,6 @@ namespace SabaSingleWallet.API.Helpers;
 
 public class HandleMessageMapper
 {
-	public static HandleBetMessage PlaceBet(PlaceBetCriteria data)
-	{
-		return new HandleBetMessage()
-		{
-			Action = "PlaceBet",
-			PlayerCode = data.UserId.ToPlayerCode(),
-			BetState = (int)BetState.Waiting,
-			ActualAmount = data.BetAmount,
-			BetAmount = data.DebitAmount,
-			Payout = data.ActualAmount,
-			BetType = data.BetType,
-		};
-	}
-
 	public static HandleBetMessage ConfirmBet(ConfirmBetCriteria data, string PlayerCode)
 	{
 		return new HandleBetMessage()
@@ -33,6 +19,7 @@ public class HandleMessageMapper
 			BetState = (int)BetState.Running,
 			TxId = data.TxId.ToString(),
 			BetAmount = data.ActualAmount,
+			LicenseeTxid = data.LicenseetxId,
 			Payout = data.ActualAmount,
 			TransactionTime = data.TransactionTime,
 			ActualAmount = data.ActualAmount,
@@ -96,13 +83,13 @@ public class HandleMessageMapper
 		return status.ToLower() switch
 		{
 			"won" => BetState.Win,
-			"lost" => BetState.Loss,
+			"lose" => BetState.Loss,
 			"draw" => BetState.Draw,
 			"void" => BetState.Void,
 			"refund" => BetState.Refund,
 			"reject" => BetState.Cancel,
 			"half won" => BetState.HalfWin,
-			"half lost" => BetState.HalfLoss,
+			"half lose" => BetState.HalfLoss,
 			_ => BetState.Running,
 		};
 	}
