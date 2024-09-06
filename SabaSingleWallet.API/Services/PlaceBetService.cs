@@ -43,8 +43,6 @@ public class PlaceBetGetService(
 
 			var res = new PlaceBetResult("0", query.message.RefId, spResult.Licenseetxid, "");
 
-			await messagePublisher.HandleBetAsync(HandleMessageMapper.PlaceBet(criteria), cancellationToken);
-
 			return await GenerateResponseAsync(query, res, cancellationToken);
 		}
 		catch (Exception ex)
