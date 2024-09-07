@@ -7,6 +7,7 @@ using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using Tgs.CashService.Client;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
@@ -57,11 +58,19 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 
 				if (transaction.IsOddsChanged)
 				{
-					var addAmmountResut = await client.GameProviderAddBalanceAsync(playerCode, transaction.CreditAmount, cancellationToken: cancellationToken);
+					var addAmmountResut = await client.GameProviderAddBalanceAsync(
+						playerCode,
+						transaction.CreditAmount,
+						new Tgs.CashService.ProviderInfo(
+						ProviderConst.ProviderCode,
+						transaction.RefId,
+						query.message.OperationId,
+						query.message.Action),
+						cancellationToken: cancellationToken);
 
-					if (!string.IsNullOrWhiteSpace(addAmmountResut.ErrorMessage))
+					if (addAmmountResut.ErrorCode != SabaStatusCodeConst.SuccessCode)
 					{
-						return await GenerateResponseAsync("307", 0, "Cannot Credit player. Please Try Again Later", query, cancellationToken);
+						return await GenerateResponseAsync(addAmmountResut.ErrorCode, 0, query, cancellationToken);
 					}
 				}
 
@@ -69,7 +78,7 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.ConfirmBet(criteria, playerCode), cancellationToken);
 
-				return await GenerateResponseAsync("0", balance, "", query, cancellationToken);
+				return await GenerateResponseAsync(SabaStatusCodeConst.SuccessCode, balance, query, cancellationToken);
 			}
 
 			return await GenerateResponseAsync("504", 0, "No Such Ticket", query, cancellationToken);
@@ -82,9 +91,9 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 		}
 	}
 
-	private async Task<ConfirmBetResult> GenerateResponseAsync(string status, decimal balance, string? message, ConfirmBetRequest request, CancellationToken cancellationToken)
+	private async Task<ConfirmBetResult> GenerateResponseAsync(string status, decimal balance, ConfirmBetRequest request, CancellationToken cancellationToken)
 	{
-		var res = new ConfirmBetResult(status, balance, message);
+		var res = new ConfirmBetResult(status, balance);
 
 		await messagePublisher.LogApi(new ApiLogMessage()
 		{

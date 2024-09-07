@@ -2,6 +2,5 @@
 
 public record ConfirmBetResult(
 		string status,
-		decimal? balance = null,
-		string? msg = null
-		);
+		decimal? balance = null
+		) : ApiResult(status);
