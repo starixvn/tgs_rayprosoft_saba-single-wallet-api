@@ -1,9 +1,6 @@
-﻿
+﻿namespace SabaSingleWallet.Repositories.Models.Unsettle;
 
-namespace SabaSingleWallet.Repositories.Models.Unsettle;
-public class UnsettleSPResult
+public class UnsettleSPResult : SPResult
 {
-	public string SpResult { get; set; }
-
 	public string? Licenseetxid { get; set; }
 }

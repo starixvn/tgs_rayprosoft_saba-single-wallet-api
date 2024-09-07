@@ -1,20 +1,19 @@
 ﻿using AutoMapper;
 using Newtonsoft.Json;
 using SabaSingleWallet.API.Extensions;
-using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using Tgs.CashService.Client;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
 public class PlaceBetParlayService(
 	ICashServiceClient cashClient,
-	ISapaApiMessagePublishHandler messagePublisher,
 	IPlayerRepository playerRepository,
 	IMapper mapper
 ) : IGetService<PlaceBetParlayRequest, PlaceBetParlayResult>
@@ -27,84 +26,60 @@ public class PlaceBetParlayService(
 
 			if (deductError != null)
 			{
-				await WriteLogAsync(query, deductError, cancellationToken);
-
 				return deductError;
 			}
 
-			var ticketInfos = new List<TicketInfoMapping>();
-			var error = false;
+			var response = await InsertTicketsAsync(query, cancellationToken);
 
-			foreach (var ticket in CreatePlaceBetCriteria(query))
-			{
-				var insertTicketResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>(
-					ticket,
-					StoreProcedureMapper.PlaceBetSP
-				);
-
-				ticketInfos.Add(new TicketInfoMapping(ticket.RefId, insertTicketResult.Licenseetxid));
-
-				if (!error && insertTicketResult.SpResult != 0)
-				{
-					error = true;
-				}
-			}
-
-			if (error)
-			{
-				var errorResponse = new PlaceBetParlayResult("506", ticketInfos, "Unable To Processed. Please Try Again Later");
-
-				await WriteLogAsync(query, errorResponse, cancellationToken);
-
-				return errorResponse;
-			}
-
-			var successResponse = new PlaceBetParlayResult("0", ticketInfos, "");
-
-			await WriteLogAsync(query, successResponse, cancellationToken);
-
-			return successResponse;
+			return response;
 		}
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			return new PlaceBetParlayResult("203", null, "");
+
+			return new PlaceBetParlayResult(null, SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
 
 	private async ValueTask<PlaceBetParlayResult?> DeductBalanceAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken)
 	{
 		var playerCode = query.message.UserId.ToPlayerCode();
-		var refIds = JsonConvert.SerializeObject(query.message.Txns.Select(t => t.RefId));
-		var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(
-				playerCode,
-				query.message.TotalBetAmount,
-				refIds,
-				query.message.OperationId,
-				null,
-				cancellationToken
-			).ConfigureAwait(false);
 
-		if (deductBalanceResult.ErrorCode != 0)
+		foreach (var ticket in CreatePlaceBetCriteria(query))
 		{
-			var tickets = GetTicketInfos(query.message.Txns.Select(t => t.RefId).ToList(), null);
-			var result = CreateErrorResult(deductBalanceResult.ErrorCode, tickets);
+			var provider = ProviderConst.CreateProviderInfo(ticket.RefId, ticket.OperationId, ticket.Action);
+			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, ticket.DebitAmount, provider, "", cancellationToken).ConfigureAwait(false);
 
-			return result;
+			if (!string.Equals(deductBalanceResult.ErrorCode, "0"))
+			{
+				var tickets = GetErrorTickets(query.message.Txns.Select(t => t.RefId).ToList());
+
+				return new PlaceBetParlayResult(tickets, deductBalanceResult.ErrorCode);
+			}
 		}
 
 		return null;
 	}
 
-	private async ValueTask WriteLogAsync(PlaceBetParlayRequest request, PlaceBetParlayResult response, CancellationToken cancellationToken)
+	private async ValueTask<PlaceBetParlayResult> InsertTicketsAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken)
 	{
-		await messagePublisher.LogApi(new ApiLogMessage()
+		var ticketInfos = new List<TicketInfoMapping>();
+
+		foreach (var ticket in CreatePlaceBetCriteria(query))
 		{
-			Key = request.key,
-			Action = request.message.Action,
-			Request = request,
-			Response = response
-		}, cancellationToken);
+			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>(ticket, StoreProcedureMapper.PlaceBetSP);
+
+			ticketInfos.Add(new TicketInfoMapping(ticket.RefId, spResult.Licenseetxid));
+
+			if (!SabaStatusCodeConst.IsSuccess(spResult.StatusCode))
+			{
+				var tickets = GetErrorTickets(query.message.Txns.Select(t => t.RefId).ToList());
+
+				return new PlaceBetParlayResult(tickets);
+			}
+		}
+
+		return new PlaceBetParlayResult(ticketInfos);
 	}
 
 	private List<PlaceBetCriteria> CreatePlaceBetCriteria(PlaceBetParlayRequest query)
@@ -183,17 +158,6 @@ public class PlaceBetParlayService(
 		criteria.MatchDateTime = DateTime.Parse(ticket.MatchDateTime);
 	}
 
-	private static List<TicketInfoMapping> GetTicketInfos(List<string> refIds, string? licenseeTxId)
-		=> refIds.Select(id => new TicketInfoMapping(licenseeTxId, id)).ToList();
-
-	private static PlaceBetParlayResult CreateErrorResult(int code, List<TicketInfoMapping> tickets)
-	{
-		return code switch
-		{
-			1 => new PlaceBetParlayResult("1", tickets, "Duplicate Transaction"),
-			2 => new PlaceBetParlayResult("307", tickets, "Invalid Amount"),
-			502 => new PlaceBetParlayResult("502", tickets, "Player Has Insufficient Funds"),
-			_ => new PlaceBetParlayResult("-1", tickets, "Undefined"),
-		};
-	}
+	private static List<TicketInfoMapping> GetErrorTickets(List<string> refIds)
+		=> refIds.Select(id => new TicketInfoMapping(null, id)).ToList();
 }

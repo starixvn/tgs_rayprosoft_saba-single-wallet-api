@@ -1,8 +1,6 @@
 ﻿namespace SabaSingleWallet.Repositories.Models.PlaceBet;
 
-public class PlaceBetSPResult
+public class PlaceBetSPResult : SPResult
 {
-	public string? SpResult { get; set; }
-
 	public string? Licenseetxid { get; set; }
 }

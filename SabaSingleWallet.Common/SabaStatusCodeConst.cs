@@ -26,4 +26,6 @@ public static class SabaStatusCodeConst
 			? errorCode
 			: "Unknown Error";
 	}
+
+	public static bool IsSuccess(string code) => string.Equals(code, SuccessCode);
 }
