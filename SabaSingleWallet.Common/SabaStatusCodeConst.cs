@@ -2,8 +2,9 @@
 
 public static class SabaStatusCodeConst
 {
-	public const string ApiInternalErrorCode = "300";
 	public const string SuccessCode = "0";
+	public const string ApiInternalErrorCode = "300";
+	public const string NoTransactionFound = "301";
 
 	private static readonly Dictionary<string, string> ErrorCodeDictionary = new()
 	{
@@ -14,7 +15,8 @@ public static class SabaStatusCodeConst
 		// Cash Service Error
 		{ "201", "Insufficient Balance" },
 		// Saba API Error
-		{ ApiInternalErrorCode, "Internal Server Error" }
+		{ ApiInternalErrorCode, "Internal Server Error" },
+		{ NoTransactionFound, "No Transaction Found" },
 
 	};
 

@@ -2,7 +2,7 @@
 
 public class ConfirmBetSPResult
 {
-	public int SpResult { get; set; }
+	public string SpResult { get; set; }
 
 	public int SportType { get; set; }
 

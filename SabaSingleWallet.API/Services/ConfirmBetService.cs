@@ -51,9 +51,9 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 
 				var spCallResult = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(criteria, StoreProcedureMapper.ConfirmBetSP);
 
-				if (spCallResult.SpResult < 0)
+				if (spCallResult.SpResult != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
+					return await GenerateResponseAsync(spCallResult.SpResult, 0, query, cancellationToken);
 				}
 
 				if (transaction.IsOddsChanged)
@@ -81,13 +81,13 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 				return await GenerateResponseAsync(SabaStatusCodeConst.SuccessCode, balance, query, cancellationToken);
 			}
 
-			return await GenerateResponseAsync("504", 0, "No Such Ticket", query, cancellationToken);
+			return await GenerateResponseAsync(SabaStatusCodeConst.NoTransactionFound, 0, query, cancellationToken);
 		}
 		catch (Exception ex)
 		{
 			SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
-			return await GenerateResponseAsync("999", 0, "System Error", query, cancellationToken);
+			return await GenerateResponseAsync(SabaStatusCodeConst.ApiInternalErrorCode, 0, query, cancellationToken);
 		}
 	}
 
