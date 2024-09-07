@@ -17,22 +17,10 @@ public class HandleMessageMapper
 			PlayerCode = PlayerCode,
 			BetState = (int)BetState.Running,
 			TxId = data.TxId.ToString(),
-			//TO DO: remove BetAmount
-			BetAmount = data.ActualAmount,
 			LicenseeTxid = data.LicenseetxId,
-			Payout = data.ActualAmount,
+			WinLoss = data.ActualAmount,
 			TransactionTime = data.TransactionTime,
 			ActualAmount = data.ActualAmount,
-		};
-	}
-
-	public static HandleBetMessage CancelBet(string PlayerCode)
-	{
-		return new HandleBetMessage()
-		{
-			Action = "CancelBet",
-			PlayerCode = PlayerCode,
-			BetState = (int)BetState.Cancel,
 		};
 	}
 

@@ -17,17 +17,7 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 	{
 		Console.WriteLine(query.message);
 
-		var response = await ProcessRequestAsync(query, cancellationToken);
-
-		await messagePublisher.LogApi(new ApiLogMessage()
-		{
-			Key = query.key,
-			Action = query.message.Action,
-			Request = query,
-			Response = response
-		}, cancellationToken);
-
-		return response;
+		return await ProcessRequestAsync(query, cancellationToken);
 	}
 
 	private async Task<ConfirmBetResult> ProcessRequestAsync(ConfirmBetRequest query, CancellationToken cancellationToken = default)
