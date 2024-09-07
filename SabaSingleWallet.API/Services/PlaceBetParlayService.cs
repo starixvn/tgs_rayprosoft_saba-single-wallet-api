@@ -137,11 +137,13 @@ public class PlaceBetParlayService(
 	private static void MapParlayTicket(PlaceBetCriteria criteria, ComboInfo ticket)
 	{
 		criteria.RefId = ticket.RefId;
-		criteria.BetTypeName = ticket.ParlayType;
+		criteria.ParlayType = ticket.ParlayType;
 		criteria.BetAmount = ticket.BetAmount;
 		criteria.CreditAmount = ticket.CreditAmount;
 		criteria.DebitAmount = ticket.DebitAmount;
 		criteria.BetType = 29;
+		criteria.KickOffTime = null;
+		criteria.MatchDateTime = null;
 	}
 
 	private static void MapSingleBetTicket(PlaceBetCriteria criteria, TicketDetail ticket)
