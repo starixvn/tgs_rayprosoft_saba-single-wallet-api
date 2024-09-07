@@ -142,6 +142,8 @@ public class PlaceBetParlayService(
 		criteria.CreditAmount = ticket.CreditAmount;
 		criteria.DebitAmount = ticket.DebitAmount;
 		criteria.BetType = 29;
+		criteria.BetTypeName = "Parlay";
+		criteria.BetTypeName_en = "Parlay";
 		criteria.KickOffTime = null;
 		criteria.MatchDateTime = null;
 	}
