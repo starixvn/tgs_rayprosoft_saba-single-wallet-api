@@ -13,7 +13,12 @@ public static class SabaStatusCodeConst
 		{ "101", "Duplicate Transaction" },
 		{ "102", "No Data"},
 		// Cash Service Error
-		{ "201", "Insufficient Balance" },
+		{ "201", "Internal Server Error" },
+		{ "202", "Duplicate Transaction" },
+		{ "203", "Can't found wallet" },
+		{ "204", "Player Has Insufficient Funds" },
+		{ "205", "Invalid Amount" },
+		{ "206", "Invalid Data" },
 		// Saba API Error
 		{ ApiInternalErrorCode, "Internal Server Error" },
 		{ NoTransactionFound, "No Transaction Found" },
