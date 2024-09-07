@@ -116,7 +116,7 @@ public class PlaceBetParlayService(
 			var criteria = mapper.Map<PlaceBetCriteria>(query.message);
 			var singleBet = ticket.Detail!.FirstOrDefault(detail => detail is SingleBetDetail) as SingleBetDetail;
 
-			MapParlayTicket(criteria, ticket);
+			MapParlayTicket(criteria, ticket, query.message.TicketDetail);
 
 			if (singleBet != null)
 			{
@@ -134,7 +134,7 @@ public class PlaceBetParlayService(
 		return result;
 	}
 
-	private static void MapParlayTicket(PlaceBetCriteria criteria, ComboInfo ticket)
+	private static void MapParlayTicket(PlaceBetCriteria criteria, ComboInfo ticket, List<TicketDetail> ticketDetails)
 	{
 		criteria.RefId = ticket.RefId;
 		criteria.ParlayType = ticket.ParlayType;
@@ -146,6 +146,7 @@ public class PlaceBetParlayService(
 		criteria.BetTypeName_en = "Parlay";
 		criteria.KickOffTime = null;
 		criteria.MatchDateTime = null;
+		criteria.Detail = JsonConvert.SerializeObject(new { Ticket = ticket, TicketDetail = ticketDetails });
 	}
 
 	private static void MapSingleBetTicket(PlaceBetCriteria criteria, TicketDetail ticket)
