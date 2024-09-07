@@ -34,9 +34,9 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 					SportType = null
 				}, StoreProcedureMapper.CancelBetSP);
 
-				if (result.SpResult != SabaStatusCodeConst.SuccessCode)
+				if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResponseAsync(result.SpResult, null, query, cancellationToken);
+					return await GenerateResponseAsync(result.StatusCode, null, query, cancellationToken);
 				}
 
 				var balanceResponse = await cashClient.GameProviderAddBalanceAsync(

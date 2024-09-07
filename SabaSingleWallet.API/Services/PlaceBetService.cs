@@ -46,9 +46,9 @@ public class PlaceBetGetService(
 			var criteria = mapper.Map<PlaceBetCriteria>(query.message);
 			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>(criteria, StoreProcedureMapper.PlaceBetSP);
 
-			if (spResult.SpResult != SabaStatusCodeConst.SuccessCode)
+			if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 			{
-				return await GenerateResponseAsync(query, new PlaceBetResult(spResult.SpResult, query.message.RefId, null), cancellationToken);
+				return await GenerateResponseAsync(query, new PlaceBetResult(spResult.StatusCode, query.message.RefId, null), cancellationToken);
 			}
 
 			var res = new PlaceBetResult(SabaStatusCodeConst.SuccessCode, query.message.RefId, spResult.Licenseetxid);

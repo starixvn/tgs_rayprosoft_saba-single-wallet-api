@@ -26,13 +26,13 @@ public class GetTicketInfoService(ISapaApiMessagePublishHandler messagePublisher
 					RefId = query.message.RefId,
 				}, StoreProcedureMapper.GetTicketInfo);
 
-			if (result.SpResult != SabaStatusCodeConst.SuccessCode)
+			if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
 			{
-				return await GenerateResultAsync(query, new GetTicketInfoResult(result.SpResult));
+				return await GenerateResultAsync(query, new GetTicketInfoResult(result.StatusCode));
 			}
 
 			return await GenerateResultAsync(query, new GetTicketInfoResult(
-				result.SpResult, result.TicketStatus, result.ActualStake, result.WinlostAmount
+				result.StatusCode, result.TicketStatus, result.ActualStake, result.WinlostAmount
 			));
 		}
 		catch (Exception ex)

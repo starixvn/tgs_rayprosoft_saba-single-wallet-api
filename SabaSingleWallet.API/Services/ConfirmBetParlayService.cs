@@ -29,7 +29,7 @@ public class ConfirmBetParlayService(
 			{
 				var inserted = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(ticket, StoreProcedureMapper.ConfirmBetSP);
 
-				if (inserted.SpResult < 0)
+				if (inserted.StatusCode < 0)
 				{
 					var insertError = CreateResult(506);
 

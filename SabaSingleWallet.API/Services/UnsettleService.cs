@@ -34,9 +34,9 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 				var spResult = await playerRepository.CallStoredProcedureAsync<UnsettleCriteria, UnsettleSPResult>
 					(unSettleCriteria, StoreProcedureMapper.SettleSP);
 
-				if (spResult.SpResult != SabaStatusCodeConst.SuccessCode)
+				if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResultAsync(query, spResult.SpResult);
+					return await GenerateResultAsync(query, spResult.StatusCode);
 				}
 
 				var playerCode = settlement.UserId.ToPlayerCode();

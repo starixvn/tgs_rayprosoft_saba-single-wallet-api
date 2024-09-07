@@ -51,9 +51,9 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 
 				var spCallResult = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(criteria, StoreProcedureMapper.ConfirmBetSP);
 
-				if (spCallResult.SpResult != SabaStatusCodeConst.SuccessCode)
+				if (spCallResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResponseAsync(spCallResult.SpResult, 0, query, cancellationToken);
+					return await GenerateResponseAsync(spCallResult.StatusCode, 0, query, cancellationToken);
 				}
 
 				if (transaction.IsOddsChanged)

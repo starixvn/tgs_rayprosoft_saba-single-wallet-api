@@ -30,9 +30,9 @@ public class ResettleService(
 				var spResult = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>
 					(criteria, StoreProcedureMapper.SettleSP);
 
-				if (spResult.SpResult != SabaStatusCodeConst.SuccessCode)
+				if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResultAsync(query, spResult.SpResult);
+					return await GenerateResultAsync(query, spResult.StatusCode);
 				}
 
 				//TODO if isOnlyWinlostDateChanged, then no need to recalculate params

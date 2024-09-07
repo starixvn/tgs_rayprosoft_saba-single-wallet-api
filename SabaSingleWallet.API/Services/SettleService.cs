@@ -32,9 +32,9 @@ public class SettleService(
 				criteria.Action = query.message.Action;
 				var result = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>(criteria, StoreProcedureMapper.SettleSP);
 
-				if (result.SpResult != SabaStatusCodeConst.SuccessCode)
+				if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResultAsync(query, result.SpResult);
+					return await GenerateResultAsync(query, result.StatusCode);
 				}
 
 				if (transaction.CreditAmount > 0)
