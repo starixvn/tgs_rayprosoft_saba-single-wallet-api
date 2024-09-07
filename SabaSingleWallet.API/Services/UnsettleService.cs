@@ -10,6 +10,7 @@ using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.Repositories.Models.Unsettle;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.API.Helpers;
+using Tgs.GameRecord.Saba.Common;
 namespace SabaSingleWallet.API.Services;
 
 public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher, 
@@ -32,9 +33,9 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 				var spResult = await playerRepository.CallStoredProcedureAsync<UnsettleCriteria, UnsettleSPResult>
 					(unSettleCriteria, StoreProcedureMapper.SettleSP);
 
-				if (spResult.SpResult < 0)
+				if (spResult.SpResult != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (SP)");
+					return await GenerateResultAsync(query, spResult.SpResult);
 				}
 
 				var playerCode = settlement.UserId.ToPlayerCode();
@@ -62,9 +63,9 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 			return await GenerateResultAsync(query, "803", "No Bet Found");
 		}
 	}
-	private async Task<UnsettleResult> GenerateResultAsync(UnsettleRequest query, string status, string msg)
+	private async Task<UnsettleResult> GenerateResultAsync(UnsettleRequest query, string status)
 	{
-		var res = new UnsettleResult(status, msg);
+		var res = new UnsettleResult(status);
 		await messagePublisher.LogApi(new ApiLogMessage()
 		{
 			Key = query.key,

@@ -2,6 +2,5 @@
 
 public record ResettleResult
 (
-	string status,
-	string? msg = null
-);
+	string status
+) : ApiResult(status);

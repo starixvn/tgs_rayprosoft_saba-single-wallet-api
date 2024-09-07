@@ -2,7 +2,7 @@
 
 public class SettleSPResult
 {
-	public int? SpResult { get; set; }
+	public string SpResult { get; set; }
 
 	public string? Licenseetxid { get; set; }
 }

@@ -25,19 +25,30 @@ public class PlaceBetGetService(
 		{
 			var playerCode = query.message.UserId.ToPlayerCode();
 
-			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, query.message.DebitAmount, query.message.Action, query.message.OperationId).ConfigureAwait(false);
+			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(
+				playerCode,
+				query.message.DebitAmount,
+				new Tgs.CashService.ProviderInfo(
+					ProviderConst.ProviderCode,
+					query.message.RefId,
+					query.message.OperationId,
+					query.message.Action
+					),
+				null,
+				cancellationToken
+				).ConfigureAwait(false);
 
 			if (!string.IsNullOrWhiteSpace(deductBalanceResult.ErrorMessage))
 			{
-				return await GenerateResponseAsync(query, new PlaceBetResult(deductBalanceResult.ErrorCode.ToString(), query.message.RefId, null), cancellationToken);
+				return await GenerateResponseAsync(query, new PlaceBetResult(deductBalanceResult.ErrorCode, query.message.RefId, null), cancellationToken);
 			}
 
 			var criteria = mapper.Map<PlaceBetCriteria>(query.message);
 			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>(criteria, StoreProcedureMapper.PlaceBetSP);
 
-			if (spResult.SpResult != 0)
+			if (spResult.SpResult != SabaStatusCodeConst.SuccessCode)
 			{
-				return await GenerateResponseAsync(query, new PlaceBetResult(spResult.SpResult.ToString(), query.message.RefId, null), cancellationToken);
+				return await GenerateResponseAsync(query, new PlaceBetResult(spResult.SpResult, query.message.RefId, null), cancellationToken);
 			}
 
 			var res = new PlaceBetResult(SabaStatusCodeConst.SuccessCode, query.message.RefId, spResult.Licenseetxid);

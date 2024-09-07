@@ -2,6 +2,5 @@
 
 public record SettleResult
 (
-	string status,
-	string? msg = null
-);
+	string status
+): ApiResult(status);
