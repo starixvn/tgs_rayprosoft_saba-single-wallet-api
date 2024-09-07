@@ -8,6 +8,7 @@ using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using Tgs.CashService.Client;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
@@ -29,11 +30,9 @@ public class ConfirmBetParlayService(
 			{
 				var inserted = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(ticket, StoreProcedureMapper.ConfirmBetSP);
 
-				if (inserted.StatusCode < 0)
+				if (!SabaStatusCodeConst.IsSuccess(inserted.StatusCode))
 				{
-					var insertError = CreateResult(506);
-
-					return await WriteLogAndReturnResponseAsync(query, insertError, cancellationToken);
+					return new ConfirmBetParlayResult(0, inserted.StatusCode);
 				}
 
 				var confirmData = HandleMessageMapper.ConfirmBet(ticket, playerCode);
@@ -44,19 +43,19 @@ public class ConfirmBetParlayService(
 
 				if (increaseError != null)
 				{
-					return await WriteLogAndReturnResponseAsync(query, increaseError, cancellationToken);
+					return increaseError;
 				}
 			}
 
 			var currentBalance = await client.GameProviderGetBalanceAsync(playerCode, cancellationToken);
-			var successResponse = CreateResult(0, currentBalance.Balance);
 
-			return await WriteLogAndReturnResponseAsync(query, successResponse, cancellationToken);
+			return new ConfirmBetParlayResult(currentBalance.Balance);
 		}
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			return CreateResult(-1, 0);
+
+			return new ConfirmBetParlayResult(0, SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
 
@@ -67,18 +66,12 @@ public class ConfirmBetParlayService(
 	{
 		if (ticket.IsOddsChanged && ticket.CreditAmount > 0)
 		{
-			var addBalanceResult = await client.GameProviderAddBalanceAsync(
-					playerCode,
-					ticket.CreditAmount,
-					"",
-					ticket.RefId,
-					null,
-					cancellationToken
-				).ConfigureAwait(false);
+			var provider = ProviderConst.CreateProviderInfo(ticket.RefId, ticket.OperationId, ticket.Action);
+			var result = await client.GameProviderAddBalanceAsync(playerCode, ticket.CreditAmount, provider, "", cancellationToken).ConfigureAwait(false);
 
-			if (addBalanceResult.ErrorCode != 0)
+			if (!SabaStatusCodeConst.IsSuccess(result.ErrorCode))
 			{
-				return CreateResult(307);
+				return new ConfirmBetParlayResult(0, result.ErrorCode);
 			}
 		}
 
@@ -102,29 +95,5 @@ public class ConfirmBetParlayService(
 		}
 
 		return result;
-	}
-
-	private async ValueTask<ConfirmBetParlayResult> WriteLogAndReturnResponseAsync(ConfirmBetParlayRequest request, ConfirmBetParlayResult response, CancellationToken cancellationToken)
-	{
-		await messagePublisher.LogApi(new ApiLogMessage()
-		{
-			Key = request.key,
-			Action = request.message.Action,
-			Request = request,
-			Response = response
-		}, cancellationToken);
-
-		return response;
-	}
-
-	private static ConfirmBetParlayResult CreateResult(int code, decimal balance = 0)
-	{
-		return code switch
-		{
-			0 => new ConfirmBetParlayResult("0", balance, null),
-			307 => new ConfirmBetParlayResult("307", balance, "Cannot Credit player. Please Try Again Later"),
-			506 => new ConfirmBetParlayResult("506", balance, "Unable To Processed. Please Try Again Later"),
-			_ => new ConfirmBetParlayResult("-1", balance, "Undefined"),
-		};
 	}
 }

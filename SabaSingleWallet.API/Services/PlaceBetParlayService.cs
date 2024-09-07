@@ -50,7 +50,7 @@ public class PlaceBetParlayService(
 			var provider = ProviderConst.CreateProviderInfo(ticket.RefId, ticket.OperationId, ticket.Action);
 			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, ticket.DebitAmount, provider, "", cancellationToken).ConfigureAwait(false);
 
-			if (!string.Equals(deductBalanceResult.ErrorCode, "0"))
+			if (!SabaStatusCodeConst.IsSuccess(deductBalanceResult.ErrorCode))
 			{
 				var tickets = GetErrorTickets(query.message.Txns.Select(t => t.RefId).ToList());
 
