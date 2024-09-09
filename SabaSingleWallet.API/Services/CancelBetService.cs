@@ -39,19 +39,30 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 					return await GenerateResponseAsync(result.StatusCode, null, query, cancellationToken);
 				}
 
-				var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
+				var isDeductPlaceBetAmount = await cashClient.IsExistGameProviderTransactionLogAsync(
 					playerCode,
-					transaction.CreditAmount,
 					new Tgs.CashService.ProviderInfo(
-					ProviderConst.ProviderCode,
-					transaction.RefId,
-					query.message.OperationId,
-					query.message.Action),
-					cancellationToken: cancellationToken);
+						ProviderConst.ProviderCode,
+						transaction.RefId,
+						"PlaceBet"),
+					cancellationToken);
 
-				if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
+				if (isDeductPlaceBetAmount)
 				{
-					return await GenerateResponseAsync(balanceResponse.ErrorCode, null, query, cancellationToken);
+					var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
+									playerCode,
+									transaction.CreditAmount,
+									new Tgs.CashService.ProviderInfo(
+									ProviderConst.ProviderCode,
+									transaction.RefId,
+									query.message.OperationId,
+									query.message.Action),
+									cancellationToken: cancellationToken);
+
+					if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
+					{
+						return await GenerateResponseAsync(balanceResponse.ErrorCode, null, query, cancellationToken);
+					}
 				}
 			}
 
