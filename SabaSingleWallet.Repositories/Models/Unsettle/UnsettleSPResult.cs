@@ -2,5 +2,5 @@
 
 public class UnsettleSPResult : SPResult
 {
-	public string? Licenseetxid { get; set; }
+	public string? Sporttype { get; set; }
 }
