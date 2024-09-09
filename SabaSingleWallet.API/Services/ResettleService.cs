@@ -50,7 +50,6 @@ public class ResettleService(
 							settlement.RefId,
 							query.message.OperationId,
 							query.message.Action),
-						null,
 						cancellationToken: cancellationToken);
 
 					//TODO skip if duplicated transaction
