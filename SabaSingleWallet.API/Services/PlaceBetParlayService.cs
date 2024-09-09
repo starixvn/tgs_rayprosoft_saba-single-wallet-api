@@ -114,6 +114,7 @@ public class PlaceBetParlayService(
 		criteria.RefId = ticket.RefId;
 		criteria.ParlayType = ticket.ParlayType;
 		criteria.BetAmount = ticket.BetAmount;
+		criteria.ActualAmount = ticket.BetAmount;
 		criteria.CreditAmount = ticket.CreditAmount;
 		criteria.DebitAmount = ticket.DebitAmount;
 		criteria.BetType = 29;
@@ -142,6 +143,7 @@ public class PlaceBetParlayService(
 		criteria.BetChoice = ticket.BetChoice;
 		criteria.BetChoice_en = ticket.BetChoice_en;
 		criteria.LeagueId = ticket.LeagueId;
+		criteria.LeagueName = ticket.LeagueName;
 		criteria.IsLive = ticket.IsLive;
 		criteria.Point = ticket.Point ?? string.Empty;
 		criteria.Point2 = ticket.Point2 ?? string.Empty;

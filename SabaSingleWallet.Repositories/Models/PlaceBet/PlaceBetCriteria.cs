@@ -59,6 +59,5 @@ public class PlaceBetCriteria
 	public string Extra { get; set; }
 	public string ParlayType { get; set; }
 	public string Detail { get; set; }
-	public int TicketType { get; set; }
 	public string RefId { get; set; }
 }
