@@ -29,7 +29,7 @@ public record SettlementTransaction
 
 	public required decimal DebitAmount { get; set; }
 
-	public required string SettlementTime { get; set; }
+	public string? SettlementTime { get; set; }
 
 	public string? ExtraStatus { get; set; } //cashout || void ticket || refund match || void cashout
 }
