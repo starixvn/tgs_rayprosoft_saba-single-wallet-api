@@ -22,7 +22,6 @@ public static class SabaStatusCodeConst
 		// Saba API Error
 		{ ApiInternalErrorCode, "Internal Server Error" },
 		{ NoTransactionFound, "No Transaction Found" },
-
 	};
 
 	public static string GetErrorMessage(string code)
@@ -31,6 +30,10 @@ public static class SabaStatusCodeConst
 			? errorCode
 			: "Unknown Error";
 	}
+
+	public static bool IsInteruptedByCash(string code) => int.Parse(code) > 250;
+
+	public static bool IsInteruptedBySP(string code) => int.Parse(code) > 150;
 
 	public static bool IsSuccess(string code) => string.Equals(code, SuccessCode);
 }

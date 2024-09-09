@@ -7,6 +7,7 @@ using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Settle;
+using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
@@ -30,7 +31,8 @@ public class ResettleService(
 				var spResult = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>
 					(criteria, StoreProcedureMapper.SettleSP);
 
-				if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
+				//TODO skip if duplicated transaction
+				if (SabaStatusCodeConst.IsInteruptedBySP(spResult.StatusCode))
 				{
 					return await GenerateResultAsync(query, spResult.StatusCode);
 				}
@@ -43,7 +45,7 @@ public class ResettleService(
 						playerCode,
 						settlement.CreditAmount,
 						settlement.DebitAmount,
-						new Tgs.CashService.ProviderInfo(
+						new ProviderInfo(
 							ProviderConst.ProviderCode,
 							settlement.RefId,
 							query.message.OperationId,
@@ -51,7 +53,10 @@ public class ResettleService(
 						null,
 						cancellationToken: cancellationToken);
 
-					if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
+					//TODO skip if duplicated transaction
+					//TODO skip if player has inssufficient amount (half lose -> lose, void)
+
+					if (SabaStatusCodeConst.IsInteruptedByCash(balanceResponse.ErrorCode))
 					{
 						return await GenerateResultAsync(query, balanceResponse.ErrorCode);
 					}
