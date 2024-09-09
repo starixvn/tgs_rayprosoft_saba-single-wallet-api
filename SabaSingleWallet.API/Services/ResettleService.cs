@@ -35,24 +35,26 @@ public class ResettleService(
 					return await GenerateResultAsync(query, spResult.StatusCode);
 				}
 
-				//TODO if isOnlyWinlostDateChanged, then no need to recalculate params
-				var playerCode = settlement.UserId.ToPlayerCode();
-
-				var balanceResponse = await cashServiceClient.GameProviderAdjustBalanceAsync(
-					playerCode,
-					settlement.CreditAmount,
-					settlement.DebitAmount,
-					new Tgs.CashService.ProviderInfo(
-						ProviderConst.ProviderCode,
-						settlement.RefId,
-						query.message.OperationId,
-						query.message.Action),
-					null,
-					cancellationToken: cancellationToken);
-
-				if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
+				if (!settlement.ExtraInfo.IsOnlyWinlostDateChanged)
 				{
-					return await GenerateResultAsync(query, balanceResponse.ErrorCode);
+					var playerCode = settlement.UserId.ToPlayerCode();
+
+					var balanceResponse = await cashServiceClient.GameProviderAdjustBalanceAsync(
+						playerCode,
+						settlement.CreditAmount,
+						settlement.DebitAmount,
+						new Tgs.CashService.ProviderInfo(
+							ProviderConst.ProviderCode,
+							settlement.RefId,
+							query.message.OperationId,
+							query.message.Action),
+						null,
+						cancellationToken: cancellationToken);
+
+					if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
+					{
+						return await GenerateResultAsync(query, balanceResponse.ErrorCode);
+					}
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Resettle(criteria), cancellationToken);
@@ -62,7 +64,7 @@ public class ResettleService(
 		}
 		catch (Exception ex)
 		{
-			SentrySdk.CaptureException(ex);
+			_ = SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
 
 			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
