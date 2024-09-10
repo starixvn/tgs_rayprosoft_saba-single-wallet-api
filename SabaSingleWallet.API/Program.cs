@@ -71,6 +71,8 @@ builder.Services
 				&& !excludeExtensions.Any(
 					ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
 		.AddHttpClientInstrumentation()
+		.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("npgsql-tester"))
+		.SetSampler(new AlwaysOnSampler())
 		.AddNpgsql()
 		.AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
 		.AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector") ?? new Uri("")))
