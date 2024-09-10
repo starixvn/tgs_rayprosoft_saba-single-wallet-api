@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.HttpLogging;
 using NATS.Client.Core;
+using Npgsql;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SabaSingleWallet.API;
-using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.Core.DependencyInjection;
 using SabaSingleWallet.Repositories.DependencyInjection;
 using Tgs.GameRecord.Saba.Common;
@@ -71,6 +71,7 @@ builder.Services
 				&& !excludeExtensions.Any(
 					ext => httpContext.Request.Path.Value.EndsWith($".{ext}")))
 		.AddHttpClientInstrumentation()
+		.AddNpgsql()
 		.AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
 		.AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector") ?? new Uri("")))
 	.WithMetrics(meterBuiler => meterBuiler

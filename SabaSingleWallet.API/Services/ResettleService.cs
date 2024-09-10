@@ -24,7 +24,7 @@ public class ResettleService(
 {
 	public async ValueTask<ResettleResult> GetAsync(ResettleRequest query, CancellationToken cancellationToken = default)
 	{
-		ResettleCriteria criteria = null;
+		ResettleCriteria? criteria = null;
 
 		try
 		{
