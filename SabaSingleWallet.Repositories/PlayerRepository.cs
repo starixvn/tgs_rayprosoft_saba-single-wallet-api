@@ -27,12 +27,21 @@ namespace SabaSingleWallet.Repositories
 					parameters.Add(property.Name.ToLower(), value);
 				}
 
+				WriteLogParams(typeof(TCriteria).Name, parameters);
+
 				string sqlQuery = $"CALL {spName}({string.Join(", ", typeof(TCriteria).GetProperties().Select(p => $"@{p.Name.ToLower()}"))})";
 
 				var result = await db.QueryFirstAsync<TResult>(sqlQuery, parameters);
 
 				return result;
 			}
+		}
+
+		private static void WriteLogParams(string action, DynamicParameters parameters)
+		{
+			var data = string.Join(", ", from param in parameters.ParameterNames select string.Format("@{0}={1}", param, parameters.Get<object>(param)));
+
+			Console.WriteLine($"{action}: {data}");
 		}
 	}
 }
