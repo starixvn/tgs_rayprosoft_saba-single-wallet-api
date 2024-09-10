@@ -6,7 +6,7 @@ using SabaSingleWallet.API.Models.Resettle;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
-using SabaSingleWallet.Repositories.Models.Settle;
+using SabaSingleWallet.Repositories.Models.Resettle;
 using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
@@ -18,17 +18,20 @@ public class ResettleService(
 	ISapaApiMessagePublishHandler messagePublisher,
 	ICashServiceClient cashServiceClient,
 	IPlayerRepository playerRepository,
-	IMapper mapper
+	IMapper mapper,
+	ISentryClient sentryClient
 	) : IGetService<ResettleRequest, ResettleResult>
 {
 	public async ValueTask<ResettleResult> GetAsync(ResettleRequest query, CancellationToken cancellationToken = default)
 	{
+		ResettleCriteria criteria = null;
+
 		try
 		{
 			foreach (var settlement in query.message.Txns)
 			{
-				var criteria = mapper.Map<SettleCriteria>(settlement);
-				var spResult = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>
+				criteria = mapper.Map<ResettleCriteria>(settlement);
+				var spResult = await playerRepository.CallStoredProcedureAsync<ResettleCriteria, ResettleSPResult>
 					(criteria, StoreProcedureMapper.SettleSP);
 
 				//TODO skip if duplicated transaction
@@ -61,15 +64,19 @@ public class ResettleService(
 					}
 				}
 
-				await messagePublisher.HandleBetAsync(HandleMessageMapper.Resettle(criteria), cancellationToken);
+				await messagePublisher.HandleBetAsync(HandleMessageMapper.Resettle(criteria, settlement.ExtraInfo.IsOnlyWinlostDateChanged), cancellationToken);
 			}
 
 			return await GenerateResultAsync(query, SabaStatusCodeConst.SuccessCode);
 		}
 		catch (Exception ex)
 		{
-			_ = SentrySdk.CaptureException(ex);
-			Console.Write(ex.ToString());
+			if (criteria != null)
+			{
+				sentryClient.CaptureMessage(message: "EXEC " + criteria?.ToString());
+			}
+
+			sentryClient.CaptureException(ex);
 
 			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
 		}

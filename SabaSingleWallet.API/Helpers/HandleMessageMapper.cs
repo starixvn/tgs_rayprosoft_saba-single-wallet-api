@@ -1,6 +1,7 @@
 ﻿using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
+using SabaSingleWallet.Repositories.Models.Resettle;
 using SabaSingleWallet.Repositories.Models.Settle;
 using SabaSingleWallet.Repositories.Models.Unsettle;
 using Tgs.GameRecord.Handle.Common.Protos;
@@ -50,7 +51,7 @@ public static class HandleMessageMapper
 		};
 	}
 
-	public static HandleBetMessage Resettle(SettleCriteria data)
+	public static HandleBetMessage Resettle(ResettleCriteria data, bool isOnlyWinlostDateChanged)
 	{
 		return new HandleBetMessage()
 		{
@@ -60,7 +61,8 @@ public static class HandleMessageMapper
 			TxId = data.TxId.ToString(),
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
-			WinlostDate = data.WinlostDate?.DateTime,
+			WinlostDate = data.WinlostDate.DateTime,
+			IsOnlyWinlostDateChanged = isOnlyWinlostDateChanged
 		};
 	}
 
