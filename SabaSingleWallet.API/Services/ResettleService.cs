@@ -31,6 +31,9 @@ public class ResettleService(
 			foreach (var settlement in query.message.Txns)
 			{
 				criteria = mapper.Map<ResettleCriteria>(settlement);
+				criteria.OperationId = query.message.OperationId;
+				criteria.Action = query.message.Action;
+
 				var spResult = await playerRepository.CallStoredProcedureAsync<ResettleCriteria, ResettleSPResult>
 					(criteria, StoreProcedureMapper.SettleSP);
 
