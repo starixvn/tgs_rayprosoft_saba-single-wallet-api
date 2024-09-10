@@ -121,8 +121,6 @@ public class PlaceBetParlayService(
 		criteria.BetType = 29;
 		criteria.BetTypeName = "Parlay";
 		criteria.BetTypeName_en = "Parlay";
-		criteria.KickOffTime = null;
-		criteria.MatchDateTime = null;
 		criteria.Detail = JsonConvert.SerializeObject(new { Ticket = ticket, TicketDetail = ticketDetails });
 	}
 
