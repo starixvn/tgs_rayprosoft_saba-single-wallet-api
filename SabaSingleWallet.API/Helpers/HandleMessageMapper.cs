@@ -29,6 +29,7 @@ public static class HandleMessageMapper
 			PlayerCode = data.UserId.ToPlayerCode(),
 			BetState = (int)StatusToInt(data.Status),
 			TxId = data.TxId.ToString(),
+			RefId = data.RefId,
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate?.DateTime,
