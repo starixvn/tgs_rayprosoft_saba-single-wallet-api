@@ -15,7 +15,8 @@ namespace SabaSingleWallet.API.Services;
 public class PlaceBetParlayService(
 	ICashServiceClient cashClient,
 	IPlayerRepository playerRepository,
-	IMapper mapper
+	IMapper mapper,
+	ISentryClient client
 ) : IGetService<PlaceBetParlayRequest, PlaceBetParlayResult>
 {
 	public async ValueTask<PlaceBetParlayResult> GetAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken = default)
@@ -35,7 +36,7 @@ public class PlaceBetParlayService(
 		}
 		catch (Exception ex)
 		{
-			Console.Write(ex.ToString());
+			_ = client.CaptureException(ex);
 
 			return new PlaceBetParlayResult(null, SabaStatusCodeConst.ApiInternalErrorCode);
 		}
