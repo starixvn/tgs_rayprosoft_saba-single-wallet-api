@@ -29,8 +29,4 @@ public record ConfirmBetCriteria
 	public decimal DebitAmount { get; set; }
 
 	public DateTime WinLostDate { get; set; }
-
-	public int? SpResult { get; set; }
-
-	public int? SportType { get; set; }
 }

@@ -22,5 +22,7 @@ public class HandleBetMessage
 
 	public string TxId { get; set; } = "";
 
+	public string? RefId { get; set; } = "";
+
 	public long LicenseeTxid { get; set; }
 }

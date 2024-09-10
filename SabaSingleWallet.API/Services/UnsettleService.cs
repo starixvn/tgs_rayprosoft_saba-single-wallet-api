@@ -1,20 +1,22 @@
 ﻿using AutoMapper;
+using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Unsettle;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Repositories.Helpers;
-using SabaSingleWallet.Repositories;
-using Tgs.CashService.Client;
-using Tgs.ServiceUtility;
-using SabaSingleWallet.API.Extensions;
-using SabaSingleWallet.Repositories.Models.Unsettle;
 using SabaSingleWallet.Core;
-using SabaSingleWallet.API.Helpers;
+using SabaSingleWallet.Repositories.Helpers;
+using SabaSingleWallet.Repositories.Models.Unsettle;
+using Tgs.CashService;
+using Tgs.CashService.Client;
+using Tgs.GameRecord.Saba.Common;
+using Tgs.ServiceUtility;
+
 namespace SabaSingleWallet.API.Services;
 
-public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher, 
-	ICashServiceClient cashServiceClient, 
-	IPlayerRepository playerRepository, 
+public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
+	ICashServiceClient cashServiceClient,
+	IPlayerRepository playerRepository,
 	IMapper mapper) : IGetService<UnsettleRequest, UnsettleResult>
 {
 	public async ValueTask<UnsettleResult> GetAsync(UnsettleRequest query, CancellationToken cancellationToken = default)
@@ -24,7 +26,7 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 			Console.WriteLine(query.message);
 
 			foreach (var settlement in query.message.Txns)
-				
+
 			{
 				var unSettleCriteria = mapper.Map<UnsettleCriteria>(settlement);
 				unSettleCriteria.OperationId = query.message.OperationId;
@@ -32,9 +34,9 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 				var spResult = await playerRepository.CallStoredProcedureAsync<UnsettleCriteria, UnsettleSPResult>
 					(unSettleCriteria, StoreProcedureMapper.SettleSP);
 
-				if (spResult.SpResult < 0)
+				if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (SP)");
+					return await GenerateResultAsync(query, spResult.StatusCode);
 				}
 
 				var playerCode = settlement.UserId.ToPlayerCode();
@@ -42,29 +44,31 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 					playerCode,
 					settlement.CreditAmount,
 					settlement.DebitAmount,
-					query.message.Action,
-					query.message.OperationId,
+					new ProviderInfo(ProviderConst.ProviderCode, settlement.RefId, query.message.OperationId, query.message.Action),
+					null,
 					cancellationToken: cancellationToken);
 
-				if (balanceResponse.ErrorCode > 0)
+				if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResultAsync(query, "307", "Cannot Credit player. Please Try Again Later");
+					return await GenerateResultAsync(query, balanceResponse.ErrorCode);
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Unsettle(unSettleCriteria), cancellationToken);
 			}
 
-			return	await GenerateResultAsync(query, "0", string.Empty);
+			return await GenerateResultAsync(query, SabaStatusCodeConst.SuccessCode);
 		}
 		catch (Exception ex)
 		{
+			SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
-			return await GenerateResultAsync(query, "803", "No Bet Found");
+			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
-	private async Task<UnsettleResult> GenerateResultAsync(UnsettleRequest query, string status, string msg)
+
+	private async Task<UnsettleResult> GenerateResultAsync(UnsettleRequest query, string status)
 	{
-		var res = new UnsettleResult(status, msg);
+		var res = new UnsettleResult(status);
 		await messagePublisher.LogApi(new ApiLogMessage()
 		{
 			Key = query.key,

@@ -8,6 +8,7 @@ using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Settle;
 using Tgs.CashService.Client;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
@@ -31,9 +32,9 @@ public class SettleService(
 				criteria.Action = query.message.Action;
 				var result = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>(criteria, StoreProcedureMapper.SettleSP);
 
-				if (result.SpResult < 1)
+				if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later");
+					return await GenerateResultAsync(query, result.StatusCode);
 				}
 
 				if (transaction.CreditAmount > 0)
@@ -41,40 +42,37 @@ public class SettleService(
 					var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
 					transaction.UserId.ToPlayerCode(),
 					transaction.CreditAmount,
+					new Tgs.CashService.ProviderInfo(
+						ProviderConst.ProviderCode,
+						transaction.RefId,
+						query.message.OperationId,
+						query.message.Action
+						),
+					null,
 					cancellationToken: cancellationToken);
 
-					if (!string.IsNullOrWhiteSpace(balanceResponse.ErrorMessage))
+					if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
 					{
-						return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later");
+						return await GenerateResultAsync(query, balanceResponse.ErrorCode);
 					}
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Settle(criteria), cancellationToken);
 			}
 
-			var res = new SettleResult("0");
-
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
-
-			return res;
+			return await GenerateResultAsync(query, SabaStatusCodeConst.SuccessCode);
 		}
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
 			SentrySdk.CaptureException(ex);
-			return await GenerateResultAsync(query, "803", "No Bet Found");
+			return await GenerateResultAsync(query,SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
 
-	private async Task<SettleResult> GenerateResultAsync(SettleRequest query, string status, string msg)
+	private async Task<SettleResult> GenerateResultAsync(SettleRequest query, string status)
 	{
-		var res = new SettleResult(status, msg);
+		var res = new SettleResult(status);
 		await messagePublisher.LogApi(new ApiLogMessage()
 		{
 			Key = query.key,

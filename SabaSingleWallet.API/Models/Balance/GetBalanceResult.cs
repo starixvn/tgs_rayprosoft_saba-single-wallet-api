@@ -5,6 +5,5 @@ public record GetBalanceResult
 	string status,
 	string? userId,
 	decimal? balance,
-	string? balanceTs,
-	string? msg = null
-);
+	string? balanceTs
+): ApiResult(status);

@@ -11,7 +11,7 @@ public class PlaceBetCriteria
 	public int AwayId { get; set; }
 	public string HomeName { get; set; }
 	public string AwayName { get; set; }
-	public DateTime KickOffTime { get; set; }
+	public DateTime? KickOffTime { get; set; }
 	public DateTime BetTime { get; set; }
 	public decimal BetAmount { get; set; }
 	public decimal ActualAmount { get; set; }
@@ -48,7 +48,7 @@ public class PlaceBetCriteria
 	public decimal CreditAmount { get; set; }
 	public decimal DebitAmount { get; set; }
 	public string OddsInfo { get; set; }
-	public DateTime MatchDateTime { get; set; }
+	public DateTime? MatchDateTime { get; set; }
 	public bool IsOddsChanged { get; set; }
 	public DateTime? WinLostDate { get; set; }
 	public int ProductId { get; set; }
@@ -59,6 +59,5 @@ public class PlaceBetCriteria
 	public string Extra { get; set; }
 	public string ParlayType { get; set; }
 	public string Detail { get; set; }
-	public int TicketType { get; set; }
 	public string RefId { get; set; }
 }

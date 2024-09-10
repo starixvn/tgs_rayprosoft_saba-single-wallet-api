@@ -1,11 +1,7 @@
-﻿namespace SabaSingleWallet.API.Models.PlaceBetParlay;
+﻿using System.Diagnostics.CodeAnalysis;
 
-public record PlaceBetParlayResult
-(	string status,
-	List<TicketInfoMapping>? txns,
-	string? msg);
+namespace SabaSingleWallet.API.Models.PlaceBetParlay;
 
-public record TicketInfoMapping(
-	string? refId,
-	string? licenseeTxId
-);
+public record PlaceBetParlayResult(List<TicketInfoMapping>? txns, string status = "0") : ApiResult(status);
+
+public record TicketInfoMapping(string? refId, string? licenseeTxId);

@@ -1,4 +1,5 @@
 ﻿using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.Common;
@@ -6,6 +7,7 @@ using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.CancelBet;
 using Tgs.CashService.Client;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
@@ -32,37 +34,53 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 					SportType = null
 				}, StoreProcedureMapper.CancelBetSP);
 
-				if (result.SpResult < 0)
+				if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResponseAsync("506", 0, "Unable To Processed. Please Try Again Later", query, cancellationToken);
+					return await GenerateResponseAsync(result.StatusCode, null, query, cancellationToken);
 				}
 
-				var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
+				var isDeductPlaceBetAmount = await cashClient.IsExistGameProviderTransactionLogAsync(
 					playerCode,
-					transaction.CreditAmount,
-					cancellationToken: cancellationToken);
+					new Tgs.CashService.ProviderInfo(
+						ProviderConst.ProviderCode,
+						transaction.RefId,
+						"PlaceBet"),
+					cancellationToken);
 
-				if (!string.IsNullOrWhiteSpace(balanceResponse.ErrorMessage))
+				if (isDeductPlaceBetAmount)
 				{
-					return await GenerateResponseAsync("307", 0, "Cannot Credit player. Please Try Again Later", query, cancellationToken);
+					var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
+									playerCode,
+									transaction.CreditAmount,
+									new Tgs.CashService.ProviderInfo(
+									ProviderConst.ProviderCode,
+									transaction.RefId,
+									query.message.OperationId,
+									query.message.Action),
+									cancellationToken: cancellationToken);
+
+					if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
+					{
+						return await GenerateResponseAsync(balanceResponse.ErrorCode, null, query, cancellationToken);
+					}
 				}
 			}
 
 			var balance = (await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken)).Balance;
 
-			return await GenerateResponseAsync("0", balance, "", query, cancellationToken);
+			return await GenerateResponseAsync(SabaStatusCodeConst.SuccessCode, balance, query, cancellationToken);
 		}
 		catch (Exception ex)
 		{
 			SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
-			return await GenerateResponseAsync("803", null, "No Bet Found", query, cancellationToken);
+			return await GenerateResponseAsync(SabaStatusCodeConst.ApiInternalErrorCode, null, query, cancellationToken);
 		}
 	}
 
-	private async Task<CancelBetResult> GenerateResponseAsync(string status, decimal? balance, string? message, CancelBetRequest request, CancellationToken cancellationToken)
+	private async Task<CancelBetResult> GenerateResponseAsync(string status, decimal? balance, CancelBetRequest request, CancellationToken cancellationToken)
 	{
-		var res = new CancelBetResult(status, balance, message);
+		var res = new CancelBetResult(status, balance);
 
 		await messagePublisher.LogApi(new ApiLogMessage()
 		{

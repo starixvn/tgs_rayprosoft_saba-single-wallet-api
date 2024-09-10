@@ -1,8 +1,6 @@
 ﻿namespace SabaSingleWallet.Repositories.Models.Settle;
 
-public class SettleSPResult
+public class SettleSPResult : SPResult
 {
-	public int? SpResult { get; set; }
-
-	public string? Licenseetxid { get; set; }
+	public string? Sporttype { get; set; }
 }

@@ -7,7 +7,7 @@ using Tgs.GameRecord.Handle.Common.Protos;
 
 namespace SabaSingleWallet.API.Helpers;
 
-public class HandleMessageMapper
+public static class HandleMessageMapper
 {
 	public static HandleBetMessage ConfirmBet(ConfirmBetCriteria data, string PlayerCode)
 	{
@@ -15,12 +15,9 @@ public class HandleMessageMapper
 		{
 			Action = "ConfirmBet",
 			PlayerCode = PlayerCode,
-			BetState = (int)BetState.Running,
 			TxId = data.TxId.ToString(),
 			LicenseeTxid = data.LicenseetxId,
-			WinLoss = data.ActualAmount,
 			TransactionTime = data.TransactionTime,
-			ActualAmount = data.ActualAmount,
 		};
 	}
 
@@ -32,6 +29,7 @@ public class HandleMessageMapper
 			PlayerCode = data.UserId.ToPlayerCode(),
 			BetState = (int)StatusToInt(data.Status),
 			TxId = data.TxId.ToString(),
+			RefId = data.RefId,
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate?.DateTime,

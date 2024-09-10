@@ -27,6 +27,4 @@ public class SettleCriteria
 	public decimal DebitAmount { get; set; }
 
 	public string? ExtraStatus { get; set; }
-
-	public int tickettype { get; set; }
 }

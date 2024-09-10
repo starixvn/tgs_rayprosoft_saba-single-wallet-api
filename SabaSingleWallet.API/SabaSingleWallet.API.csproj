@@ -38,4 +38,8 @@
     <ProjectReference Include="..\SabaSingleWallet.Repositories\SabaSingleWallet.Repositories.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Middlewares\" />
+  </ItemGroup>
+
 </Project>

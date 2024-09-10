@@ -1,9 +1,6 @@
-﻿
+﻿namespace SabaSingleWallet.Repositories.Models.CancelBet;
 
-namespace SabaSingleWallet.Repositories.Models.CancelBet;
-public class CancelBetSPResult
+public class CancelBetSPResult : SPResult
 {
-	public int SpResult { get; set; }
-
 	public int? SportType { get; set; }
 }

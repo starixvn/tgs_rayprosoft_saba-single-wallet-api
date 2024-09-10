@@ -3,6 +3,7 @@ using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Balance;
 using SabaSingleWallet.Common;
 using Tgs.CashService.Client;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
@@ -17,7 +18,7 @@ public class GetBalanceService(ICashServiceClient cashClient, ISapaApiMessagePub
 
 			var response = await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken).ConfigureAwait(false);
 
-			var result = new GetBalanceResult("0", query.Message.UserId, response.Balance, DateTime.UtcNow.ToString(), response.ErrorMessage);
+			var result = new GetBalanceResult(SabaStatusCodeConst.SuccessCode, query.Message.UserId, response.Balance, DateTime.UtcNow.ToString());
 
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
@@ -31,8 +32,9 @@ public class GetBalanceService(ICashServiceClient cashClient, ISapaApiMessagePub
 		}
 		catch (Exception ex)
 		{
+			SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
-			return new GetBalanceResult("203", null, null, null, "Account not existed");
+			return new GetBalanceResult(SabaStatusCodeConst.ApiInternalErrorCode, null, null, null);
 		}
 	}
 }

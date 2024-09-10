@@ -7,7 +7,9 @@ using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Settle;
+using Tgs.CashService;
 using Tgs.CashService.Client;
+using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
@@ -29,44 +31,53 @@ public class ResettleService(
 				var spResult = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>
 					(criteria, StoreProcedureMapper.SettleSP);
 
-				if (spResult.SpResult < 0)
+				//TODO skip if duplicated transaction
+				if (SabaStatusCodeConst.IsInteruptedBySP(spResult.StatusCode))
 				{
-					return await GenerateResultAsync(query, "506", "Unable To Processed. Please Try Again Later (SP)");
+					return await GenerateResultAsync(query, spResult.StatusCode);
 				}
 
-				//TODO if isOnlyWinlostDateChanged, then no need to recalculate params
-
-				var playerCode = settlement.UserId.ToPlayerCode();
-
-				var balanceResponse = await cashServiceClient.GameProviderAdjustBalanceAsync(
-					playerCode,
-					settlement.CreditAmount,
-					settlement.DebitAmount,
-					query.message.Action,
-					query.message.OperationId,
-					cancellationToken: cancellationToken);
-
-				if (balanceResponse.ErrorCode > 0)
+				if (!settlement.ExtraInfo.IsOnlyWinlostDateChanged)
 				{
-					return await GenerateResultAsync(query, "307", "Cannot Credit player. Please Try Again Later");
+					var playerCode = settlement.UserId.ToPlayerCode();
+
+					var balanceResponse = await cashServiceClient.GameProviderAdjustBalanceAsync(
+						playerCode,
+						settlement.CreditAmount,
+						settlement.DebitAmount,
+						new ProviderInfo(
+							ProviderConst.ProviderCode,
+							settlement.RefId,
+							query.message.OperationId,
+							query.message.Action),
+						cancellationToken: cancellationToken);
+
+					//TODO skip if duplicated transaction
+					//TODO skip if player has inssufficient amount (half lose -> lose, void)
+
+					if (SabaStatusCodeConst.IsInteruptedByCash(balanceResponse.ErrorCode))
+					{
+						return await GenerateResultAsync(query, balanceResponse.ErrorCode);
+					}
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Resettle(criteria), cancellationToken);
 			}
 
-			return new ResettleResult("0");
+			return await GenerateResultAsync(query, SabaStatusCodeConst.SuccessCode);
 		}
 		catch (Exception ex)
 		{
+			_ = SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
 
-			return await GenerateResultAsync(query, "803", "No Bet Found");
+			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
 
-	private async Task<ResettleResult> GenerateResultAsync(ResettleRequest query, string status, string msg)
+	private async Task<ResettleResult> GenerateResultAsync(ResettleRequest query, string status)
 	{
-		var res = new ResettleResult(status, msg);
+		var res = new ResettleResult(status);
 		await messagePublisher.LogApi(new ApiLogMessage()
 		{
 			Key = query.key,
