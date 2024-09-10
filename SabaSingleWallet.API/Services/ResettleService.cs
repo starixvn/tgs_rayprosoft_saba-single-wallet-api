@@ -73,7 +73,7 @@ public class ResettleService(
 		{
 			if (criteria != null)
 			{
-				sentryClient.CaptureMessage(message: "EXEC " + criteria?.ToString());
+				sentryClient.CaptureMessage(message: "EXEC " + criteria?.ToString(), SentryLevel.Error);
 			}
 
 			sentryClient.CaptureException(ex);
