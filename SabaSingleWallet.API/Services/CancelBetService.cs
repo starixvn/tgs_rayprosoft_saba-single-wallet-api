@@ -30,8 +30,6 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 					RefId = transaction.RefId,
 					CreditAmount = transaction.CreditAmount,
 					DebitAmount = transaction.DebitAmount,
-					SpResult = 0,
-					SportType = null
 				}, StoreProcedureMapper.CancelBetSP);
 
 				if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
