@@ -4,7 +4,6 @@ using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using SabaSingleWallet.Repositories.Models.Resettle;
 using SabaSingleWallet.Repositories.Models.Settle;
 using SabaSingleWallet.Repositories.Models.Unsettle;
-using Tgs.GameRecord.Handle.Common.Protos;
 
 namespace SabaSingleWallet.API.Helpers;
 
@@ -59,6 +58,7 @@ public static class HandleMessageMapper
 			PlayerCode = data.UserId.ToPlayerCode(),
 			BetState = data.Status,
 			TxId = data.TxId.ToString(),
+			RefId = data.RefId,
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate.DateTime,
