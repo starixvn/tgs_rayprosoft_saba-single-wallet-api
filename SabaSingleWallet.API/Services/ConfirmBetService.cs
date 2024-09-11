@@ -56,7 +56,7 @@ public class ConfirmBetService(ISapaApiMessagePublishHandler messagePublisher, I
 					return await GenerateResponseAsync(spCallResult.StatusCode, 0, query, cancellationToken);
 				}
 
-				if (transaction.IsOddsChanged)
+				if (transaction.IsOddsChanged && transaction.CreditAmount > 0)
 				{
 					var addAmmountResut = await client.GameProviderAddBalanceAsync(
 						playerCode,
