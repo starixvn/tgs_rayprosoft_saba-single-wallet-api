@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Functions>
+  <Functions  Name="SabaSingleWallet">
+    <Setting Key="dbo.bet_bettrans_sbsw_bet" SpName="CALL bet_bettrans_sbsw_bet" DbName="tgs_staging"/>
+  </Functions>
+</Functions>

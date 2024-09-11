@@ -5,7 +5,7 @@ using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBet;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
-using SabaSingleWallet.Repositories.Helpers;
+using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using Tgs.CashService;
 using Tgs.CashService.Client;
@@ -46,7 +46,7 @@ public class PlaceBetHandler(
 			}
 
 			var criteria = mapper.Map<PlaceBetCriteria>(request.message);
-			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>(criteria, StoreProcedureMapper.PlaceBetSP);
+			var spResult = await fanexPlayerRepository.CallStoredProcedureAsync<PlaceBetSPResult>(criteria);
 
 			if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 			{

@@ -1,6 +1,9 @@
-﻿namespace SabaSingleWallet.Repositories.Models.PlaceBet;
+﻿using Fanex.Data.Repository;
+using SabaSingleWallet.Repositories.Helpers;
 
-public class PlaceBetCriteria
+namespace SabaSingleWallet.Repositories.Models.PlaceBet;
+
+public class PlaceBetCriteria : CriteriaBase
 {
 	public string Action { get; set; }
 	public string OperationId { get; set; }
@@ -60,4 +63,7 @@ public class PlaceBetCriteria
 	public string? ParlayType { get; set; }
 	public string? Detail { get; set; }
 	public string RefId { get; set; }
+
+	public override string GetSettingKey() => StoreProcedureMapper.PlaceBetSP;
+	public override bool IsValid() => true;
 }

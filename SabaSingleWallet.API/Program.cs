@@ -1,3 +1,4 @@
+using Fanex.Data.Postgres;
 using Microsoft.AspNetCore.HttpLogging;
 using NATS.Client.Core;
 using Npgsql;
@@ -13,6 +14,9 @@ using Tgs.MessageQueue.Nats.Serializers;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddFanexPostgres(builder.Configuration, connectionStringSection: "FanexConnectionStrings");
+AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
 builder.Services
 	.AddSabaSingleWalletApiCore()
 	.AddRepositories()
