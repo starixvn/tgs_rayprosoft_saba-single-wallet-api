@@ -51,7 +51,7 @@ public static class HandleMessageMapper
 		};
 	}
 
-	public static HandleBetMessage Resettle(ResettleCriteria data, bool isOnlyWinlostDateChanged)
+	public static HandleBetMessage Resettle(ResettleCriteria data)
 	{
 		return new HandleBetMessage()
 		{
@@ -62,7 +62,7 @@ public static class HandleMessageMapper
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate.DateTime,
-			IsOnlyWinlostDateChanged = isOnlyWinlostDateChanged
+			IsOnlyWinlostDateChanged = data.IsOnlyWinlostDateChanged,
 		};
 	}
 

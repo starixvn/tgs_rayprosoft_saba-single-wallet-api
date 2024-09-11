@@ -67,7 +67,7 @@ public class ResettleService(
 					}
 				}
 
-				await messagePublisher.HandleBetAsync(HandleMessageMapper.Resettle(criteria, settlement.ExtraInfo.IsOnlyWinlostDateChanged), cancellationToken);
+				await messagePublisher.HandleBetAsync(HandleMessageMapper.Resettle(criteria), cancellationToken);
 			}
 
 			return await GenerateResultAsync(query, SabaStatusCodeConst.SuccessCode);
@@ -76,10 +76,10 @@ public class ResettleService(
 		{
 			if (criteria != null)
 			{
-				sentryClient.CaptureMessage(message: "EXEC " + criteria?.ToString(), SentryLevel.Error);
+				_ = sentryClient.CaptureMessage(message: "EXEC " + criteria?.ToString(), SentryLevel.Error);
 			}
 
-			sentryClient.CaptureException(ex);
+			_ = sentryClient.CaptureException(ex);
 
 			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
 		}

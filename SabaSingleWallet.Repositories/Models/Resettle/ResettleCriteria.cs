@@ -25,4 +25,6 @@ public class ResettleCriteria
 	public decimal DebitAmount { get; set; }
 
 	public string? ExtraStatus { get; set; }
+
+	public bool IsOnlyWinlostDateChanged { get; set; } = false;
 }
