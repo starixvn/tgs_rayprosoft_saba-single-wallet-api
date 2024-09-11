@@ -14,8 +14,4 @@ public class CancelBetCriteria
 	public decimal CreditAmount { get; set; }
 
 	public decimal DebitAmount { get; set; }
-
-	public int SpResult { get; set; }
-
-	public int? SportType { get; set; }
 }
