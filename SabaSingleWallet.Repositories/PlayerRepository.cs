@@ -20,28 +20,25 @@ namespace SabaSingleWallet.Repositories
 			using (IDbConnection db = new NpgsqlConnection(_connectionString))
 			{
 				var parameters = new DynamicParameters();
+				var properties = new List<string>();
 
 				foreach (var property in typeof(TCriteria).GetProperties())
 				{
 					var value = property.GetValue(criteria);
-					parameters.Add(property.Name.ToLower(), value);
+
+					if (value is not null)
+					{
+						parameters.Add(property.Name, value);
+						properties.Add(property.Name);
+					}
 				}
 
-				WriteLogParams(typeof(TCriteria).Name, parameters);
-
-				string sqlQuery = $"CALL {spName}({string.Join(", ", typeof(TCriteria).GetProperties().Select(p => $"@{p.Name.ToLower()}"))})";
+				string sqlQuery = $"CALL {spName}({string.Join(", ", properties.Select(property => $"{property} => @{property}"))})";
 
 				var result = await db.QueryFirstAsync<TResult>(sqlQuery, parameters);
 
 				return result;
 			}
-		}
-
-		private static void WriteLogParams(string action, DynamicParameters parameters)
-		{
-			var data = string.Join(", ", from param in parameters.ParameterNames select string.Format("@{0}={1}", param, parameters.Get<object>(param)));
-
-			Console.WriteLine($"{action}: {data}");
 		}
 	}
 }
