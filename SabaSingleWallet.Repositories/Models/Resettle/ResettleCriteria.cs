@@ -26,5 +26,5 @@ public class ResettleCriteria
 
 	public string? ExtraStatus { get; set; }
 
-	public bool IsOnlyWinlostDateChanged { get; set; } = false;
+	public bool IsOnlyWinlostDateChanged { get; set; }
 }

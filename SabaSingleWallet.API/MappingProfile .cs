@@ -25,7 +25,8 @@ public class MappingProfile : Profile
 			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()));
 		CreateMap<ResettlementTransaction, ResettleCriteria>()
 			.ForMember(dest => dest.WinlostDate, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.WinlostDate).ToUniversalTime()))
-			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()));
+			.ForMember(dest => dest.UpdateTime, opt => opt.MapFrom(src => DateTimeOffset.Parse(src.UpdateTime).ToUniversalTime()))
+			.ForMember(dest => dest.IsOnlyWinlostDateChanged, opt => opt.MapFrom(src => src.ExtraInfo.IsOnlyWinlostDateChanged));
 		CreateMap<PlaceBetParlayData, PlaceBetCriteria>();
 		CreateMap<TicketInfo, ConfirmBetCriteria>();
 	}
