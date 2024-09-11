@@ -28,7 +28,7 @@ public static class HandleMessageMapper
 		{
 			Action = "Settle",
 			PlayerCode = data.UserId.ToPlayerCode(),
-			BetState = (int)StatusToInt(data.Status),
+			BetState = data.Status,
 			TxId = data.TxId.ToString(),
 			RefId = data.RefId,
 			Payout = data.Payout,
@@ -43,7 +43,7 @@ public static class HandleMessageMapper
 		{
 			Action = "Unsettle",
 			PlayerCode = data.UserId.ToPlayerCode(),
-			BetState = (int)StatusToInt(data.Status),
+			BetState = data.Status,
 			TxId = data.TxId.ToString(),
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
@@ -57,28 +57,12 @@ public static class HandleMessageMapper
 		{
 			Action = "Resettle",
 			PlayerCode = data.UserId.ToPlayerCode(),
-			BetState = (int)StatusToInt(data.Status),
+			BetState = data.Status,
 			TxId = data.TxId.ToString(),
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate.DateTime,
 			IsOnlyWinlostDateChanged = data.IsOnlyWinlostDateChanged,
-		};
-	}
-
-	private static BetState StatusToInt(string status)
-	{
-		return status.ToLower() switch
-		{
-			"won" => BetState.Win,
-			"lose" => BetState.Loss,
-			"draw" => BetState.Draw,
-			"void" => BetState.Void,
-			"refund" => BetState.Refund,
-			"reject" => BetState.Cancel,
-			"half won" => BetState.HalfWin,
-			"half lose" => BetState.HalfLoss,
-			_ => BetState.Running,
 		};
 	}
 }
