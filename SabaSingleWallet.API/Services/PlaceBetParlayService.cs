@@ -5,6 +5,7 @@ using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
+using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using Tgs.CashService.Client;
@@ -14,7 +15,7 @@ namespace SabaSingleWallet.API.Services;
 
 public class PlaceBetParlayService(
 	ICashServiceClient cashClient,
-	IPlayerRepository playerRepository,
+	IFanexPlayerRepository playerRepository,
 	IMapper mapper,
 	ISentryClient client,
 	ISapaApiMessagePublishHandler messagePublisher
@@ -94,7 +95,7 @@ public class PlaceBetParlayService(
 
 		foreach (var ticket in CreatePlaceBetCriteria(query))
 		{
-			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetCriteria, PlaceBetSPResult>(ticket, StoreProcedureMapper.PlaceBetSP);
+			var spResult = await playerRepository.CallStoredProcedureAsync< PlaceBetSPResult>(ticket);
 
 			ticketInfos.Add(new TicketInfoMapping(ticket.RefId, spResult.Licenseetxid));
 

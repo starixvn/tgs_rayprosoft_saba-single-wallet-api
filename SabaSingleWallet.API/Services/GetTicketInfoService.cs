@@ -1,8 +1,9 @@
-﻿using MediatR;
+using MediatR;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.GetTicketInfo;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
+using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.GetTicketInfo;
 using Tgs.GameRecord.Saba.Common;
@@ -21,12 +22,12 @@ public class GetTicketInfoService(
 			Console.WriteLine(query.message);
 
 			var result = await playerRepository
-				.CallStoredProcedureAsync<GetTicketInfoCriteria, GetTicketInfoSPResult>
+				.CallStoredProcedureAsync<GetTicketInfoSPResult>
 				(new GetTicketInfoCriteria
 				{
 					UserId = query.message.UserId,
 					RefId = query.message.RefId,
-				}, StoreProcedureMapper.GetTicketInfo);
+				});
 
 			if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
 			{

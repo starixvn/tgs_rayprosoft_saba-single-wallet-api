@@ -1,7 +1,10 @@
 ﻿
+using Fanex.Data.Repository;
+using SabaSingleWallet.Repositories.Helpers;
+
 namespace SabaSingleWallet.Repositories.Models.Unsettle;
 
-public class UnsettleCriteria
+public class UnsettleCriteria : CriteriaBase
 {
 	public string Action { get; set; }
 
@@ -26,4 +29,8 @@ public class UnsettleCriteria
 	public decimal DebitAmount { get; set; }
 
 	public string? ExtraStatus { get; set; }
+
+	public override string GetSettingKey() => StoreProcedureMapper.SettleSP;
+
+	public override bool IsValid() => true;
 }

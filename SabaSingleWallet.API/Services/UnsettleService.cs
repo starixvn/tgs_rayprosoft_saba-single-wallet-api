@@ -6,6 +6,7 @@ using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Unsettle;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
+using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Unsettle;
 using Tgs.CashService;
@@ -16,7 +17,7 @@ namespace SabaSingleWallet.API.Services;
 
 public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 	ICashServiceClient cashServiceClient,
-	IPlayerRepository playerRepository,
+	IFanexPlayerRepository playerRepository,
 	IMapper mapper) : IRequestHandler<UnsettleRequest, UnsettleResult>
 {
 	public async Task<UnsettleResult> Handle(UnsettleRequest query, CancellationToken cancellationToken)
@@ -31,8 +32,7 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 				var unSettleCriteria = mapper.Map<UnsettleCriteria>(settlement);
 				unSettleCriteria.OperationId = query.message.OperationId;
 				unSettleCriteria.Action = query.message.Action;
-				var spResult = await playerRepository.CallStoredProcedureAsync<UnsettleCriteria, UnsettleSPResult>
-					(unSettleCriteria, StoreProcedureMapper.SettleSP);
+				var spResult = await playerRepository.CallStoredProcedureAsync< UnsettleSPResult>(unSettleCriteria);
 
 				if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{

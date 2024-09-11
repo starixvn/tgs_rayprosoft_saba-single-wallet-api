@@ -1,8 +1,10 @@
-﻿using System.Numerics;
+﻿
+using Fanex.Data.Repository;
+using SabaSingleWallet.Repositories.Helpers;
 
 namespace SabaSingleWallet.Repositories.Models.Settle;
 
-public class SettleCriteria
+public class SettleCriteria : CriteriaBase
 {
 	public string Action { get; set; }
 
@@ -27,4 +29,8 @@ public class SettleCriteria
 	public decimal DebitAmount { get; set; }
 
 	public string? ExtraStatus { get; set; }
+
+	public override string GetSettingKey() => StoreProcedureMapper.SettleSP;
+
+	public override bool IsValid() => true;
 }

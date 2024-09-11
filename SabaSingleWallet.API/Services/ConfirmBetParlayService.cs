@@ -6,6 +6,7 @@ using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.ConfirmBetParlay;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
+using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using Tgs.CashService.Client;
@@ -16,7 +17,7 @@ namespace SabaSingleWallet.API.Services;
 public class ConfirmBetParlayService(
 	ISapaApiMessagePublishHandler messagePublisher,
 	IMapper mapper,
-	IPlayerRepository playerRepository,
+	IFanexPlayerRepository playerRepository,
 	ICashServiceClient client
 ) : IRequestHandler<ConfirmBetParlayRequest, ConfirmBetParlayResult>
 {
@@ -52,7 +53,7 @@ public class ConfirmBetParlayService(
 
 			foreach (var ticket in CreateConfirmBetCriteria(query))
 			{
-				var inserted = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(ticket, StoreProcedureMapper.ConfirmBetSP);
+				var inserted = await playerRepository.CallStoredProcedureAsync< ConfirmBetSPResult>(ticket);
 
 				if (!SabaStatusCodeConst.IsSuccess(inserted.StatusCode))
 				{

@@ -6,6 +6,7 @@ using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Resettle;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
+using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Resettle;
 using Tgs.CashService;
@@ -17,7 +18,7 @@ namespace SabaSingleWallet.API.Services;
 public class ResettleService(
 	ISapaApiMessagePublishHandler messagePublisher,
 	ICashServiceClient cashServiceClient,
-	IPlayerRepository playerRepository,
+	IFanexPlayerRepository playerRepository,
 	IMapper mapper,
 	ISentryClient sentryClient
 	) : IRequestHandler<ResettleRequest, ResettleResult>
@@ -32,8 +33,7 @@ public class ResettleService(
 				criteria.OperationId = query.message.OperationId;
 				criteria.Action = query.message.Action;
 
-				var spResult = await playerRepository.CallStoredProcedureAsync<ResettleCriteria, ResettleSPResult>
-					(criteria, StoreProcedureMapper.SettleSP);
+				var spResult = await playerRepository.CallStoredProcedureAsync< ResettleSPResult>(criteria);
 
 				if (!CouldProcessNext(spResult.StatusCode))
 				{

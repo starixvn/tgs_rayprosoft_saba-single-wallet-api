@@ -1,6 +1,9 @@
-﻿namespace SabaSingleWallet.Repositories.Models.Resettle;
+﻿using Fanex.Data.Repository;
+using SabaSingleWallet.Repositories.Helpers;
 
-public class ResettleCriteria
+namespace SabaSingleWallet.Repositories.Models.Resettle;
+
+public class ResettleCriteria : CriteriaBase
 {
 	public string Action { get; set; }
 
@@ -27,4 +30,8 @@ public class ResettleCriteria
 	public string? ExtraStatus { get; set; }
 
 	public bool IsOnlyWinlostDateChanged { get; set; }
+	
+	public override string GetSettingKey() => StoreProcedureMapper.SettleSP;
+
+	public override bool IsValid() => true;
 }

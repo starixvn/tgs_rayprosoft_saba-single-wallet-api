@@ -5,6 +5,7 @@ using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.ConfirmBet;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
+using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using Tgs.CashService.Client;
@@ -52,7 +53,7 @@ public class ConfirmBetHandler(
 					UpdateTime = DateTimeOffset.Parse(confirmBetData.UpdateTime).ToUniversalTime().DateTime,
 				};
 
-				var spCallResult = await playerRepository.CallStoredProcedureAsync<ConfirmBetCriteria, ConfirmBetSPResult>(criteria, StoreProcedureMapper.ConfirmBetSP);
+				var spCallResult = await playerRepository.CallStoredProcedureAsync< ConfirmBetSPResult>(criteria);
 
 				if (spCallResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{

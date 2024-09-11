@@ -1,6 +1,9 @@
-﻿namespace SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
+﻿using Fanex.Data.Repository;
+using SabaSingleWallet.Repositories.Helpers;
 
-public record ConfirmBetCriteria
+namespace SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
+
+public class ConfirmBetCriteria : CriteriaBase
 {
 	public string Action { get; set; }
 
@@ -29,4 +32,8 @@ public record ConfirmBetCriteria
 	public decimal DebitAmount { get; set; }
 
 	public DateTime WinLostDate { get; set; }
+
+	public override string GetSettingKey() => StoreProcedureMapper.ConfirmBetSP;
+
+	public override bool IsValid() => true;
 }
