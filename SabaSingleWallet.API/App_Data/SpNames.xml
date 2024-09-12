@@ -2,7 +2,7 @@
 <Functions>
   <Functions  Name="SabaSingleWallet">
     <Setting Key="dbo.bet_bettrans_sbsw_settle" SpName="CALL dbo.bet_bettrans_sbsw_settle" DbName="tgs_staging"/>
-    <Setting Key="dbo.bet_bettrans_sbsw_bet" SpName="CALL bet_bettrans_sbsw_bet" DbName="tgs_staging"/>
+    <Setting Key="dbo.bet_bettrans_sbsw_bet" SpName="CALL dbo.bet_bettrans_sbsw_bet" DbName="tgs_staging"/>
     <Setting Key="dbo.bet_bettrans_sbsw_confirmbet" SpName="CALL dbo.bet_bettrans_sbsw_confirmbet" DbName="tgs_staging"/>
     <Setting Key="dbo.bet_bettrans_sbsw_cancelbet" SpName="CALL dbo.bet_bettrans_sbsw_cancelbet" DbName="tgs_staging"/>
     <Setting Key="dbo.Bet_Bettrans_SBSW_Get_TicketInfo" SpName="CALL dbo.Bet_Bettrans_SBSW_Get_TicketInfo" DbName="tgs_staging"/>
