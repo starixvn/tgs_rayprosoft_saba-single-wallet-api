@@ -14,10 +14,8 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="13.0.1" />
-    <PackageReference Include="Dapper" Version="2.1.35" />
     <PackageReference Include="Fanex.Data.Postgres" Version="4.3.0-beta3" />
     <PackageReference Include="Fanex.Data.Repository" Version="4.3.0-beta3" />
-    <PackageReference Include="Npgsql" Version="8.0.3" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.1" />
   </ItemGroup>
 

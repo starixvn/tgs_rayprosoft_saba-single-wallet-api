@@ -5,9 +5,7 @@ using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Resettle;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories;
-using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Resettle;
 using Tgs.CashService;
 using Tgs.CashService.Client;
@@ -18,7 +16,7 @@ namespace SabaSingleWallet.API.Services;
 public class ResettleService(
 	ISapaApiMessagePublishHandler messagePublisher,
 	ICashServiceClient cashServiceClient,
-	IFanexPlayerRepository playerRepository,
+	IPlayerRepository playerRepository,
 	IMapper mapper,
 	ISentryClient sentryClient
 	) : IRequestHandler<ResettleRequest, ResettleResult>

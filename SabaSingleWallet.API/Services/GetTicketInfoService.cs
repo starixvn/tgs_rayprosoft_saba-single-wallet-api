@@ -2,9 +2,7 @@ using MediatR;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.GetTicketInfo;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories;
-using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.GetTicketInfo;
 using Tgs.GameRecord.Saba.Common;
 

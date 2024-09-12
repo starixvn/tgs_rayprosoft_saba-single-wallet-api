@@ -5,9 +5,7 @@ using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.ConfirmBetParlay;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories;
-using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
@@ -17,7 +15,7 @@ namespace SabaSingleWallet.API.Services;
 public class ConfirmBetParlayService(
 	ISapaApiMessagePublishHandler messagePublisher,
 	IMapper mapper,
-	IFanexPlayerRepository playerRepository,
+	IPlayerRepository playerRepository,
 	ICashServiceClient client
 ) : IRequestHandler<ConfirmBetParlayRequest, ConfirmBetParlayResult>
 {

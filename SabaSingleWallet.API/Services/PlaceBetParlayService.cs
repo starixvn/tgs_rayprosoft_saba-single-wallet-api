@@ -4,9 +4,7 @@ using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories;
-using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
@@ -15,7 +13,7 @@ namespace SabaSingleWallet.API.Services;
 
 public class PlaceBetParlayService(
 	ICashServiceClient cashClient,
-	IFanexPlayerRepository playerRepository,
+	IPlayerRepository playerRepository,
 	IMapper mapper,
 	ISentryClient client,
 	ISapaApiMessagePublishHandler messagePublisher

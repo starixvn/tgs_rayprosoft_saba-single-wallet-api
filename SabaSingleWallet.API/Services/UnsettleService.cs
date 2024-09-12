@@ -17,7 +17,7 @@ namespace SabaSingleWallet.API.Services;
 
 public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 	ICashServiceClient cashServiceClient,
-	IFanexPlayerRepository playerRepository,
+	IPlayerRepository playerRepository,
 	IMapper mapper) : IRequestHandler<UnsettleRequest, UnsettleResult>
 {
 	public async Task<UnsettleResult> Handle(UnsettleRequest query, CancellationToken cancellationToken)
