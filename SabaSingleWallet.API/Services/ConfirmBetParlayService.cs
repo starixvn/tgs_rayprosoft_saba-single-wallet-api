@@ -24,6 +24,30 @@ public class ConfirmBetParlayService(
 	{
 		try
 		{
+			var response = await ProccessRequestAsync(query, cancellationToken);
+
+			await messagePublisher.LogApi(new ApiLogMessage()
+			{
+				Key = query.key,
+				Action = query.message.Action,
+				Request = query,
+				Response = response
+			}, cancellationToken);
+
+			return response;
+		}
+		catch (Exception ex)
+		{
+			Console.Write(ex.ToString());
+
+			return new ConfirmBetParlayResult(0, SabaStatusCodeConst.ApiInternalErrorCode);
+		}
+	}
+
+	public async ValueTask<ConfirmBetParlayResult> ProccessRequestAsync(ConfirmBetParlayRequest query, CancellationToken cancellationToken = default)
+	{
+		try
+		{
 			var playerCode = query.message.UserId.ToPlayerCode();
 
 			foreach (var ticket in CreateConfirmBetCriteria(query))

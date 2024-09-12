@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Newtonsoft.Json;
 using SabaSingleWallet.API.Extensions;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
@@ -16,10 +16,35 @@ public class PlaceBetParlayService(
 	ICashServiceClient cashClient,
 	IPlayerRepository playerRepository,
 	IMapper mapper,
-	ISentryClient client
+	ISentryClient client,
+	ISapaApiMessagePublishHandler messagePublisher
 ) : IGetService<PlaceBetParlayRequest, PlaceBetParlayResult>
 {
 	public async ValueTask<PlaceBetParlayResult> GetAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken = default)
+	{
+		try
+		{
+			var response = await ProccessRequestAsync(query, cancellationToken);
+
+			await messagePublisher.LogApi(new ApiLogMessage()
+			{
+				Key = query.key,
+				Action = query.message.Action,
+				Request = query,
+				Response = response
+			}, cancellationToken);
+
+			return response;
+		}
+		catch (Exception ex)
+		{
+			_ = client.CaptureException(ex);
+
+			return new PlaceBetParlayResult(null, SabaStatusCodeConst.ApiInternalErrorCode);
+		}
+	}
+
+	public async ValueTask<PlaceBetParlayResult> ProccessRequestAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{
