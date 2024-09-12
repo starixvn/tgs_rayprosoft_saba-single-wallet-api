@@ -73,8 +73,9 @@ public class PlaceBetParlayService(
 
 		foreach (var ticket in CreatePlaceBetCriteria(query))
 		{
-			var provider = ProviderConst.CreateProviderInfo(ticket.RefId, ticket.OperationId, ticket.Action);
-			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, ticket.DebitAmount, provider, "", cancellationToken).ConfigureAwait(false);
+			var action = "PlaceBet";
+			var provider = ProviderConst.CreateProviderInfo(ticket.RefId, ticket.OperationId, action);
+			var deductBalanceResult = await cashClient.GameProviderDeductBalanceAsync(playerCode, ticket.DebitAmount, provider, ticket.Action, cancellationToken).ConfigureAwait(false);
 
 			if (!SabaStatusCodeConst.IsSuccess(deductBalanceResult.ErrorCode))
 			{
