@@ -44,9 +44,8 @@ public static class HandleMessageMapper
 			PlayerCode = data.UserId.ToPlayerCode(),
 			BetState = data.Status,
 			TxId = data.TxId.ToString(),
-			Payout = data.Payout,
+			RefId = data.RefId,
 			ExtraStatus = data.ExtraStatus ?? "",
-			WinlostDate = data.WinlostDate,
 		};
 	}
 
