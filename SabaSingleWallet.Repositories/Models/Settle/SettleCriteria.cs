@@ -30,6 +30,8 @@ public class SettleCriteria : CriteriaBase
 
 	public string? ExtraStatus { get; set; }
 
+	public bool IsOnlyWinlostDateChanged { get; set; }
+
 	public override string GetSettingKey() => StoreProcedureMapper.SettleSP;
 
 	public override bool IsValid() => true;
