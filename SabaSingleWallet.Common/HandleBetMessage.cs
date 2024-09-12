@@ -2,9 +2,9 @@
 
 public class HandleBetMessage
 {
-	public readonly string GameProviderCode = "SABASW";
+	public string GameProviderCode { get; set; } = ProviderConst.ProviderCode;
 
-	public readonly string GameExternalId = "sports_book";
+	public string GameExternalId { get; set; } = ProviderConst.GameExternalId;
 
 	public string Action { get; set; } = "";
 
