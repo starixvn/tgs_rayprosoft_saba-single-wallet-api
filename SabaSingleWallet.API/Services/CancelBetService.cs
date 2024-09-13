@@ -1,45 +1,53 @@
 ﻿using SabaSingleWallet.API.Extensions;
-using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.CancelBet;
+using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IPlayerRepository playerRepository, ICashServiceClient cashClient) : IGetService<CancelBetRequest, CancelBetResult>
+public class CancelBetService(
+	ISapaApiMessagePublishHandler messagePublisher,
+	IPlayerRepository playerRepository,
+	ICashServiceClient cashClient,
+	ISentryClient sentryClient) : IGetService<CancelBetRequest, CancelBetResult>
+
 {
 	public async ValueTask<CancelBetResult> GetAsync(CancelBetRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{
 			var playerCode = query.message.UserId.ToPlayerCode();
+			var action = query.message.Action;
+			var operationId = query.message.OperationId;
+			var updateTime = DateTime.Parse(query.message.UpdateTime);
+
 			foreach (var transaction in query.message.Txns)
 			{
 				var result = await playerRepository.CallStoredProcedureAsync<CancelBetCriteria, CancelBetSPResult>(new CancelBetCriteria
 				{
-					Action = query.message.Action,
-					OperationId = query.message.OperationId,
-					UpdateTime = DateTime.Parse(query.message.UpdateTime),
-
+					Action = action,
+					OperationId = operationId,
+					UpdateTime = updateTime,
 					RefId = transaction.RefId,
 					CreditAmount = transaction.CreditAmount,
 					DebitAmount = transaction.DebitAmount,
 				}, StoreProcedureMapper.CancelBetSP);
 
-				if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
+				if (!CouldProcessNext(result.StatusCode))
 				{
 					return await GenerateResponseAsync(result.StatusCode, null, query, cancellationToken);
 				}
 
 				var isDeductPlaceBetAmount = await cashClient.IsExistGameProviderTransactionLogAsync(
 					playerCode,
-					new Tgs.CashService.ProviderInfo(
+					new ProviderInfo(
 						ProviderConst.ProviderCode,
 						transaction.RefId,
 						"PlaceBet"),
@@ -50,14 +58,10 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 					var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
 									playerCode,
 									transaction.CreditAmount,
-									new Tgs.CashService.ProviderInfo(
-									ProviderConst.ProviderCode,
-									transaction.RefId,
-									query.message.OperationId,
-									query.message.Action),
+									new ProviderInfo(ProviderConst.ProviderCode, transaction.RefId, operationId, action),
 									cancellationToken: cancellationToken);
 
-					if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
+					if (!CouldProcessNext(balanceResponse.ErrorCode))
 					{
 						return await GenerateResponseAsync(balanceResponse.ErrorCode, null, query, cancellationToken);
 					}
@@ -70,13 +74,16 @@ public class CancelBetService(ISapaApiMessagePublishHandler messagePublisher, IP
 		}
 		catch (Exception ex)
 		{
-			SentrySdk.CaptureException(ex);
-			Console.Write(ex.ToString());
+			_ = sentryClient.CaptureException(ex);
+
 			return await GenerateResponseAsync(SabaStatusCodeConst.ApiInternalErrorCode, null, query, cancellationToken);
 		}
 	}
 
-	private async Task<CancelBetResult> GenerateResponseAsync(string status, decimal? balance, CancelBetRequest request, CancellationToken cancellationToken)
+	private static bool CouldProcessNext(string statusCode)
+		=> statusCode == SabaStatusCodeConst.SuccessCode || SabaStatusCodeConst.IsDuplicatedError(statusCode);
+
+	public async Task<CancelBetResult> GenerateResponseAsync(string status, decimal? balance, CancelBetRequest request, CancellationToken cancellationToken)
 	{
 		var res = new CancelBetResult(status, balance);
 

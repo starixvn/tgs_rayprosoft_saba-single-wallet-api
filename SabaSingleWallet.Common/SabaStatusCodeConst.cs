@@ -35,5 +35,7 @@ public static class SabaStatusCodeConst
 
 	public static bool IsInteruptedBySP(string code) => int.Parse(code) > 150;
 
+	public static bool IsDuplicatedError(string code) => code is "202" or "101";
+
 	public static bool IsSuccess(string code) => string.Equals(code, SuccessCode);
 }
