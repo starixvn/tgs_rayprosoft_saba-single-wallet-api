@@ -20,9 +20,9 @@ public class PlaceBetHandler(
 		IPlayerRepository playerRepository,
 		IMapper mapper,
 		ISentryClient sentryClient
-	) : IRequestHandler<PlaceBet, PlaceBetResult>
+	) : IRequestHandler<PlaceBetRequest, PlaceBetResult>
 {
-	public async Task<PlaceBetResult> Handle(PlaceBet request, CancellationToken cancellationToken)
+	public async Task<PlaceBetResult> Handle(PlaceBetRequest request, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -64,7 +64,7 @@ public class PlaceBetHandler(
 		}
 	}
 
-	private async Task<PlaceBetResult> GenerateResponseAsync(PlaceBet request, PlaceBetResult result, CancellationToken cancellationToken)
+	private async Task<PlaceBetResult> GenerateResponseAsync(PlaceBetRequest request, PlaceBetResult result, CancellationToken cancellationToken)
 	{
 		await messagePublisher.LogApi(new ApiLogMessage()
 		{

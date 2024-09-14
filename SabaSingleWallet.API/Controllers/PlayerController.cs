@@ -25,7 +25,7 @@ namespace SabaSingleWallet.API.Controllers
 	public class PlayerController(IMediator mediator) : ControllerBase
 	{
 		[HttpPost("placebet")]
-		public async ValueTask<PlaceBetResult> PlaceBetAsync(PlaceBet request)
+		public async ValueTask<PlaceBetResult> PlaceBetAsync(PlaceBetRequest request)
 		{
 			var result = await mediator.Send(request);
 
@@ -33,12 +33,9 @@ namespace SabaSingleWallet.API.Controllers
 		}
 
 		[HttpPost("getbalance")]
-		public async ValueTask<GetBalanceResult> GetBalance(
-			[FromServices] IGetService<GetBalanceRequest, GetBalanceResult> service,
-			[FromBody] GetBalanceRequest source
-			)
+		public async ValueTask<GetBalanceResult> GetBalanceAsync(GetBalanceRequest request)
 		{
-			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
+			var result = await mediator.Send(request);
 
 			return result;
 		}
