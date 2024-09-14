@@ -18,6 +18,7 @@ public static class HandleMessageMapper
 			TxId = data.TxId.ToString(),
 			LicenseeTxid = data.LicenseetxId,
 			TransactionTime = data.TransactionTime,
+			GameProviderCode = ProviderConst.ProviderCode,
 		};
 	}
 
@@ -33,6 +34,7 @@ public static class HandleMessageMapper
 			Payout = data.Payout,
 			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate?.DateTime,
+			GameProviderCode = ProviderConst.ProviderCode,
 		};
 	}
 
@@ -46,6 +48,7 @@ public static class HandleMessageMapper
 			TxId = data.TxId.ToString(),
 			RefId = data.RefId,
 			ExtraStatus = data.ExtraStatus ?? "",
+			GameProviderCode = ProviderConst.ProviderCode,
 		};
 	}
 
@@ -62,6 +65,7 @@ public static class HandleMessageMapper
 			ExtraStatus = data.ExtraStatus ?? "",
 			WinlostDate = data.WinlostDate.DateTime,
 			IsOnlyWinlostDateChanged = data.IsOnlyWinlostDateChanged,
+			GameProviderCode = ProviderConst.ProviderCode,
 		};
 	}
 }
