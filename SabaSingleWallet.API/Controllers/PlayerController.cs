@@ -41,12 +41,9 @@ namespace SabaSingleWallet.API.Controllers
 		}
 
 		[HttpPost("settle")]
-		public async ValueTask<SettleResult> Settle(
-			[FromServices] IGetService<SettleRequest, SettleResult> service,
-			SettleRequest source
-			)
+		public async ValueTask<SettleResult> SettleAsync(SettleRequest request)
 		{
-			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
+			var result = await mediator.Send(request);
 
 			return result;
 		}

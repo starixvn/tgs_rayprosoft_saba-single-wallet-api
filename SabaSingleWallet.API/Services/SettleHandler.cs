@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MediatR;
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
@@ -10,25 +11,24 @@ using SabaSingleWallet.Repositories.Models.Settle;
 using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class SettleService(
+public class SettleHandler(
 	ICashServiceClient cashClient,
 	IPlayerRepository playerRepository,
 	ISapaApiMessagePublishHandler messagePublisher,
 	IMapper mapper,
-	ISentryClient sentryClient) : IGetService<SettleRequest, SettleResult>
+	ISentryClient sentryClient) : IRequestHandler<SettleRequest, SettleResult>
 {
-	public async ValueTask<SettleResult> GetAsync(SettleRequest query, CancellationToken cancellationToken = default)
+	public async Task<SettleResult> Handle(SettleRequest request, CancellationToken cancellationToken)
 	{
 		try
 		{
-			var action = query.message.Action;
-			var operationId = query.message.OperationId;
+			var action = request.message.Action;
+			var operationId = request.message.OperationId;
 
-			foreach (var transaction in query.message.Txns)
+			foreach (var transaction in request.message.Txns)
 			{
 				var criteria = mapper.Map<SettleCriteria>(transaction);
 				criteria.OperationId = operationId;
@@ -38,7 +38,7 @@ public class SettleService(
 
 				if (!CouldProcessNext(result.StatusCode))
 				{
-					return await GenerateResultAsync(query, result.StatusCode);
+					return await GenerateResultAsync(request, result.StatusCode);
 				}
 
 				if (transaction.CreditAmount > 0)
@@ -51,20 +51,20 @@ public class SettleService(
 
 					if (!CouldProcessNext(result.StatusCode))
 					{
-						return await GenerateResultAsync(query, balanceResponse.ErrorCode);
+						return await GenerateResultAsync(request, balanceResponse.ErrorCode);
 					}
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Settle(criteria), cancellationToken);
 			}
 
-			return await GenerateResultAsync(query, SabaStatusCodeConst.SuccessCode);
+			return await GenerateResultAsync(request, SabaStatusCodeConst.SuccessCode);
 		}
 		catch (Exception ex)
 		{
 			_ = sentryClient.CaptureException(ex);
 
-			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
+			return await GenerateResultAsync(request, SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
 
