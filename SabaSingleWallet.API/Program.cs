@@ -73,7 +73,6 @@ builder.Services
 		.AddHttpClientInstrumentation()
 		.SetSampler(new AlwaysOnSampler())
 		.AddNpgsql()
-		.AddEntityFrameworkCoreInstrumentation(options => options.SetDbStatementForText = true)
 		.AddOtlpExporter(options => options.Endpoint = builder.Configuration.GetValue<Uri>("Otel:Collector") ?? new Uri("")))
 	.WithMetrics(meterBuiler => meterBuiler
 		.SetResourceBuilder(ResourceBuilder.CreateDefault()
