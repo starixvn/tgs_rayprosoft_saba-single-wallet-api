@@ -7,6 +7,7 @@ using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Settle;
+using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
 using Tgs.ServiceUtility;
@@ -17,22 +18,25 @@ public class SettleService(
 	ICashServiceClient cashClient,
 	IPlayerRepository playerRepository,
 	ISapaApiMessagePublishHandler messagePublisher,
-	IMapper mapper) : IGetService<SettleRequest, SettleResult>
+	IMapper mapper,
+	ISentryClient sentryClient) : IGetService<SettleRequest, SettleResult>
 {
 	public async ValueTask<SettleResult> GetAsync(SettleRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{
-			Console.WriteLine(query.message);
+			var action = query.message.Action;
+			var operationId = query.message.OperationId;
 
 			foreach (var transaction in query.message.Txns)
 			{
 				var criteria = mapper.Map<SettleCriteria>(transaction);
-				criteria.OperationId = query.message.OperationId;
-				criteria.Action = query.message.Action;
+				criteria.OperationId = operationId;
+				criteria.Action = action;
+
 				var result = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>(criteria, StoreProcedureMapper.SettleSP);
 
-				if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
+				if (!CouldProcessNext(result.StatusCode))
 				{
 					return await GenerateResultAsync(query, result.StatusCode);
 				}
@@ -42,16 +46,10 @@ public class SettleService(
 					var balanceResponse = await cashClient.GameProviderAddBalanceAsync(
 					transaction.UserId.ToPlayerCode(),
 					transaction.CreditAmount,
-					new Tgs.CashService.ProviderInfo(
-						ProviderConst.ProviderCode,
-						transaction.RefId,
-						query.message.OperationId,
-						query.message.Action
-						),
-					null,
+					new ProviderInfo(ProviderConst.ProviderCode, transaction.RefId, operationId, action),
 					cancellationToken: cancellationToken);
 
-					if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
+					if (!CouldProcessNext(result.StatusCode))
 					{
 						return await GenerateResultAsync(query, balanceResponse.ErrorCode);
 					}
@@ -64,15 +62,19 @@ public class SettleService(
 		}
 		catch (Exception ex)
 		{
-			Console.Write(ex.ToString());
-			SentrySdk.CaptureException(ex);
-			return await GenerateResultAsync(query,SabaStatusCodeConst.ApiInternalErrorCode);
+			_ = sentryClient.CaptureException(ex);
+
+			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
+
+	private static bool CouldProcessNext(string statusCode)
+		=> statusCode == SabaStatusCodeConst.SuccessCode || SabaStatusCodeConst.IsDuplicatedError(statusCode);
 
 	private async Task<SettleResult> GenerateResultAsync(SettleRequest query, string status)
 	{
 		var res = new SettleResult(status);
+
 		await messagePublisher.LogApi(new ApiLogMessage()
 		{
 			Key = query.key,
