@@ -49,12 +49,9 @@ namespace SabaSingleWallet.API.Controllers
 		}
 
 		[HttpPost("confirmbet")]
-		public async ValueTask<ConfirmBetResult> ConfirmBet(
-			[FromServices] IGetService<ConfirmBetRequest, ConfirmBetResult> service,
-			ConfirmBetRequest source
-			)
+		public async ValueTask<ConfirmBetResult> ConfirmBetAsync(ConfirmBetRequest request)
 		{
-			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
+			var result = await mediator.Send(request);
 
 			return result;
 		}

@@ -1,6 +1,9 @@
-﻿namespace SabaSingleWallet.API.Models.ConfirmBet;
+﻿using MediatR;
 
-public record ConfirmBetRequest(
-   string key,
-   ConfirmBetData message
-   );
+namespace SabaSingleWallet.API.Models.ConfirmBet;
+
+public class ConfirmBetRequest : IRequest<ConfirmBetResult>
+{
+	public string key { get; set; }
+	public ConfirmBetData message { get; set; }
+}
