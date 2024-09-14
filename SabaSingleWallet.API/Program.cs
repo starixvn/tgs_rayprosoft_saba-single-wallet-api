@@ -14,14 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services
-	.AddOptions<MongoDBOptions>()
-	.Configure((MongoDBOptions options, IServiceProvider sp) =>
-	{
-		var configuration = sp.GetRequiredService<IConfiguration>();
-		options.ConnectionString = configuration.GetConnectionString("Mongo")!;
-	})
-	.Services
-	.AddSingleton<MongoDBConnectionManager>()
 	.AddSabaSingleWalletApiCore()
 	.AddRepositories()
 	.AddCashServiceClient((op, sp) =>
@@ -87,6 +79,7 @@ builder.Services
 
 builder.Services.AddRequestDecompression();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
 
 var app = builder.Build();
 

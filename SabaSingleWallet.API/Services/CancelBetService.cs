@@ -26,7 +26,7 @@ public class CancelBetService(
 			var playerCode = query.message.UserId.ToPlayerCode();
 			var action = query.message.Action;
 			var operationId = query.message.OperationId;
-			var updateTime = DateTime.Parse(query.message.UpdateTime);
+			var updateTime = DateTime.Parse(query.message.UpdateTime); //TODO review timezone
 
 			foreach (var transaction in query.message.Txns)
 			{

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MediatR;
+using Microsoft.AspNetCore.Mvc;
 using SabaSingleWallet.API.Models.AdjustBalance;
 using SabaSingleWallet.API.Models.Balance;
 using SabaSingleWallet.API.Models.CancelBet;
@@ -21,15 +22,12 @@ namespace SabaSingleWallet.API.Controllers
 {
 	[Route("api/player")]
 	[ApiController]
-	public class PlayerController : ControllerBase
+	public class PlayerController(IMediator mediator) : ControllerBase
 	{
 		[HttpPost("placebet")]
-		public async ValueTask<PlaceBetResult> PlaceBet(
-			[FromServices] IGetService<PlaceBetRequest, PlaceBetResult> service,
-			PlaceBetRequest source
-			)
+		public async ValueTask<PlaceBetResult> PlaceBetAsync(PlaceBet request)
 		{
-			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
+			var result = await mediator.Send(request);
 
 			return result;
 		}
@@ -112,7 +110,7 @@ namespace SabaSingleWallet.API.Controllers
 
 		[HttpPost("confirmbetparlay")]
 		public async ValueTask<ConfirmBetParlayResult> ConfirmBetParlay(
-	        [FromServices] IGetService<ConfirmBetParlayRequest, ConfirmBetParlayResult> service,
+			[FromServices] IGetService<ConfirmBetParlayRequest, ConfirmBetParlayResult> service,
 			ConfirmBetParlayRequest source)
 		{
 			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
@@ -182,7 +180,7 @@ namespace SabaSingleWallet.API.Controllers
 
 		[HttpPost("adjustbalance")]
 		public async ValueTask<AdjustBalanceResult> AdjustBalance(
-[FromServices] IGetService<AdjustBalanceRequest,AdjustBalanceResult > service,
+[FromServices] IGetService<AdjustBalanceRequest, AdjustBalanceResult> service,
 AdjustBalanceRequest source)
 		{
 			var result = await service.GetAsync(source, cancellationToken: HttpContext.RequestAborted).ConfigureAwait(false);
