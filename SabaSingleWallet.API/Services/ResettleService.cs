@@ -24,21 +24,18 @@ public class ResettleService(
 {
 	public async ValueTask<ResettleResult> GetAsync(ResettleRequest query, CancellationToken cancellationToken = default)
 	{
-		ResettleCriteria? criteria = null;
-
 		try
 		{
 			foreach (var settlement in query.message.Txns)
 			{
-				criteria = mapper.Map<ResettleCriteria>(settlement);
+				var criteria = mapper.Map<ResettleCriteria>(settlement);
 				criteria.OperationId = query.message.OperationId;
 				criteria.Action = query.message.Action;
 
 				var spResult = await playerRepository.CallStoredProcedureAsync<ResettleCriteria, ResettleSPResult>
 					(criteria, StoreProcedureMapper.SettleSP);
 
-				//TODO skip if duplicated transaction
-				if (SabaStatusCodeConst.IsInteruptedBySP(spResult.StatusCode))
+				if (!CouldProcessNext(spResult.StatusCode))
 				{
 					return await GenerateResultAsync(query, spResult.StatusCode);
 				}
@@ -58,10 +55,7 @@ public class ResettleService(
 							query.message.Action),
 						cancellationToken: cancellationToken);
 
-					//TODO skip if duplicated transaction
-					//TODO skip if player has inssufficient amount (half lose -> lose, void)
-
-					if (SabaStatusCodeConst.IsInteruptedByCash(balanceResponse.ErrorCode))
+					if (!CouldProcessNext(balanceResponse.ErrorCode))
 					{
 						return await GenerateResultAsync(query, balanceResponse.ErrorCode);
 					}
@@ -74,16 +68,14 @@ public class ResettleService(
 		}
 		catch (Exception ex)
 		{
-			if (criteria != null)
-			{
-				_ = sentryClient.CaptureMessage(message: "EXEC " + criteria?.ToString(), SentryLevel.Error);
-			}
-
 			_ = sentryClient.CaptureException(ex);
 
 			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
+
+	private static bool CouldProcessNext(string statusCode)
+		=> statusCode == SabaStatusCodeConst.SuccessCode || SabaStatusCodeConst.IsDuplicatedError(statusCode);
 
 	private async Task<ResettleResult> GenerateResultAsync(ResettleRequest query, string status)
 	{
