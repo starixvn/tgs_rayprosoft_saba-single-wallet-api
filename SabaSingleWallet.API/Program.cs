@@ -1,4 +1,5 @@
 using Fanex.Data.Postgres;
+using MediatR;
 using Microsoft.AspNetCore.HttpLogging;
 using NATS.Client.Core;
 using Npgsql;
@@ -6,6 +7,7 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using SabaSingleWallet.API;
+using SabaSingleWallet.API.Services._Shared;
 using SabaSingleWallet.Core.DependencyInjection;
 using SabaSingleWallet.Repositories.DependencyInjection;
 using Tgs.GameRecord.Saba.Common;
@@ -83,15 +85,17 @@ builder.Services
 
 builder.Services.AddRequestDecompression();
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly));
+builder.Services
+	.AddMediatR(cfg => cfg.RegisterServicesFromAssemblies(typeof(Program).Assembly))
+	.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
-	app.UseSwagger();
-	app.UseSwaggerUI();
+	_ = app.UseSwagger();
+	_ = app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
