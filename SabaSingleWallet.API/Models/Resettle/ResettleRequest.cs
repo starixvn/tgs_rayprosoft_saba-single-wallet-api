@@ -1,6 +1,8 @@
-﻿namespace SabaSingleWallet.API.Models.Resettle;
+﻿using MediatR;
+
+namespace SabaSingleWallet.API.Models.Resettle;
 
 public record ResettleRequest(
    string key,
    ResettleData message
-   );
+   ) : IRequest<ResettleResult>;

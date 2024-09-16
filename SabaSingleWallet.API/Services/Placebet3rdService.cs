@@ -1,12 +1,14 @@
-﻿using SabaSingleWallet.API.Messages;
+﻿using MediatR;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Placebet3rd;
 using SabaSingleWallet.Common;
-using Tgs.ServiceUtility;
+
 namespace SabaSingleWallet.API.Services;
 
-public class Placebet3rdService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<Placebet3rdRequest, Placebet3rdResult>
+public class Placebet3rdService(ISapaApiMessagePublishHandler messagePublisher)
+	: IRequestHandler<Placebet3rdRequest, Placebet3rdResult>
 {
-	public async ValueTask<Placebet3rdResult> GetAsync(Placebet3rdRequest query, CancellationToken cancellationToken = default)
+	public async Task<Placebet3rdResult> Handle(Placebet3rdRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -51,7 +53,6 @@ public class Placebet3rdService(ISapaApiMessagePublishHandler messagePublisher) 
 				Balance = 00m,
 				Status = "false"
 			};
-
 		}
 	}
 }

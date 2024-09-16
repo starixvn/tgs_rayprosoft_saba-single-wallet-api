@@ -1,5 +1,4 @@
-﻿using System.Reflection;
-using SabaSingleWallet.API.Messages;
+﻿using SabaSingleWallet.API.Messages;
 
 namespace Microsoft.Extensions.DependencyInjection;
 
@@ -8,8 +7,5 @@ public static class ServiceCollectionExtensions
 	public static IServiceCollection AddGameInterfaceCore(
 		this IServiceCollection services)
 		=> services
-		.RegisterAllServiceUtilityTypes(
-			Assembly.GetExecutingAssembly(),
-			ServiceLifetime.Transient)
 		.AddTransient<ISapaApiMessagePublishHandler, SapaApiMessagePublishHandler>();
 }

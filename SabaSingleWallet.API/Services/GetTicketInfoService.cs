@@ -1,18 +1,20 @@
-﻿using SabaSingleWallet.API.Messages;
+﻿using MediatR;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.GetTicketInfo;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.GetTicketInfo;
-using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class GetTicketInfoService(ISapaApiMessagePublishHandler messagePublisher, IPlayerRepository playerRepository, ICashServiceClient cashClient) : IGetService<GetTicketInfoRequest, GetTicketInfoResult>
+public class GetTicketInfoService(
+	ISapaApiMessagePublishHandler messagePublisher,
+	IPlayerRepository playerRepository
+	) : IRequestHandler<GetTicketInfoRequest, GetTicketInfoResult>
 {
-	public async ValueTask<GetTicketInfoResult> GetAsync(GetTicketInfoRequest query, CancellationToken cancellationToken = default)
+	public async Task<GetTicketInfoResult> Handle(GetTicketInfoRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{

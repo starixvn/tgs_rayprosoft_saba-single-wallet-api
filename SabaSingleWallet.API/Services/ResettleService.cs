@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MediatR;
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
@@ -10,7 +11,6 @@ using SabaSingleWallet.Repositories.Models.Resettle;
 using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
@@ -20,9 +20,9 @@ public class ResettleService(
 	IPlayerRepository playerRepository,
 	IMapper mapper,
 	ISentryClient sentryClient
-	) : IGetService<ResettleRequest, ResettleResult>
+	) : IRequestHandler<ResettleRequest, ResettleResult>
 {
-	public async ValueTask<ResettleResult> GetAsync(ResettleRequest query, CancellationToken cancellationToken = default)
+	public async Task<ResettleResult> Handle(ResettleRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{

@@ -1,22 +1,19 @@
-﻿
+﻿using MediatR;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.AdjustBalance;
-
 using SabaSingleWallet.Common;
-using Tgs.ServiceUtility;
-
 
 namespace SabaSingleWallet.API.Services;
 
-public class AdjustBalanceService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<AdjustBalanceRequest, AdjustBalanceResult>
+public class AdjustBalanceService(ISapaApiMessagePublishHandler messagePublisher) : IRequestHandler<AdjustBalanceRequest, AdjustBalanceResult>
 {
-	public async ValueTask<AdjustBalanceResult> GetAsync(AdjustBalanceRequest query, CancellationToken cancellationToken = default)
+	public async Task<AdjustBalanceResult> Handle(AdjustBalanceRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{
 			Console.WriteLine(query.message);
 			var res = new AdjustBalanceResult("0", null);
-			return await GenerateResultAsync( query, res);
+			return await GenerateResultAsync(query, res);
 		}
 		catch (Exception ex)
 		{

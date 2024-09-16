@@ -1,18 +1,18 @@
-﻿using SabaSingleWallet.API.Messages;
+﻿using MediatR;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.ConfirmBet3rd;
 using SabaSingleWallet.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class ConfirmBet3rdService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<ConfirmBet3rdRequest, ConfirmBet3rdResult>
+public class ConfirmBet3rdService(ISapaApiMessagePublishHandler messagePublisher) : IRequestHandler<ConfirmBet3rdRequest, ConfirmBet3rdResult>
 {
-	public async ValueTask<ConfirmBet3rdResult> GetAsync(ConfirmBet3rdRequest query, CancellationToken cancellationToken = default)
+	public async Task<ConfirmBet3rdResult> Handle(ConfirmBet3rdRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{
 			Console.WriteLine(query.message);
-			var res = new ConfirmBet3rdResult("204","success",1000);
+			var res = new ConfirmBet3rdResult("204", "success", 1000);
 
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
@@ -22,13 +22,12 @@ public class ConfirmBet3rdService(ISapaApiMessagePublishHandler messagePublisher
 				Response = res
 			}, cancellationToken);
 
-
 			return res;
 		}
 		catch (Exception ex)
 		{
 			Console.Write(ex.ToString());
-			return new ConfirmBet3rdResult("",null,0 );
+			return new ConfirmBet3rdResult("", null, 0);
 		}
 	}
 }

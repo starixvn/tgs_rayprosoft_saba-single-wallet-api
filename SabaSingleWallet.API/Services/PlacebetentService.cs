@@ -1,13 +1,14 @@
-﻿using SabaSingleWallet.API.Messages;
+﻿using MediatR;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Placebetent;
 using SabaSingleWallet.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class PlacebetentService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<PlacebetentRequest, PlacebetentResult>
+public class PlacebetentService(ISapaApiMessagePublishHandler messagePublisher)
+	: IRequestHandler<PlacebetentRequest, PlacebetentResult>
 {
-	public async ValueTask<PlacebetentResult> GetAsync(PlacebetentRequest query, CancellationToken cancellationToken = default)
+	public async Task<PlacebetentResult> Handle(PlacebetentRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -56,7 +57,6 @@ public class PlacebetentService(ISapaApiMessagePublishHandler messagePublisher) 
 						}
 					}
 			};
-
 		}
 	}
 }

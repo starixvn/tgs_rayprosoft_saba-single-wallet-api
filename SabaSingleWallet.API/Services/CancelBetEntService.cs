@@ -1,14 +1,13 @@
-﻿
+﻿using MediatR;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.CancelBetEnt;
 using SabaSingleWallet.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
-public class CancelBetEntService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<CancelBetEntRequest, CancelBetEntResult>
+public class CancelBetEntService(ISapaApiMessagePublishHandler messagePublisher) : IRequestHandler<CancelBetEntRequest, CancelBetEntResult>
 {
-	public async ValueTask<CancelBetEntResult> GetAsync(CancelBetEntRequest query, CancellationToken cancellationToken = default)
+	public async Task<CancelBetEntResult> Handle(CancelBetEntRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{

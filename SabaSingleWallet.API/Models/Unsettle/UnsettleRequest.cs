@@ -1,6 +1,8 @@
-﻿namespace SabaSingleWallet.API.Models.Unsettle;
+﻿using MediatR;
+
+namespace SabaSingleWallet.API.Models.Unsettle;
 
 public record UnsettleRequest(
 	   string key,
 	   UnsettleData message
-	   );
+) : IRequest<UnsettleResult>;

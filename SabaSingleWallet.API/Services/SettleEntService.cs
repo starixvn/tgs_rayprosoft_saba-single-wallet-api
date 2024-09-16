@@ -1,17 +1,19 @@
-﻿using SabaSingleWallet.API.Messages;
+﻿using MediatR;
+using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.SettleEnt;
 using SabaSingleWallet.Common;
-using Tgs.ServiceUtility;
+
 namespace SabaSingleWallet.API.Services;
 
-public class SettleEntService(ISapaApiMessagePublishHandler messagePublisher) : IGetService<SettleEntRequest, SettleEntResult>
+public class SettleEntService(ISapaApiMessagePublishHandler messagePublisher)
+	: IRequestHandler<SettleEntRequest, SettleEntResult>
 {
-	public async ValueTask<SettleEntResult> GetAsync(SettleEntRequest query, CancellationToken cancellationToken = default)
+	public async Task<SettleEntResult> Handle(SettleEntRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{
 			Console.WriteLine(query.message);
-			var res = new SettleEntResult("0","success");
+			var res = new SettleEntResult("0", "success");
 
 			await messagePublisher.LogApi(new ApiLogMessage()
 			{
@@ -21,7 +23,6 @@ public class SettleEntService(ISapaApiMessagePublishHandler messagePublisher) : 
 				Response = res
 			}, cancellationToken);
 
-			
 			return res;
 		}
 		catch (Exception ex)

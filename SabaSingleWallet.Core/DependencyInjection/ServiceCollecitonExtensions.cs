@@ -8,6 +8,5 @@ public static class ServiceCollecitonExtensions
 	public static IServiceCollection AddSabaSingleWalletApiCore(
 	this IServiceCollection services)
 	=> services
-	.RegisterAllServiceUtilityTypes(Assembly.GetExecutingAssembly(), ServiceLifetime.Transient)
 	.AddSerialNumberGenerator();
 }

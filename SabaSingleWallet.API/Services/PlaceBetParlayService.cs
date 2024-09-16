@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MediatR;
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
@@ -8,7 +9,6 @@ using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.PlaceBet;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
@@ -18,9 +18,9 @@ public class PlaceBetParlayService(
 	IMapper mapper,
 	ISentryClient client,
 	ISapaApiMessagePublishHandler messagePublisher
-) : IGetService<PlaceBetParlayRequest, PlaceBetParlayResult>
+) : IRequestHandler<PlaceBetParlayRequest, PlaceBetParlayResult>
 {
-	public async ValueTask<PlaceBetParlayResult> GetAsync(PlaceBetParlayRequest query, CancellationToken cancellationToken = default)
+	public async Task<PlaceBetParlayResult> Handle(PlaceBetParlayRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{

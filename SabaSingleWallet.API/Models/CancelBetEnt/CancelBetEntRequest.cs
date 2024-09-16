@@ -1,6 +1,8 @@
-﻿namespace SabaSingleWallet.API.Models.CancelBetEnt;
+﻿using MediatR;
+
+namespace SabaSingleWallet.API.Models.CancelBetEnt;
 
 public record CancelBetEntRequest(
    string key,
    CancelBetEntData message
-   );
+   ) : IRequest<CancelBetEntResult>;

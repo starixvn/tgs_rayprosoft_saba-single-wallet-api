@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MediatR;
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
@@ -10,16 +11,15 @@ using SabaSingleWallet.Repositories.Models.Unsettle;
 using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
 public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 	ICashServiceClient cashServiceClient,
 	IPlayerRepository playerRepository,
-	IMapper mapper) : IGetService<UnsettleRequest, UnsettleResult>
+	IMapper mapper) : IRequestHandler<UnsettleRequest, UnsettleResult>
 {
-	public async ValueTask<UnsettleResult> GetAsync(UnsettleRequest query, CancellationToken cancellationToken = default)
+	public async Task<UnsettleResult> Handle(UnsettleRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{

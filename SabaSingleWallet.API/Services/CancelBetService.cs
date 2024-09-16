@@ -1,4 +1,5 @@
-﻿using SabaSingleWallet.API.Extensions;
+﻿using MediatR;
+using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.Common;
@@ -8,7 +9,6 @@ using SabaSingleWallet.Repositories.Models.CancelBet;
 using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
@@ -16,10 +16,10 @@ public class CancelBetService(
 	ISapaApiMessagePublishHandler messagePublisher,
 	IPlayerRepository playerRepository,
 	ICashServiceClient cashClient,
-	ISentryClient sentryClient) : IGetService<CancelBetRequest, CancelBetResult>
+	ISentryClient sentryClient) : IRequestHandler<CancelBetRequest, CancelBetResult>
 
 {
-	public async ValueTask<CancelBetResult> GetAsync(CancelBetRequest query, CancellationToken cancellationToken = default)
+	public async Task<CancelBetResult> Handle(CancelBetRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{

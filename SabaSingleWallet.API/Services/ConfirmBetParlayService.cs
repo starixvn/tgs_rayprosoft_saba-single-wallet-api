@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using MediatR;
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
@@ -9,7 +10,6 @@ using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.ConfirmBetCriterias;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
-using Tgs.ServiceUtility;
 
 namespace SabaSingleWallet.API.Services;
 
@@ -18,9 +18,9 @@ public class ConfirmBetParlayService(
 	IMapper mapper,
 	IPlayerRepository playerRepository,
 	ICashServiceClient client
-) : IGetService<ConfirmBetParlayRequest, ConfirmBetParlayResult>
+) : IRequestHandler<ConfirmBetParlayRequest, ConfirmBetParlayResult>
 {
-	public async ValueTask<ConfirmBetParlayResult> GetAsync(ConfirmBetParlayRequest query, CancellationToken cancellationToken = default)
+	public async Task<ConfirmBetParlayResult> Handle(ConfirmBetParlayRequest query, CancellationToken cancellationToken = default)
 	{
 		try
 		{
