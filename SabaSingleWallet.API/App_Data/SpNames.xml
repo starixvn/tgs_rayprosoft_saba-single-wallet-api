@@ -5,7 +5,7 @@
     <Setting Key="dbo.bet_bettrans_sbsw_bet" SpName="CALL dbo.bet_bettrans_sbsw_bet" DbName="tgs_staging"/>
     <Setting Key="dbo.bet_bettrans_sbsw_confirmbet" SpName="CALL dbo.bet_bettrans_sbsw_confirmbet" DbName="tgs_staging"/>
     <Setting Key="dbo.bet_bettrans_sbsw_cancelbet" SpName="CALL dbo.bet_bettrans_sbsw_cancelbet" DbName="tgs_staging"/>
-    <Setting Key="dbo.Bet_Bettrans_SBSW_Get_TicketInfo" SpName="CALL dbo.Bet_Bettrans_SBSW_Get_TicketInfo" DbName="tgs_staging"/>
+    <Setting Key="dbo.bet_bettrans_sbsw_get_ticketinfo" SpName="CALL dbo.bet_bettrans_sbsw_get_ticketinfo" DbName="tgs_staging"/>
     <Setting Key="dbo.game_bets_set" SpName="CALL dbo.game_bets_set" DbName="tgs_staging"/>
   </Functions>
 </Functions>
