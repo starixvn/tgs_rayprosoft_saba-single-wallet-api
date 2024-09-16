@@ -24,67 +24,67 @@ namespace SabaSingleWallet.API.Controllers
 	public class PlayerController(IMediator mediator) : ControllerBase
 	{
 		[HttpPost("placebet")]
-		public Task<PlaceBetResult> PlaceBetAsync(PlaceBetRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<PlaceBetResult> PlaceBetAsync(PlaceBetRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("getbalance")]
-		public Task<GetBalanceResult> GetBalanceAsync(GetBalanceRequest request)
-			 => mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<GetBalanceResult> GetBalanceAsync(GetBalanceRequest request)
+			 => await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("settle")]
-		public Task<SettleResult> SettleAsync(SettleRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<SettleResult> SettleAsync(SettleRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("confirmbet")]
-		public Task<ConfirmBetResult> ConfirmBetAsync(ConfirmBetRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<ConfirmBetResult> ConfirmBetAsync(ConfirmBetRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("cancelbet")]
-		public Task<CancelBetResult> CancelBetAsync(CancelBetRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<CancelBetResult> CancelBetAsync(CancelBetRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("resettle")]
-		public Task<ResettleResult> ResettleAsync(ResettleRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<ResettleResult> ResettleAsync(ResettleRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("unsettle")]
-		public Task<UnsettleResult> UnsettleAsync(UnsettleRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<UnsettleResult> UnsettleAsync(UnsettleRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("placebetparlay")]
-		public Task<PlaceBetParlayResult> PlacebetParlayAsync(PlaceBetParlayRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<PlaceBetParlayResult> PlacebetParlayAsync(PlaceBetParlayRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("confirmbetparlay")]
-		public Task<ConfirmBetParlayResult> ConfirmBetParlayAsync(ConfirmBetParlayRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<ConfirmBetParlayResult> ConfirmBetParlayAsync(ConfirmBetParlayRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("placebet3rd")]
-		public Task<Placebet3rdResult> Placebet3rdAsync(Placebet3rdRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<Placebet3rdResult> Placebet3rdAsync(Placebet3rdRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("confirmbet3rd")]
-		public Task<ConfirmBet3rdResult> Confirmbet3rdAsync(ConfirmBet3rdRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<ConfirmBet3rdResult> Confirmbet3rdAsync(ConfirmBet3rdRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("placebetent")]
-		public Task<PlacebetentResult> PlaceBetEntAsync(PlacebetentRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<PlacebetentResult> PlaceBetEntAsync(PlacebetentRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("settleent")]
-		public Task<SettleEntResult> SettleEntAsync(SettleEntRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<SettleEntResult> SettleEntAsync(SettleEntRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("cancelbetent")]
-		public Task<CancelBetEntResult> CancelBetEntAsync(CancelBetEntRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<CancelBetEntResult> CancelBetEntAsync(CancelBetEntRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("getticketinfo")]
-		public Task<GetTicketInfoResult> GetTicketInfoAsync(GetTicketInfoRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<GetTicketInfoResult> GetTicketInfoAsync(GetTicketInfoRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 
 		[HttpPost("adjustbalance")]
-		public Task<AdjustBalanceResult> AdjustBalanceAsync(AdjustBalanceRequest request)
-			=> mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
+		public async Task<AdjustBalanceResult> AdjustBalanceAsync(AdjustBalanceRequest request)
+			=> await mediator.Send(request, cancellationToken: HttpContext.RequestAborted);
 	}
 }
