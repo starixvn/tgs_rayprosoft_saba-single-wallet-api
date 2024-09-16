@@ -5,8 +5,7 @@ using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Settle;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Core;
-using SabaSingleWallet.Repositories.Helpers;
+using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Models.Settle;
 using Tgs.CashService;
 using Tgs.CashService.Client;
@@ -34,7 +33,7 @@ public class SettleHandler(
 				criteria.OperationId = operationId;
 				criteria.Action = action;
 
-				var result = await playerRepository.CallStoredProcedureAsync<SettleCriteria, SettleSPResult>(criteria, StoreProcedureMapper.SettleSP);
+				var result = await playerRepository.CallStoredProcedureAsync< SettleSPResult>(criteria);
 
 				if (!CouldProcessNext(result.StatusCode))
 				{

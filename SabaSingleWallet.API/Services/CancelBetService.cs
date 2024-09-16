@@ -3,9 +3,8 @@ using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Core;
-using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.CancelBet;
+using SabaSingleWallet.Repositories;
 using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
@@ -30,7 +29,7 @@ public class CancelBetService(
 
 			foreach (var transaction in query.message.Txns)
 			{
-				var result = await playerRepository.CallStoredProcedureAsync<CancelBetCriteria, CancelBetSPResult>(new CancelBetCriteria
+				var result = await playerRepository.CallStoredProcedureAsync< CancelBetSPResult>(new CancelBetCriteria
 				{
 					Action = action,
 					OperationId = operationId,
@@ -38,7 +37,7 @@ public class CancelBetService(
 					RefId = transaction.RefId,
 					CreditAmount = transaction.CreditAmount,
 					DebitAmount = transaction.DebitAmount,
-				}, StoreProcedureMapper.CancelBetSP);
+				});
 
 				if (!CouldProcessNext(result.StatusCode))
 				{
