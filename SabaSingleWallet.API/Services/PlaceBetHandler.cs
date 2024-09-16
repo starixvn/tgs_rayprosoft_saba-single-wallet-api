@@ -45,7 +45,7 @@ public class PlaceBetHandler(
 			}
 
 			var criteria = mapper.Map<PlaceBetCriteria>(request.message);
-			var spResult = await fanexPlayerRepository.CallStoredProcedureAsync<PlaceBetSPResult>(criteria);
+			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetSPResult>(criteria);
 
 			if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 			{
