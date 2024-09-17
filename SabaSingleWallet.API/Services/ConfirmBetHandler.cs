@@ -51,11 +51,11 @@ public class ConfirmBetHandler(
 					UpdateTime = DateTimeOffset.Parse(confirmBetData.UpdateTime).ToUniversalTime().DateTime,
 				};
 
-				var spCallResult = await playerRepository.CallStoredProcedureAsync< ConfirmBetSPResult>(criteria);
+				var spCallResult = await playerRepository.CallStoredProcedureAsync<ConfirmBetSPResult>(criteria);
 
 				if (spCallResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResponseAsync(spCallResult.StatusCode, 0, request, cancellationToken);
+					return new ConfirmBetResult(spCallResult.StatusCode, 0);
 				}
 
 				if (transaction.IsOddsChanged && transaction.CreditAmount > 0)
@@ -72,7 +72,7 @@ public class ConfirmBetHandler(
 
 					if (addAmmountResut.ErrorCode != SabaStatusCodeConst.SuccessCode)
 					{
-						return await GenerateResponseAsync(addAmmountResut.ErrorCode, 0, request, cancellationToken);
+						return new ConfirmBetResult(addAmmountResut.ErrorCode, 0);
 					}
 				}
 
@@ -80,30 +80,15 @@ public class ConfirmBetHandler(
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.ConfirmBet(criteria, playerCode), cancellationToken);
 
-				return await GenerateResponseAsync(SabaStatusCodeConst.SuccessCode, balance, request, cancellationToken);
+				return new ConfirmBetResult(SabaStatusCodeConst.SuccessCode, balance);
 			}
 
-			return await GenerateResponseAsync(SabaStatusCodeConst.NoTransactionFound, 0, request, cancellationToken);
+			return new ConfirmBetResult(SabaStatusCodeConst.NoTransactionFound, 0);
 		}
 		catch (Exception ex)
 		{
 			_ = sentryClient.CaptureException(ex);
-			return await GenerateResponseAsync(SabaStatusCodeConst.ApiInternalErrorCode, 0, request, cancellationToken);
+			return new ConfirmBetResult(SabaStatusCodeConst.ApiInternalErrorCode, 0);
 		}
-	}
-
-	private async Task<ConfirmBetResult> GenerateResponseAsync(string status, decimal balance, ConfirmBetRequest request, CancellationToken cancellationToken)
-	{
-		var res = new ConfirmBetResult(status, balance);
-
-		await messagePublisher.LogApi(new ApiLogMessage()
-		{
-			Key = request.key,
-			Action = request.message.Action,
-			Request = request,
-			Response = res
-		}, cancellationToken);
-
-		return res;
 	}
 }

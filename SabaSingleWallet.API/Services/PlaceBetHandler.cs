@@ -41,7 +41,7 @@ public class PlaceBetHandler(
 
 			if (!string.IsNullOrWhiteSpace(deductBalanceResult.ErrorMessage))
 			{
-				return await GenerateResponseAsync(request, new PlaceBetResult(deductBalanceResult.ErrorCode, request.message.RefId, null), cancellationToken);
+				return new PlaceBetResult(deductBalanceResult.ErrorCode, request.message.RefId, null);
 			}
 
 			var criteria = mapper.Map<PlaceBetCriteria>(request.message);
@@ -49,30 +49,15 @@ public class PlaceBetHandler(
 
 			if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 			{
-				return await GenerateResponseAsync(request, new PlaceBetResult(spResult.StatusCode, request.message.RefId, null), cancellationToken);
+				return new PlaceBetResult(spResult.StatusCode, request.message.RefId, null);
 			}
 
-			var res = new PlaceBetResult(SabaStatusCodeConst.SuccessCode, request.message.RefId, spResult.Licenseetxid);
-
-			return await GenerateResponseAsync(request, res, cancellationToken);
+			return new PlaceBetResult(SabaStatusCodeConst.SuccessCode, request.message.RefId, spResult.Licenseetxid);
 		}
 		catch (Exception ex)
 		{
 			_ = sentryClient.CaptureException(ex);
-			return await GenerateResponseAsync(request, new PlaceBetResult(SabaStatusCodeConst.ApiInternalErrorCode, request.message.RefId, null), cancellationToken);
+			return new PlaceBetResult(SabaStatusCodeConst.ApiInternalErrorCode, request.message.RefId, null);
 		}
-	}
-
-	private async Task<PlaceBetResult> GenerateResponseAsync(PlaceBetRequest request, PlaceBetResult result, CancellationToken cancellationToken)
-	{
-		await messagePublisher.LogApi(new ApiLogMessage()
-		{
-			Key = request.key,
-			Action = request.message.Action,
-			Request = request,
-			Response = result
-		}, cancellationToken);
-
-		return result;
 	}
 }

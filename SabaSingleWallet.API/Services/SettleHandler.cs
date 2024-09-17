@@ -33,11 +33,11 @@ public class SettleHandler(
 				criteria.OperationId = operationId;
 				criteria.Action = action;
 
-				var result = await playerRepository.CallStoredProcedureAsync< SettleSPResult>(criteria);
+				var result = await playerRepository.CallStoredProcedureAsync<SettleSPResult>(criteria);
 
 				if (!CouldProcessNext(result.StatusCode))
 				{
-					return await GenerateResultAsync(request, result.StatusCode);
+					return new SettleResult(result.StatusCode);
 				}
 
 				if (transaction.CreditAmount > 0)
@@ -50,38 +50,23 @@ public class SettleHandler(
 
 					if (!CouldProcessNext(result.StatusCode))
 					{
-						return await GenerateResultAsync(request, balanceResponse.ErrorCode);
+						return new SettleResult(balanceResponse.ErrorCode);
 					}
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Settle(criteria), cancellationToken);
 			}
 
-			return await GenerateResultAsync(request, SabaStatusCodeConst.SuccessCode);
+			return new SettleResult(SabaStatusCodeConst.SuccessCode);
 		}
 		catch (Exception ex)
 		{
 			_ = sentryClient.CaptureException(ex);
 
-			return await GenerateResultAsync(request, SabaStatusCodeConst.ApiInternalErrorCode);
+			return new SettleResult(SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
 
 	private static bool CouldProcessNext(string statusCode)
 		=> statusCode == SabaStatusCodeConst.SuccessCode || SabaStatusCodeConst.IsDuplicatedError(statusCode);
-
-	private async Task<SettleResult> GenerateResultAsync(SettleRequest query, string status)
-	{
-		var res = new SettleResult(status);
-
-		await messagePublisher.LogApi(new ApiLogMessage()
-		{
-			Key = query.key,
-			Action = query.message.Action,
-			Request = query,
-			Response = res
-		});
-
-		return res;
-	}
 }
