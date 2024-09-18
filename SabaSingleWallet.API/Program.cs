@@ -14,6 +14,7 @@ using Tgs.GameRecord.Saba.Common;
 using Tgs.MessageQueue.Nats.Serializers;
 
 var builder = WebApplication.CreateBuilder(args);
+var env = builder.Configuration.GetValue<string>("env");
 
 // Add services to the container.
 builder.Services.AddFanexPostgres(builder.Configuration, connectionStringSection: "FanexConnectionStrings");
@@ -37,8 +38,8 @@ builder.Services
 .AddMessageQueue()
 .AddNatsMessageQueue(config => config.ConfigureResolveConnection(sp => sp.GetRequiredKeyedService<NatsConnection>("Nats")))
  .ClearAllExchanges()
- .AddNatsGlobPatternExchange(SabaNatsConst.ApiLogsPublish)
- .AddNatsGlobPatternExchange(SabaNatsConst.HandleBetPublish);
+ .AddNatsGlobPatternExchange($"{SabaNatsConst.ApiLogsPublish}.{env}")
+ .AddNatsGlobPatternExchange($"{SabaNatsConst.HandleBetPublish}.{env}");
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
