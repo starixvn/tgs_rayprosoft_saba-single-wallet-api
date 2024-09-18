@@ -25,14 +25,6 @@ public class ConfirmBetParlayService(
 		{
 			var response = await ProccessRequestAsync(query, cancellationToken);
 
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = response
-			}, cancellationToken);
-
 			return response;
 		}
 		catch (Exception ex)
@@ -51,7 +43,7 @@ public class ConfirmBetParlayService(
 
 			foreach (var ticket in CreateConfirmBetCriteria(query))
 			{
-				var inserted = await playerRepository.CallStoredProcedureAsync< ConfirmBetSPResult>(ticket);
+				var inserted = await playerRepository.CallStoredProcedureAsync<ConfirmBetSPResult>(ticket);
 
 				if (!SabaStatusCodeConst.IsSuccess(inserted.StatusCode))
 				{

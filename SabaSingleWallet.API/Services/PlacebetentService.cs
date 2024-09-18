@@ -1,18 +1,15 @@
 ﻿using MediatR;
-using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Placebetent;
-using SabaSingleWallet.Common;
 
 namespace SabaSingleWallet.API.Services;
 
-public class PlacebetentService(ISapaApiMessagePublishHandler messagePublisher)
+public class PlacebetentService()
 	: IRequestHandler<PlacebetentRequest, PlacebetentResult>
 {
 	public async Task<PlacebetentResult> Handle(PlacebetentRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{
-			Console.WriteLine(query.message);
 			var res = new PlacebetentResult
 			{
 				Status = "204",
@@ -29,19 +26,10 @@ public class PlacebetentService(ISapaApiMessagePublishHandler messagePublisher)
 					}
 			};
 
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
-
 			return res;
 		}
 		catch (Exception ex)
 		{
-			Console.Write(ex.ToString());
 			return new PlacebetentResult
 			{
 				Status = "555",

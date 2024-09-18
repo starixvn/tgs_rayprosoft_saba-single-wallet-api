@@ -1,7 +1,6 @@
 ﻿using AutoMapper;
 using MediatR;
 using SabaSingleWallet.API.Extensions;
-using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.PlaceBetParlay;
 using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
@@ -15,8 +14,7 @@ public class PlaceBetParlayService(
 	ICashServiceClient cashClient,
 	IPlayerRepository playerRepository,
 	IMapper mapper,
-	ISentryClient client,
-	ISapaApiMessagePublishHandler messagePublisher
+	ISentryClient client
 ) : IRequestHandler<PlaceBetParlayRequest, PlaceBetParlayResult>
 {
 	public async Task<PlaceBetParlayResult> Handle(PlaceBetParlayRequest query, CancellationToken cancellationToken)
@@ -24,14 +22,6 @@ public class PlaceBetParlayService(
 		try
 		{
 			var response = await ProccessRequestAsync(query, cancellationToken);
-
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = response
-			}, cancellationToken);
 
 			return response;
 		}
@@ -93,7 +83,7 @@ public class PlaceBetParlayService(
 
 		foreach (var ticket in CreatePlaceBetCriteria(query))
 		{
-			var spResult = await playerRepository.CallStoredProcedureAsync< PlaceBetSPResult>(ticket);
+			var spResult = await playerRepository.CallStoredProcedureAsync<PlaceBetSPResult>(ticket);
 
 			ticketInfos.Add(new TicketInfoMapping(ticket.RefId, spResult.Licenseetxid));
 

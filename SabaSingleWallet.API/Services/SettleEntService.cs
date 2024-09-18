@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.SettleEnt;
-using SabaSingleWallet.Common;
 
 namespace SabaSingleWallet.API.Services;
 
@@ -14,14 +13,6 @@ public class SettleEntService(ISapaApiMessagePublishHandler messagePublisher)
 		{
 			Console.WriteLine(query.message);
 			var res = new SettleEntResult("0", "success");
-
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
 
 			return res;
 		}

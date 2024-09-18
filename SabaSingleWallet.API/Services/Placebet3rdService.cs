@@ -1,11 +1,9 @@
 ﻿using MediatR;
-using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Placebet3rd;
-using SabaSingleWallet.Common;
 
 namespace SabaSingleWallet.API.Services;
 
-public class Placebet3rdService(ISapaApiMessagePublishHandler messagePublisher)
+public class Placebet3rdService()
 	: IRequestHandler<Placebet3rdRequest, Placebet3rdResult>
 {
 	public async Task<Placebet3rdResult> Handle(Placebet3rdRequest query, CancellationToken cancellationToken)
@@ -26,14 +24,6 @@ public class Placebet3rdService(ISapaApiMessagePublishHandler messagePublisher)
 				Balance = 100.00m,
 				Status = "success"
 			};
-
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = query.key,
-				Action = query.message.Action,
-				Request = query,
-				Response = res
-			}, cancellationToken);
 
 			return res;
 		}
