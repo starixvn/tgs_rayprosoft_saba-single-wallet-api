@@ -3,8 +3,8 @@ using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.CancelBet;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Repositories.Models.CancelBet;
 using SabaSingleWallet.Repositories;
+using SabaSingleWallet.Repositories.Models.CancelBet;
 using Tgs.CashService;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
@@ -29,7 +29,7 @@ public class CancelBetService(
 
 			foreach (var transaction in query.message.Txns)
 			{
-				var result = await playerRepository.CallStoredProcedureAsync< CancelBetSPResult>(new CancelBetCriteria
+				var result = await playerRepository.CallStoredProcedureAsync<CancelBetSPResult>(new CancelBetCriteria
 				{
 					Action = action,
 					OperationId = operationId,
@@ -41,7 +41,7 @@ public class CancelBetService(
 
 				if (!CouldProcessNext(result.StatusCode))
 				{
-					return await GenerateResponseAsync(result.StatusCode, null, query, cancellationToken);
+					return new CancelBetResult(result.StatusCode, 0);
 				}
 
 				var isDeductPlaceBetAmount = await cashClient.IsExistGameProviderTransactionLogAsync(
@@ -62,38 +62,23 @@ public class CancelBetService(
 
 					if (!CouldProcessNext(balanceResponse.ErrorCode))
 					{
-						return await GenerateResponseAsync(balanceResponse.ErrorCode, null, query, cancellationToken);
+						return new CancelBetResult(balanceResponse.ErrorCode, 0);
 					}
 				}
 			}
 
 			var balance = (await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken)).Balance;
 
-			return await GenerateResponseAsync(SabaStatusCodeConst.SuccessCode, balance, query, cancellationToken);
+			return new CancelBetResult(SabaStatusCodeConst.SuccessCode, balance);
 		}
 		catch (Exception ex)
 		{
 			_ = sentryClient.CaptureException(ex);
 
-			return await GenerateResponseAsync(SabaStatusCodeConst.ApiInternalErrorCode, null, query, cancellationToken);
+			return new CancelBetResult(SabaStatusCodeConst.ApiInternalErrorCode, 0);
 		}
 	}
 
 	private static bool CouldProcessNext(string statusCode)
 		=> statusCode == SabaStatusCodeConst.SuccessCode || SabaStatusCodeConst.IsDuplicatedError(statusCode);
-
-	public async Task<CancelBetResult> GenerateResponseAsync(string status, decimal? balance, CancelBetRequest request, CancellationToken cancellationToken)
-	{
-		var res = new CancelBetResult(status, balance);
-
-		await messagePublisher.LogApi(new ApiLogMessage()
-		{
-			Key = request.key,
-			Action = request.message.Action,
-			Request = request,
-			Response = res
-		}, cancellationToken);
-
-		return res;
-	}
 }

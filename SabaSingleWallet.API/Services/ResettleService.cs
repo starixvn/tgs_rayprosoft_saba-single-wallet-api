@@ -21,7 +21,7 @@ public class ResettleService(
 	ISentryClient sentryClient
 	) : IRequestHandler<ResettleRequest, ResettleResult>
 {
-	public async Task<ResettleResult> Handle(ResettleRequest query, CancellationToken cancellationToken = default)
+	public async Task<ResettleResult> Handle(ResettleRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{
@@ -31,11 +31,11 @@ public class ResettleService(
 				criteria.OperationId = query.message.OperationId;
 				criteria.Action = query.message.Action;
 
-				var spResult = await playerRepository.CallStoredProcedureAsync< ResettleSPResult>(criteria);
+				var spResult = await playerRepository.CallStoredProcedureAsync<ResettleSPResult>(criteria);
 
 				if (!CouldProcessNext(spResult.StatusCode))
 				{
-					return await GenerateResultAsync(query, spResult.StatusCode);
+					return new ResettleResult(spResult.StatusCode);
 				}
 
 				if (!settlement.ExtraInfo.IsOnlyWinlostDateChanged)
@@ -55,37 +55,23 @@ public class ResettleService(
 
 					if (!CouldProcessNext(balanceResponse.ErrorCode))
 					{
-						return await GenerateResultAsync(query, balanceResponse.ErrorCode);
+						return new ResettleResult(balanceResponse.ErrorCode);
 					}
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Resettle(criteria), cancellationToken);
 			}
 
-			return await GenerateResultAsync(query, SabaStatusCodeConst.SuccessCode);
+			return new ResettleResult(SabaStatusCodeConst.SuccessCode);
 		}
 		catch (Exception ex)
 		{
 			_ = sentryClient.CaptureException(ex);
 
-			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
+			return new ResettleResult(SabaStatusCodeConst.ApiInternalErrorCode);
 		}
 	}
 
 	private static bool CouldProcessNext(string statusCode)
 		=> statusCode == SabaStatusCodeConst.SuccessCode || SabaStatusCodeConst.IsDuplicatedError(statusCode);
-
-	private async Task<ResettleResult> GenerateResultAsync(ResettleRequest query, string status)
-	{
-		var res = new ResettleResult(status);
-		await messagePublisher.LogApi(new ApiLogMessage()
-		{
-			Key = query.key,
-			Action = query.message.Action,
-			Request = query,
-			Response = res
-		});
-
-		return res;
-	}
 }

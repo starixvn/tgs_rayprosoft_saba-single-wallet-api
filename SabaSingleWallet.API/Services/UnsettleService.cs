@@ -5,9 +5,7 @@ using SabaSingleWallet.API.Helpers;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Unsettle;
 using SabaSingleWallet.Common;
-using SabaSingleWallet.Core;
 using SabaSingleWallet.Repositories;
-using SabaSingleWallet.Repositories.Helpers;
 using SabaSingleWallet.Repositories.Models.Unsettle;
 using Tgs.CashService;
 using Tgs.CashService.Client;
@@ -18,25 +16,24 @@ namespace SabaSingleWallet.API.Services;
 public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 	ICashServiceClient cashServiceClient,
 	IPlayerRepository playerRepository,
-	IMapper mapper) : IRequestHandler<UnsettleRequest, UnsettleResult>
+	IMapper mapper,
+	ISentryClient sentryClient) : IRequestHandler<UnsettleRequest, UnsettleResult>
 {
 	public async Task<UnsettleResult> Handle(UnsettleRequest query, CancellationToken cancellationToken)
 	{
 		try
 		{
-			Console.WriteLine(query.message);
-
 			foreach (var settlement in query.message.Txns)
 
 			{
 				var unSettleCriteria = mapper.Map<UnsettleCriteria>(settlement);
 				unSettleCriteria.OperationId = query.message.OperationId;
 				unSettleCriteria.Action = query.message.Action;
-				var spResult = await playerRepository.CallStoredProcedureAsync< UnsettleSPResult>(unSettleCriteria);
+				var spResult = await playerRepository.CallStoredProcedureAsync<UnsettleSPResult>(unSettleCriteria);
 
 				if (spResult.StatusCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResultAsync(query, spResult.StatusCode);
+					return new UnsettleResult(spResult.StatusCode);
 				}
 
 				var playerCode = settlement.UserId.ToPlayerCode();
@@ -50,33 +47,19 @@ public class UnsettleService(ISapaApiMessagePublishHandler messagePublisher,
 
 				if (balanceResponse.ErrorCode != SabaStatusCodeConst.SuccessCode)
 				{
-					return await GenerateResultAsync(query, balanceResponse.ErrorCode);
+					return new UnsettleResult(balanceResponse.ErrorCode);
 				}
 
 				await messagePublisher.HandleBetAsync(HandleMessageMapper.Unsettle(unSettleCriteria), cancellationToken);
 			}
 
-			return await GenerateResultAsync(query, SabaStatusCodeConst.SuccessCode);
+			return new UnsettleResult(SabaStatusCodeConst.SuccessCode);
 		}
 		catch (Exception ex)
 		{
-			SentrySdk.CaptureException(ex);
-			Console.Write(ex.ToString());
-			return await GenerateResultAsync(query, SabaStatusCodeConst.ApiInternalErrorCode);
+			_ = sentryClient.CaptureException(ex);
+
+			return new UnsettleResult(SabaStatusCodeConst.ApiInternalErrorCode);
 		}
-	}
-
-	private async Task<UnsettleResult> GenerateResultAsync(UnsettleRequest query, string status)
-	{
-		var res = new UnsettleResult(status);
-		await messagePublisher.LogApi(new ApiLogMessage()
-		{
-			Key = query.key,
-			Action = query.message.Action,
-			Request = query,
-			Response = res
-		});
-
-		return res;
 	}
 }
