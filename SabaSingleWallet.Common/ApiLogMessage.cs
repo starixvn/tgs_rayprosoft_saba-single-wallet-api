@@ -3,6 +3,9 @@
 namespace SabaSingleWallet.Common;
 public record ApiLogMessage
 {
+	[Required]
+	public string GameProviderCode { get; } = ProviderConst.ProviderCode;
+
 	[Key]
 	public string? Key { get; init; } = default!;
 
