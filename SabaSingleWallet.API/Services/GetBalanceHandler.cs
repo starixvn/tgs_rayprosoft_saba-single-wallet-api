@@ -25,13 +25,15 @@ public class GetBalanceHandler(
 
 			var result = new GetBalanceResult(SabaStatusCodeConst.SuccessCode, request.Message.UserId, response.Balance, DateTime.UtcNow.ToString());
 
-			await messagePublisher.LogApi(new ApiLogMessage()
-			{
-				Key = request.Key,
-				Action = request.Message.Action,
-				Request = request,
-				Response = result
-			}, cancellationToken);
+			// Temp remove
+
+			//await messagePublisher.LogApi(new ApiLogMessage()
+			//{
+			//	Key = request.Key,
+			//	Action = request.Message.Action,
+			//	Request = request,
+			//	Response = result
+			//}, cancellationToken);
 
 			return result;
 		}
