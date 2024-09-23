@@ -2,7 +2,6 @@
 using SabaSingleWallet.API.Extensions;
 using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Balance;
-using SabaSingleWallet.Common;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
 
@@ -24,16 +23,6 @@ public class GetBalanceHandler(
 			var response = await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken).ConfigureAwait(false);
 
 			var result = new GetBalanceResult(SabaStatusCodeConst.SuccessCode, request.Message.UserId, response.Balance, DateTime.UtcNow.ToString());
-
-			// Temp remove
-
-			//await messagePublisher.LogApi(new ApiLogMessage()
-			//{
-			//	Key = request.Key,
-			//	Action = request.Message.Action,
-			//	Request = request,
-			//	Response = result
-			//}, cancellationToken);
 
 			return result;
 		}
