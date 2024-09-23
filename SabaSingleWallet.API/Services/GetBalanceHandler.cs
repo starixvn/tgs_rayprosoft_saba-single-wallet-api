@@ -1,6 +1,5 @@
 ﻿using MediatR;
 using SabaSingleWallet.API.Extensions;
-using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.Balance;
 using Tgs.CashService.Client;
 using Tgs.GameRecord.Saba.Common;
@@ -9,7 +8,6 @@ namespace SabaSingleWallet.API.Services;
 
 public class GetBalanceHandler(
 		ICashServiceClient cashClient,
-		ISapaApiMessagePublishHandler messagePublisher,
 		ISentryClient sentryClient
 	) : IRequestHandler<GetBalanceRequest, GetBalanceResult>
 
