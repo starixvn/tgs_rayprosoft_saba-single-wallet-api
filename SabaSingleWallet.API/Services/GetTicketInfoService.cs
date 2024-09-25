@@ -1,7 +1,5 @@
 using MediatR;
-using SabaSingleWallet.API.Messages;
 using SabaSingleWallet.API.Models.GetTicketInfo;
-using SabaSingleWallet.Common;
 using SabaSingleWallet.Repositories;
 using SabaSingleWallet.Repositories.Models.GetTicketInfo;
 using Tgs.GameRecord.Saba.Common;
@@ -9,7 +7,6 @@ using Tgs.GameRecord.Saba.Common;
 namespace SabaSingleWallet.API.Services;
 
 public class GetTicketInfoService(
-	ISapaApiMessagePublishHandler messagePublisher,
 	IPlayerRepository playerRepository
 	) : IRequestHandler<GetTicketInfoRequest, GetTicketInfoResult>
 {
@@ -29,32 +26,18 @@ public class GetTicketInfoService(
 
 			if (result.StatusCode != SabaStatusCodeConst.SuccessCode)
 			{
-				return await GenerateResultAsync(query, new GetTicketInfoResult(result.StatusCode));
+				return new GetTicketInfoResult(result.StatusCode);
 			}
 
-			return await GenerateResultAsync(query, new GetTicketInfoResult(
-				result.StatusCode, result.TicketStatus, result.ActualStake, result.WinlostAmount
-			));
+			return new GetTicketInfoResult(
+				result.StatusCode, result.TicketStatus, result.ActualStake, result.WinlostAmount);
 		}
 		catch (Exception ex)
 		{
 			SentrySdk.CaptureException(ex);
 			Console.Write(ex.ToString());
 
-			return await GenerateResultAsync(query, new GetTicketInfoResult(SabaStatusCodeConst.ApiInternalErrorCode));
+			return new GetTicketInfoResult(SabaStatusCodeConst.ApiInternalErrorCode);
 		}
-	}
-
-	private async Task<GetTicketInfoResult> GenerateResultAsync(GetTicketInfoRequest query, GetTicketInfoResult result)
-	{
-		await messagePublisher.LogApi(new ApiLogMessage()
-		{
-			Key = query.key,
-			Action = query.message.Action,
-			Request = query,
-			Response = result
-		});
-
-		return result;
 	}
 }

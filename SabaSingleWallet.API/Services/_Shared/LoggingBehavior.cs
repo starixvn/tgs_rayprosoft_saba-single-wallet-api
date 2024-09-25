@@ -10,11 +10,13 @@ public class LoggingBehavior<TRequest, TResponse>(
 {
 	public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
 	{
-		// Pre-processing
+		if (request.GetType().GetCustomAttributes(typeof(IgnoreLoggingAttribute), true).Any())
+		{
+			return await next();
+		}
 
 		var response = await next();
 
-		// Post-processing
 		_ = await GenerateResponseAsync(request, response, cancellationToken);
 
 		return response;
