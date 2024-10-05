@@ -1,5 +1,0 @@
-{
-    "run": "docker run -i grafana/k6 run - <script.js",
-    "run-with-vus": "docker run -i grafana/k6 run --vus 10 --duration 30s - <script.js",
-    "run-and-summary": "docker run -i grafana/k6 run --summary-trend-stats='med,p(95),p(99.9)' - <script.js"    
-}
