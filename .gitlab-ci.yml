@@ -28,3 +28,4 @@ e2e-loadtest:
   artifacts:
     paths:
       - LoadTests/summary.html
+    when: always

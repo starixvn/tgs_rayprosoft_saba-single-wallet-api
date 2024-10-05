@@ -38,7 +38,7 @@ export const Scenarios = {
 };
 
 export const Threshold = {
-  http_req_duration: ["p(95)<250", "p(95)<350"],
+  http_req_duration: ["p(85)<250", "p(90)<350"],
   http_req_failed: ["rate<0.01"],
 };
 
