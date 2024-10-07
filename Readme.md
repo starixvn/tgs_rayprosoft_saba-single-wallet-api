@@ -22,7 +22,7 @@ docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e RUN_MODE=D
 #### Load Test
 
 ```bash
-docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e RUN_MODE=LOCAL script.js
+docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e RUN_MODE=ALL script.js
 ```
 
 ### Method 2: Using k6 Directly
@@ -36,5 +36,5 @@ k6 run -e RUN_MODE=DEV script.js
 #### Load Test
 
 ```bash
-k6 run -e RUN_MODE=LOCAL script.js
+k6 run -e RUN_MODE=ALL script.js
 ```

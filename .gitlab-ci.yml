@@ -10,6 +10,7 @@ include:
     entrypoint: ['']
   before_script: []
   after_script: []
+  when: manual
   rules:
     - if: '$ENV_NAME != "LOCAL"'
       when: never
@@ -19,12 +20,10 @@ include:
 e2e-smoke-test:
   extends: .e2e-test
   script: ["k6 run LoadTests/smoke.js"] 
-  when: manual
-
+  
 e2e-loadtest:
   extends: .e2e-test
-  script: ['k6 run -e RUN_MODE=DEV LoadTests/script.js']
-  when: manual
+  script: ['k6 run -e RUN_MODE=ALL LoadTests/script.js']
   artifacts:
     paths:
       - LoadTests/output
