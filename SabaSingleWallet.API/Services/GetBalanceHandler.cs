@@ -16,6 +16,8 @@ public class GetBalanceHandler(
 	{
 		try
 		{
+			sentryClient.CaptureMessage(request.Message.ToString(), SentryLevel.Warning);
+
 			var playerCode = request.Message.UserId.ToPlayerCode();
 
 			var response = await cashClient.GameProviderGetBalanceAsync(playerCode, cancellationToken).ConfigureAwait(false);
