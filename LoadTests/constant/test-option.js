@@ -14,10 +14,7 @@ const Scenarios = {
       duration: "5m",
       preAllocatedVUs: 10,
       maxVUs: 20,
-      env: {
-        ENVIRONMENT: "production",
-        VERSION: "v1.0",
-      },
+      env: { MY_CROC_ID: '1' },
       tags: {
         test_type: "api_load_test",
       },
