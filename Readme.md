@@ -13,14 +13,28 @@ You can run a load test using `k6` in two ways:
 
 ### Method 1: Using Docker
 
-Run the following command in your terminal:
+#### Simple Test
 
 ```bash
-docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e DEV_MODE=TRUE script.js
+docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e RUN_MODE=DEV script.js
+```
+
+#### Load Test
+
+```bash
+docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e RUN_MODE=LOCAL script.js
 ```
 
 ### Method 2: Using k6 Directly
 
+#### Simple Test
+
 ```bash
-k6 run -e DEV_MODE=TRUE script.js
+k6 run -e RUN_MODE=DEV script.js
+```
+
+#### Load Test
+
+```bash
+k6 run -e RUN_MODE=LOCAL script.js
 ```

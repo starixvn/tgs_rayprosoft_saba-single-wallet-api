@@ -21,6 +21,7 @@ const Scenarios = {
     },
     ramping_rate_test: {
       executor: "ramping-arrival-rate",
+      startTime: '300s',
       startRate: 50,
       timeUnit: "1s",
       preAllocatedVUs: 50,
