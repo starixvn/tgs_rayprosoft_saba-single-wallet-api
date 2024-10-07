@@ -1,14 +1,9 @@
 const Scenarios = {
   DEV: {
-    constant_rate_test: {
+    per_vus_iterations_test: {
       executor: "per-vu-iterations",
-      vus: 1, // 1 virtual user
-      iterations: 2, // The user will send 5 requests
-    },
-    ramping_rate_test: {
-      executor: "per-vu-iterations",
-      vus: 3, // 1 virtual user
-      iterations: 2, // The user will send 5 requests
+      vus: 3, // 2 virtual user
+      iterations: 2, // The user will send 2 requests
     }
   },
   LOCAL: {
@@ -44,10 +39,30 @@ const Scenarios = {
   }
 }
 
-export const Threshold = {
-  http_req_duration: ["p(85)<250", "p(90)<350"],
-  http_req_failed: ["rate<0.01"],
-};
+export const useOptions = (execName, options = {}) => {
+  const scenarios = useScenarios(execName);
+  const thresholdsResult = {}; 
+
+  const { thresholds } = options
+
+  if (thresholds) {
+    Object.keys(scenarios).forEach(scenario => {
+      Object.keys(thresholds).forEach(threshold => {
+        thresholdsResult[`${threshold}{scenario:${scenario}}`] = thresholds[threshold]
+      })
+    })
+  } else { // default threshold
+    Object.keys(scenarios).forEach(scenario => {
+      thresholdsResult[`http_req_duration{scenario:${scenario}}`] = ["p(85)<250", "p(90)<350"]
+      thresholdsResult[`http_req_failed{scenario:${scenario}}`] = ["rate<0.01"]
+    })
+  }
+
+  return {
+    scenarios: scenarios,
+    thresholds: thresholdsResult,
+  };
+}
 
 export const useScenarios = (execName) => {
   const scenarios = Scenarios[__ENV.RUN_MODE] ?? Scenarios.DEV;
@@ -59,7 +74,7 @@ export const useScenarios = (execName) => {
     // Rename the test type (copying the original content to the new key and deleting the old key)
     result[newTestType] = { ...result[testType] };
     result[newTestType]["exec"] = execName;
-    
+
     delete result[testType];
   });
 

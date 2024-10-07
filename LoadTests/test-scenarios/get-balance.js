@@ -1,11 +1,9 @@
 import { sleep, check } from "k6";
-import { useScenarios } from "../constant/test-option.js";
+import { useOptions } from "../constant/test-option.js";
 import { GetRandomSapaSportUserId } from "../data-generator/users.js";
 import getBalance from "../api/get-balance.js";
 
-export const GetBalanceOption = {
-  scenarios: useScenarios('getBalanceTest'),
-}
+export const GetBalanceOption = useOptions("getBalanceTest");
 
 export function getBalanceTest() {
   const userId = GetRandomSapaSportUserId();

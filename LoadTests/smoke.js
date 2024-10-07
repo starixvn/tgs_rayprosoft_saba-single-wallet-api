@@ -10,8 +10,8 @@ export let options = {
   vus: 1, // 1 virtual user
   iterations: 5, // Run 1 iterations
   thresholds: {
-    http_req_failed: [{ threshold: 'rate<0.01', abortOnFail: true }],
-    http_req_duration: ['p(95)<250', 'p(99)<350'], 
+    http_req_failed: [{ threshold: "rate<0.01", abortOnFail: true }],
+    http_req_duration: ["p(95)<250", "p(99)<350"],
   },
 };
 
@@ -29,4 +29,3 @@ export default function () {
 
   const settledTest = settle(userId, confirmBetTest.request);
 }
-

@@ -1,19 +1,23 @@
-import { sleep, check } from "k6";
+import { sleep, check, fail } from "k6";
 
 import { GetRandomSapaSportUserId } from "../data-generator/users.js";
 import placebet from "../api/placebet.js";
 import confirmbet from "../api/confirmbet.js";
 import settle from "../api/settle.js";
-import { useScenarios } from "../constant/test-option.js";
+import { useOptions } from "../constant/test-option.js";
 
-export const SettleOption = useScenarios('settleTest')
+export const SettleOption = useOptions("settleTest");
 
 export function settleTest() {
   const userId = GetRandomSapaSportUserId();
   const placebetResult = placebet(userId);
-  check(placebetResult.response, {
+  const placebetCheck = check(placebetResult.response, {
     "Settle/Placebet content status is 0": (r) => r.status === "0",
   });
+
+  if (!placebetCheck) {
+    fail("Settle/Placebet failed");
+  }
 
   sleep(0.5);
 
