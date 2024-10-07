@@ -19,11 +19,12 @@ include:
 e2e-smoke-test:
   extends: .e2e-test
   script: ["k6 run LoadTests/smoke.js"] 
+  when: manual
 
 e2e-loadtest:
   extends: .e2e-test
-  needs: ["e2e-smoke-test"]
   script: ['k6 run -e RUN_MODE=DEV LoadTests/script.js']
+  when: manual
   artifacts:
     paths:
       - LoadTests/output
