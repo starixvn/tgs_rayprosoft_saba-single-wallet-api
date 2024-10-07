@@ -23,8 +23,7 @@ e2e-smoke-test:
 e2e-loadtest:
   extends: .e2e-test
   needs: ["e2e-smoke-test"]
-  script:
-    - k6 run -e DEV_MODE=TRUE LoadTests/script.js
+  script: ['k6 run -e RUN_MODE=DEV LoadTests/script.js']
   artifacts:
     paths:
       - LoadTests/summary.html

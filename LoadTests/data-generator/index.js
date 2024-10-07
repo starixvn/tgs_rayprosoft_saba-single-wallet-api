@@ -441,7 +441,7 @@ const SM = {
 }, f2 = (M) => {
   const z = Math.pow(10, M - 1), b = Math.pow(10, M) - 1;
   return Math.floor(Math.random() * (b - z + 1)) + z;
-}, wM = "loadtest_", Z0 = 7, IM = (M) => ({
+}, wM = "loadtest_", Z0 = 1, IM = (M) => ({
   key: r(10),
   message: {
     ...N.GetBalance,
