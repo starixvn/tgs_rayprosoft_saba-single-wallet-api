@@ -21,7 +21,7 @@ export const options = {
 
 export function handleSummary(data) {
   return {
-    [`summary.html`]: htmlReport(data),
+    [`output/summary.html`]: htmlReport(data),
   };
 }
 

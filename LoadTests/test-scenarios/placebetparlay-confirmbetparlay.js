@@ -3,19 +3,10 @@ import { sleep, check } from "k6";
 import { GetRandomSapaSportUserId } from "../data-generator/users.js";
 import placebetParlay from "../api/placebetParlay.js";
 import confirmbetParlay from "../api/confirmbetParlay.js";
-import { Scenarios } from "../constant/test-option.js";
+import { useScenarios } from "../constant/test-option.js";
 
 export const PlaceBetConfirmBetParlayOption = {
-  scenarios: {
-    PlaceBetConfirmBetParlay_ConstantRateTest: {
-        ...Scenarios.constant_rate_test,
-        exec: 'placeBetConfirmBetParlayTest'
-    },
-    PlaceBetConfirmBetParlay_RampingRateTest: {
-        ...Scenarios.ramping_rate_test,
-        exec: 'placeBetConfirmBetParlayTest'
-    },
-  },
+  scenarios: useScenarios('placeBetConfirmBetParlayTest'),
 }
 
 export function placeBetConfirmBetParlayTest() {

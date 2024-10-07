@@ -1,4 +1,4 @@
-export const RuntimeScenarios = {
+const Scenarios = {
   DEV: {
     constant_rate_test: {
       executor: "per-vu-iterations",
@@ -49,6 +49,22 @@ export const Threshold = {
   http_req_failed: ["rate<0.01"],
 };
 
-export const Scenarios = RuntimeScenarios[__ENV.RUN_MODE] ?? RuntimeScenarios.DEV;
+export const useScenarios = (execName) => {
+  const scenarios = Scenarios[__ENV.RUN_MODE] ?? Scenarios.DEV;
+  const result = {...scenarios}
+
+  Object.keys(result).forEach((testType) => {
+    const newTestType = `${execName}-${testType}`;
+    
+    // Rename the test type (copying the original content to the new key and deleting the old key)
+    result[newTestType] = { ...result[testType] };
+    result[newTestType]["exec"] = execName;
+    
+    delete result[testType];
+  });
+
+  return result;
+}
+
 
 

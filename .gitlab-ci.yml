@@ -26,5 +26,5 @@ e2e-loadtest:
   script: ['k6 run -e RUN_MODE=DEV LoadTests/script.js']
   artifacts:
     paths:
-      - LoadTests/summary.html
+      - LoadTests/output
     when: always

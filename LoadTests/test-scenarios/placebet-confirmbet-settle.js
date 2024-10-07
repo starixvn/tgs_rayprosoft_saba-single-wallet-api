@@ -4,19 +4,10 @@ import { GetRandomSapaSportUserId } from "../data-generator/users.js";
 import placebet from "../api/placebet.js";
 import confirmbet from "../api/confirmbet.js";
 import settle from "../api/settle.js";
-import { Scenarios } from "../constant/test-option.js";
+import { useScenarios } from "../constant/test-option.js";
 
 export const PlacebetConfirmbetSettleOption = {
-  scenarios: {
-    GetBalanceConfirmBetSettle_ConstantRateTest: {
-        ...Scenarios.constant_rate_test,
-        exec: 'placebetConfirmbetSettleTest'
-    },
-    GetBalanceConfirmBetSettle_RampingRateTest: {
-        ...Scenarios.ramping_rate_test,
-        exec: 'placebetConfirmbetSettleTest'
-    },
-  },
+  scenarios: useScenarios('placebetConfirmbetSettleTest'),
 }
 
 export function placebetConfirmbetSettleTest()  {
