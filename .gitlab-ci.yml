@@ -16,19 +16,24 @@ include:
       when: never
     - !reference [.cd_rules, deploy_k8s]
     - !reference [.cd_rules, deploy]
+
+
+performance-smoke-test:
+  extends: .performance
+  script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
   artifacts:
     paths:
       - summary.html
     when: always
 
-performance-smoke-test:
-  extends: .performance
-  script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
-  
 performance-constant-arrived-test:
   extends: .performance
   needs: ['performance-smoke-test']
   script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
+  artifacts:
+    paths:
+      - summary.html
+    when: always
 
 performance-ramping-test:
   stage: ".post"
@@ -41,7 +46,11 @@ performance-ramping-test:
   when: manual
   rules:
     - !reference [.cd_rules, cleanup]
-
+  artifacts:
+    paths:
+      - summary.html
+    when: always
+    
 performance-constant-arrived-merged-test:
   extends: .performance
   stage: test
