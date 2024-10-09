@@ -16,7 +16,7 @@ You can run a load test using `k6` in two ways:
 #### Simple Test
 
 ```bash
-docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e RUN_MODE=CONSTANT_RATE script.js
+docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e RUN_MODE=DEV script.js
 ```
 
 #### Load Test
@@ -30,7 +30,7 @@ docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e RUN_MODE=C
 #### Simple Test
 
 ```bash
-k6 run -e RUN_MODE=CONSTANT_RATE LoadTests/script.js
+k6 run -e RUN_MODE=DEV LoadTests/script.js
 ```
 
 #### Load Test
