@@ -47,8 +47,8 @@ performance-constant-arrived-merged-test:
   stage: test
   script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
   rules:
-    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
-      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
   artifacts:
     reports:
       load_performance: summary.json
