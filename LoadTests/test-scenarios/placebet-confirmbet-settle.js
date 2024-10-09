@@ -20,6 +20,7 @@ export function placebetConfirmbetSettleTest() {
   });
 
   if (!placebetCheck) {
+    console.log(placebetCheck)
     fail("Placebet-Confirmbet-Settle/PlaceBet failed");
   }
 

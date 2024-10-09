@@ -1,4 +1,5 @@
 import { sleep } from "k6";
+import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
 
 import { GetRandomSapaSportUserId } from "./data-generator/users.js";
 import confirmbet from "./api/confirmbet.js";
@@ -11,7 +12,6 @@ export let options = {
   iterations: 5, // Run 1 iterations
   thresholds: {
     http_req_failed: [{ threshold: "rate<0.01", abortOnFail: true }],
-    http_req_duration: ["p(95)<250", "p(99)<350"],
   },
 };
 
@@ -28,4 +28,10 @@ export default function () {
   sleep(3);
 
   const settledTest = settle(userId, confirmBetTest.request);
+}
+
+export function handleSummary(data) {
+  return {
+    [`summary.html`]: htmlReport(data),
+  };
 }

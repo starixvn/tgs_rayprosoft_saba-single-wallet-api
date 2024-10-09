@@ -16,6 +16,7 @@ export function settleTest() {
   });
 
   if (!placebetCheck) {
+    console.log(placebetCheck)
     fail("Settle/Placebet failed");
   }
 

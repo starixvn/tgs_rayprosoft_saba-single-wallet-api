@@ -25,6 +25,7 @@ export function placeBetConfirmBetParlayTest() {
   });
 
   if (!placebetCheck) {
+    console.log(placebetCheck)
     fail("PlacebetParlay-ConfirmbetParlay/PlacebetParlay failed");
   }
 

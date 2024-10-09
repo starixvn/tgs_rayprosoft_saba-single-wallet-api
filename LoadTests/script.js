@@ -36,7 +36,7 @@ export const options = {
 
 export function handleSummary(data) {
   return {
-    [`output/summary.html`]: htmlReport(data),
+    [`summary.html`]: htmlReport(data),
   };
 }
 

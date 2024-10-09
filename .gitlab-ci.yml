@@ -10,21 +10,26 @@ include:
     entrypoint: ['']
   before_script: []
   after_script: []
-  when: manual
+  resource_group: "e2t-test"
   rules:
     - if: '$ENV_NAME != "LOCAL"'
       when: never
     - !reference [.cd_rules, deploy_k8s]
     - !reference [.cd_rules, deploy]
+  artifacts:
+    reports:
+      load_performance: summary.json
+    paths:
+      - summary.html
+    when: always
 
 e2e-smoke-test:
   extends: .e2e-test
-  script: ["k6 run LoadTests/smoke.js"] 
+  script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
   
-e2e-loadtest:
+e2e-constant-arrived-test:
   extends: .e2e-test
-  script: ['k6 run -e RUN_MODE=ALL LoadTests/script.js']
-  artifacts:
-    paths:
-      - LoadTests/output
-    when: always
+  needs: ['e2e-smoke-test']
+  script: ['k6 run -e RUN_MODE=CONSTANT_RATE --summary-export=summary.json LoadTests/script.js']
+
+

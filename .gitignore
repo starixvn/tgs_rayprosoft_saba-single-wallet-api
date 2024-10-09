@@ -400,3 +400,6 @@ FodyWeavers.xsd
 *.feature.cs
 
 op_client/**/*.js
+
+summary.html
+summary.json
