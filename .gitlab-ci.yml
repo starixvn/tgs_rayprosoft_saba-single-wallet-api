@@ -46,3 +46,30 @@ performance-ramping-test:
       - summary.html
     when: always
 
+performance-ramping-test-test-test:
+  stage: ".post"
+  extends: .performance
+  script: ["k6 run -e RUN_MODE=CONSTANT_RATE LoadTests/script.js"] 
+  when: manual
+  rules:
+    - if: '$ENV_NAME != "LOCAL"'
+      when: never
+    - !reference [.cd_success_rules]
+  artifacts:
+    paths:
+      - summary.html
+    when: always
+
+performance-ramping-test-test:
+  stage: ".post"
+  extends: .performance
+  script: ["k6 run -e RUN_MODE=CONSTANT_RATE LoadTests/script.js"] 
+  when: manual
+  rules:
+    - if: '$ENV_NAME != "LOCAL"'
+      when: never
+  artifacts:
+    paths:
+      - summary.html
+    when: always
+
