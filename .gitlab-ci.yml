@@ -32,9 +32,15 @@ performance-constant-arrived-test:
 
 performance-ramping-test:
   stage: ".post"
-  extends: .performance
+  image:
+    name: grafana/k6:latest
+    entrypoint: ['']
+  before_script: ['']
+  after_script: []
   script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
   when: manual
+  rules:
+    - !reference [.cd_rules, cleanup]
 
 performance-constant-arrived-merged-test:
   extends: .performance
