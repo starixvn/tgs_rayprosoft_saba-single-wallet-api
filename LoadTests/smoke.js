@@ -1,4 +1,5 @@
-import { sleep } from "k6";
+import { sleep, check, fail } from "k6";
+
 import { htmlReport } from "https://raw.githubusercontent.com/benc-uk/k6-reporter/main/dist/bundle.js";
 
 import { GetRandomSapaSportUserId } from "./data-generator/users.js";
@@ -12,12 +13,16 @@ export let options = {
   iterations: 5, // Run 1 iterations
   thresholds: {
     http_req_failed: [{ threshold: "rate<0.01", abortOnFail: true }],
+    http_req_duration: [
+      'p(90)<300', // 90% of requests should be under 500ms
+      'p(95)<200', // 95% of requests should be under 800ms
+    ]
   },
 };
 
 export default function () {
   const userId = GetRandomSapaSportUserId();
-
+  
   const getBalanceTest = getBalance(userId);
   sleep(1);
 
