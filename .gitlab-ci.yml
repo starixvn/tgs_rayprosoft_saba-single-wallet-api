@@ -12,64 +12,42 @@ include:
   after_script: []
   resource_group: "e2t-test"
   rules:
-    - if: '$ENV_NAME != "LOCAL"'
+    - if: $ENV_NAME != "LOCAL"
       when: never
     - !reference [.cd_rules, deploy_k8s]
     - !reference [.cd_rules, deploy]
+  artifacts:
+    paths:
+      - summary.html
+    when: always
 
 performance-smoke-test:
   extends: .performance
-  script: ["k6 run LoadTests/smoke.js"] 
+  script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
   
 performance-constant-arrived-test:
   extends: .performance
   needs: ['performance-smoke-test']
   script: ["k6 run -e RUN_MODE=CONSTANT_RATE --summary-export=summary.json LoadTests/script.js"] 
-  artifacts:
-    reports:
-      load_performance: summary.json
-    when: always
 
-# Manual Trigger
 performance-ramping-test:
   stage: ".post"
   extends: .performance
-  script: ["k6 run -e RUN_MODE=CONSTANT_RATE LoadTests/script.js"] 
-  rules:
-    - if: '$ENV_NAME == "LOCAL"'
-      when: manual
-    - if: '$ENV_NAME != "LOCAL"'
-      when: never
-    - !reference [.cd_success_rules]
-  artifacts:
-    paths:
-      - summary.html
-    when: always
-
-performance-ramping-test-test-test:
-  stage: ".post"
-  extends: .performance
-  script: ["k6 run -e RUN_MODE=CONSTANT_RATE LoadTests/script.js"] 
+  script: ["k6 run -e RUN_MODE=CONSTANT_RATE --summary-export=summary.json LoadTests/script.js"] 
   when: manual
-  rules:
-    - if: '$ENV_NAME != "LOCAL"'
-      when: never
-    - !reference [.cd_success_rules]
-  artifacts:
-    paths:
-      - summary.html
-    when: always
+  rules: 
+    - !reference [.cd_rules, deploy]
+    - !reference [.cd_rules, deploy_k8s]
 
-performance-ramping-test-test:
-  stage: ".post"
+performance-constant-arrived-merged-test:
   extends: .performance
-  script: ["k6 run -e RUN_MODE=CONSTANT_RATE LoadTests/script.js"] 
-  when: manual
+  stage: test
+  script: ["k6 run -e RUN_MODE=CONSTANT_RATE --summary-export=summary.json LoadTests/script.js"] 
   rules:
-    - if: '$ENV_NAME != "LOCAL"'
+    - if: $CI_PIPELINE_SOURCE != "merge_request_event"
       when: never
   artifacts:
-    paths:
-      - summary.html
+    reports:
+      load_performance: summary.json
     when: always
 
