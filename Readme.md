@@ -30,7 +30,7 @@ docker run --rm -i -v ${PWD}/LoadTests:/app -w /app grafana/k6 run -e RUN_MODE=C
 #### Simple Test
 
 ```bash
-k6 run -e RUN_MODE=DEV LoadTests/script.js
+k6 run -e RUN_MODE=CONSTANT_RATE LoadTests/script.js
 ```
 
 #### Load Test
