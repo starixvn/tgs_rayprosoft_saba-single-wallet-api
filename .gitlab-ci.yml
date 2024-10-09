@@ -28,21 +28,18 @@ performance-smoke-test:
 performance-constant-arrived-test:
   extends: .performance
   needs: ['performance-smoke-test']
-  script: ["k6 run -e RUN_MODE=CONSTANT_RATE --summary-export=summary.json LoadTests/script.js"] 
+  script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
 
 performance-ramping-test:
   stage: ".post"
   extends: .performance
-  script: ["k6 run -e RUN_MODE=CONSTANT_RATE --summary-export=summary.json LoadTests/script.js"] 
+  script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
   when: manual
-  rules: 
-    - !reference [.cd_rules, deploy]
-    - !reference [.cd_rules, deploy_k8s]
 
 performance-constant-arrived-merged-test:
   extends: .performance
   stage: test
-  script: ["k6 run -e RUN_MODE=CONSTANT_RATE --summary-export=summary.json LoadTests/script.js"] 
+  script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
   rules:
     - if: $CI_PIPELINE_SOURCE != "merge_request_event"
       when: never
