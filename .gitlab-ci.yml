@@ -3,12 +3,12 @@ include:
     ref: main
     file: nexcel.gitlab-ci.yml
 
-.e2e-test:
+.performance:
   stage: post-deploy
   image:
     name: grafana/k6:latest
     entrypoint: ['']
-  before_script: []
+  before_script: ['']
   after_script: []
   resource_group: "e2t-test"
   rules:
@@ -16,20 +16,33 @@ include:
       when: never
     - !reference [.cd_rules, deploy_k8s]
     - !reference [.cd_rules, deploy]
+
+performance-smoke-test:
+  extends: .performance
+  script: ["k6 run LoadTests/smoke.js"] 
+  
+performance-constant-arrived-test:
+  extends: .performance
+  needs: ['performance-smoke-test']
+  script: ["k6 run -e RUN_MODE=CONSTANT_RATE --summary-export=summary.json LoadTests/script.js"] 
   artifacts:
     reports:
       load_performance: summary.json
+    when: always
+
+# Manual Trigger
+performance-ramping-test:
+  stage: ".post"
+  extends: .performance
+  script: ["k6 run -e RUN_MODE=CONSTANT_RATE LoadTests/script.js"] 
+  rules:
+    - if: '$ENV_NAME == "LOCAL"'
+      when: manual
+    - if: '$ENV_NAME != "LOCAL"'
+      when: never
+    - !reference [.cd_success_rules]
+  artifacts:
     paths:
       - summary.html
     when: always
-
-e2e-smoke-test:
-  extends: .e2e-test
-  script: ["k6 run --summary-export=summary.json LoadTests/smoke.js"] 
-  
-e2e-constant-arrived-test:
-  extends: .e2e-test
-  needs: ['e2e-smoke-test']
-  script: ['k6 run -e RUN_MODE=CONSTANT_RATE --summary-export=summary.json LoadTests/script.js']
-
 
